@@ -31,13 +31,11 @@
         .sidebar-item:hover { 
             background-color: #f1f5f9; /* slate-100 for category and fallacy item hover */
         }
-        /* Specific hover for static buttons if needed, or use common .sidebar-static-item:hover */
-        #showCaseAnalyzerBtn:hover {
+        #showCaseAnalyzerBtn:hover { /* Specific hover for analyzer button */
             background-color: #e0e7ff; /* indigo-100, as per fallacyAI.html for this button */
         }
-         #aiSettingsBtn:hover {
-            background-color: #f1f5f9; /* slate-100, as per fallacyAI.html for this button */
-         }
+         /* Removed #aiSettingsBtn:hover here as it's globally positioned now, its hover is via Tailwind classes */
+
 
         /* Active state for CATEGORY BUTTONS */
         button.sidebar-item.sidebar-item-active {
@@ -47,13 +45,11 @@
         /* Active state for individual FALLACY LINKS */
         a.sidebar-item.sidebar-item-active {
             background-color: #e2e8f0; /* slate-200 (浅灰色) */
-            /* Font color (text-slate-600) and weight (normal from text-xs) are default */
         }
         
-        /* "智能案例分析"按钮 - Default style restored from fallacyAI.html */
-        /* Classes are applied in HTML directly */
-
-        /* Active state for "智能案例分析" button - Restored from fallacyAI.html */
+        /* "智能案例分析"按钮 - Style from fallacyAI.html */
+        /* Default state classes are applied in HTML directly */
+        /* Active state for "智能案例分析" button - Style from fallacyAI.html */
         .sidebar-static-item-active#showCaseAnalyzerBtn {
             background-color: #dbeafe; /* blue-100 */
             color: #1e40af;           /* blue-800 */
@@ -66,8 +62,14 @@
             color: #1d4ed8; /* blue-700 */
         }
 
-        /* AI Settings Button - Style restored from fallacyAI.html (defined by HTML classes) */
-        /* No specific CSS rule needed if all styles are in HTML class attribute */
+        /* AI Settings Button - Default style defined by HTML classes. Popover positioning is key. */
+        #aiSettingsContainer { /* New container for fixed positioning */
+            position: fixed;
+            top: 1rem; /* 16px */
+            right: 1rem; /* 16px */
+            z-index: 50;
+        }
+        /* SVG style for AI settings button is in its HTML class */
 
         /* Fallacy Detail Accent Borders (Original Vibrant) */
         .category-accent-red { border-left: 4px solid #EF4444; }
@@ -87,8 +89,7 @@
         }
         @media (min-width: 768px) { .chart-container { height: 420px; } }
 
-        /* Buttons for "Generate Example" and "Analyze Case" - Restored vibrant blue */
-        .gemini-btn, .analyze-case-btn {
+        .gemini-btn, .analyze-case-btn { /* Unified button style for actions */
             background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem;
             font-weight: 500; transition: background-color 0.2s; flex-shrink: 0;
         }
@@ -102,19 +103,28 @@
         .gemini-loader, .analyzer-loader { border-top: 3px solid #3B82F6; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* AI Settings Popover - Adjusted for top-right button */
         .ai-settings-popover {
-            @apply absolute left-0 bg-white p-3.5 rounded-lg shadow-xl border border-slate-200 w-full mt-1.5 z-20;
-            max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-12px) scale(0.95);
-            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            @apply absolute bg-white rounded-lg shadow-xl border border-slate-200 z-20; /* Removed p-3.5, w-full, mt-1.5 */
+            right: 0; /* Align to the right edge of its relative parent (aiSettingsContainer > div.relative) */
+            top: calc(100% + 0.25rem); /* Position below the button (100%) plus a small margin (mt-1) */
+            width: 17rem; /* w-68, a suitable fixed width, adjust as needed */
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-0.75rem) scale(0.95); /* Start slightly above and smaller for dropdown effect */
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .ai-settings-popover.popover-active {
-            max-height: 500px; opacity: 1; transform: translateY(0) scale(1); padding: 0.875rem;
+            max-height: 500px; /* Or enough to fit content */
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            padding: 0.875rem; /* p-3.5, restored padding when active */
         }
-        .ai-settings-popover-bottom {
-            bottom: 100%; margin-bottom: 0.375rem; 
-            transform: translateY(12px) scale(0.95);
-        }
-        .ai-settings-popover-bottom.popover-active { transform: translateY(0) scale(1); }
+        /* Removed .ai-settings-popover-bottom as it's no longer needed */
 
         .popover-input, .popover-select {
             @apply w-full p-1.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-sky-400 focus:border-sky-400 outline-none placeholder-slate-400 mb-2 text-xs;
@@ -123,7 +133,7 @@
         .popover-btn-primary { @apply bg-sky-500 text-white hover:bg-sky-600; }
         .popover-btn-secondary { @apply bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300; }
 
-        /* Case Analyzer Module Styles */
+        /* Case Analyzer Module Styles - As per previous good version */
         .case-analyzer-module {
             @apply bg-white p-6 sm:p-8 rounded-lg shadow-md border-t-4 border-slate-100;
         }
@@ -134,28 +144,22 @@
         .case-analyzer-title-sub {
             @apply text-base font-normal text-slate-500 ml-1.5;
         }
-        .case-analyzer-subtitle.text-xs { @apply text-slate-400; } /* Lighter for subtitle */
-        
-        /* Input area styling */
-        .case-analyzer-module label[for="caseInput"] { /* Style for the "请输入案例内容：" label */
-            @apply block text-xs font-medium text-slate-500 mb-1.5 mt-4;
-        }
-        .case-analyzer-module textarea#caseInput {
-            @apply w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-sky-300 focus:border-sky-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white shadow-sm;
+        .case-analyzer-subtitle.text-xs { @apply text-slate-400; }
+        #caseInput::placeholder { color: #d1d5db; /* slate-300 */ }
+        .case-analyzer-module textarea#caseInput { /* More specific selector for textarea */
+            @apply w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-sky-300 focus:border-sky-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white/70 shadow-sm;
             min-height: 130px;
         }
-        #caseInput::placeholder { color: #d1d5db; /* slate-300, lighter placeholder */ }
-
         .analyze-btn-wrapper { @apply mt-4 mb-6 flex justify-center; }
 
         /* Output Area Styling (Gemini chat prompt style - low saturation gray-blue) */
         .analysis-output-box-styled {
-            @apply mt-6 p-5 rounded-lg shadow-sm; /* Increased padding to p-5 for "留白" */
-            background-color: #f0f9ff; /* sky-50 (浅灰蓝) */
-            border: 1px solid #e0f2fe;  /* sky-100 (边框) */
+            @apply mt-6 p-5 rounded-lg shadow-inner;
+            background-color: #f0f9ff; /* sky-50 */
+            border: 1px solid #e0f2fe;  /* sky-100 */
         }
-        .analysis-output-box-styled h4 { /* Title inside the output box */
-            @apply text-sm font-medium text-slate-700; /* Softer title color */
+        .analysis-output-box-styled h4 {
+            @apply text-sm font-medium text-slate-700;
         }
         .analysis-output-box-styled #analysisResultContent {
             @apply text-xs text-slate-600 leading-relaxed whitespace-pre-wrap;
@@ -208,41 +212,7 @@
                         </svg>
                         智能案例分析
                     </button>
-                    <div class="relative">
-                        <button id="aiSettingsBtn" class="w-full flex items-center justify-center text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 p-2.5 rounded-lg transition-colors duration-150 relative shadow-sm border border-slate-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5 text-slate-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.646.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.333.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            AI 设置
-                        </button>
-                        <div id="aiSettingsPopover" class="ai-settings-popover ai-settings-popover-bottom">
-                            <div class="flex justify-between items-center mb-2">
-                                 <h3 class="text-sm font-medium text-slate-600">AI 配置</h3>
-                                 <button id="closeAiSettingsPopoverBtn" class="text-slate-400 hover:text-slate-600 p-0.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div>
-                                <label for="aiModelSelect" class="block text-xs font-medium text-slate-500 mb-0.5">选择 AI 模型:</label>
-                                <select id="aiModelSelect" class="popover-select">
-                                    <option value="gemini-2.0-flash">Gemini 2.0 Flash (推荐)</option>
-                                    <option value="gemini-pro">Gemini Pro</option>
-                                </select>
-                                <label for="popoverApiKeyInput" class="block text-xs font-medium text-slate-500 mb-0.5 mt-1.5">API 密钥:</label>
-                                <input type="password" id="popoverApiKeyInput" class="popover-input" placeholder="请输入 API Key">
-                                <p class="text-xs text-slate-400 mt-0.5 mb-2.5">部分模型需要。留空则使用默认配置。</p>
-                                <div class="flex justify-end space-x-2">
-                                    <button id="cancelAiSettingsBtn" class="popover-btn popover-btn-secondary">取消</button>
-                                    <button id="saveAiSettingsBtn" class="popover-btn popover-btn-primary">保存</button>
-                                </div>
-                                <p id="settingsSavedMsg" class="text-xs text-green-500 mt-1.5 text-center hidden">设置已保存!</p>
-                            </div>
-                        </div>
                     </div>
-                </div>
             </aside>
 
             <main id="contentArea" class="flex-1 p-5 sm:p-6 lg:p-8 overflow-y-auto bg-white">
@@ -310,6 +280,43 @@
         </div>
     </div>
 
+    <div id="aiSettingsContainer" class="fixed top-4 right-4 z-50">
+        <div class="relative">
+            <button id="aiSettingsBtn" class="flex items-center justify-center text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 p-2.5 rounded-lg transition-colors duration-150 shadow-sm border border-slate-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5 text-slate-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.646.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.333.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                AI 设置
+            </button>
+            <div id="aiSettingsPopover" class="ai-settings-popover">
+                <div class="flex justify-between items-center mb-2">
+                     <h3 class="text-sm font-medium text-slate-600">AI 配置</h3>
+                     <button id="closeAiSettingsPopoverBtn" class="text-slate-400 hover:text-slate-600 p-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <label for="aiModelSelect" class="block text-xs font-medium text-slate-500 mb-0.5">选择 AI 模型:</label>
+                    <select id="aiModelSelect" class="popover-select">
+                        <option value="gemini-2.0-flash">Gemini 2.0 Flash (推荐)</option>
+                        <option value="gemini-pro">Gemini Pro</option>
+                    </select>
+                    <label for="popoverApiKeyInput" class="block text-xs font-medium text-slate-500 mb-0.5 mt-1.5">API 密钥:</label>
+                    <input type="password" id="popoverApiKeyInput" class="popover-input" placeholder="请输入 API Key">
+                    <p class="text-xs text-slate-400 mt-0.5 mb-2.5">部分模型需要。留空则使用默认配置。</p>
+                    <div class="flex justify-end space-x-2">
+                        <button id="cancelAiSettingsBtn" class="popover-btn popover-btn-secondary">取消</button>
+                        <button id="saveAiSettingsBtn" class="popover-btn popover-btn-primary">保存</button>
+                    </div>
+                    <p id="settingsSavedMsg" class="text-xs text-green-500 mt-1.5 text-center hidden">设置已保存!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
 const fallacyData = {
     categories: [
@@ -319,7 +326,7 @@ const fallacyData = {
         { id: 'cat4', name: '歧义或语言运用谬误', emoji: '🟢', accentClass: 'category-accent-green', textClass: 'category-text-green', description: '由于论证中所使用的词语或句法结构具有歧义，或者概念模糊、被偷换，导致论证产生误导。', fallacies: ['01', '02', '03', '44', '45', '47', '79'] },
         { id: 'cat5', name: '概念、形式及其他问题', emoji: '🔵', accentClass: 'category-accent-blue', textClass: 'category-text-blue', description: '包括一些形式逻辑的错误、对逻辑原则的误用，以及一些更偏向认知偏差或特定情境下的推理问题。', fallacies: ['35', '38', '39', '40', '41', '42', '86'] }
     ],
-    fallacies: { /* ... (Your existing fallacy data, ensure it's complete and correct) ... */
+    fallacies: { /* ... (Your existing fallacy data as provided in fallacyAI.html) ... */
         '01': { name: '偷换概念', englishName: 'Equivocation', description: '老师在课堂上问：“有谁认识孙中山？”小明回答：“老师，我不认识孙中山。”这里，小明可能将老师通常指的“知道其人其事”的“认识”，偷换概念为“亲身见过或有私交”的“认识”。' },
         '02': { name: '混淆概念', englishName: 'Confusion of Concepts', description: '某商家宣传“买一送一”，消费者以为是买一件商品送同样一件商品，结果商家送的是小礼品。商家故意混淆了“一”所代表的商品概念，让消费者产生误解。' },
         '03': { name: '模糊概念', englishName: 'Vague Concept', description: '有人说“长得高的人更有优势”，但“长得高”没有明确标准，多高算长得高并不清晰，导致概念模糊，无法准确判断哪些人属于“长得高的人”从而有优势。' },
@@ -699,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 setTimeout(() => {
                                     sidebarLink.click();
                                     sidebarLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }, 100); // Increased delay slightly
+                                }, 100);
                             } else {
                                 sidebarLink.click();
                                 sidebarLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -710,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     };
                     matchedFallacyDisplay.classList.remove('hidden');
-                    mainAnalysisContent = mainAnalysisContent.replace(matchRegex, "").trim(); // Remove the matched line from main content
+                    mainAnalysisContent = mainAnalysisContent.replace(matchRegex, "").trim();
                 }
             }
 
@@ -759,16 +766,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Copy Button Logic (Ensured it's present and correct) ---
     const copyAnalysisBtn = document.getElementById('copyAnalysisBtn');
-    // const analysisResultContent = document.getElementById('analysisResultContent'); // Already defined
 
     if (copyAnalysisBtn && analysisResultContent) {
         copyAnalysisBtn.addEventListener('click', () => {
             let textToCopy = "";
             const tempDiv = document.createElement('div');
-            // Use analysisResultContent which contains the AI's main textual analysis
-            // Exclude the "matchedFallacyDisplay" part from being copied by default.
-            // If you want to include everything within analysis-output-box-styled, then select its innerHTML.
-            // For now, focusing on the AI's direct textual response:
             tempDiv.innerHTML = analysisResultContent.innerHTML; 
             textToCopy = tempDiv.textContent || tempDiv.innerText || "";
 
@@ -789,6 +791,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (!navigator.clipboard) { // Check if clipboard API is available
+                alert("抱歉，您的浏览器不支持安全剪贴板 API。");
+                console.error("Clipboard API not available.");
+                return;
+            }
+
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalTitle = copyAnalysisBtn.title;
                 const originalIcon = copyAnalysisBtn.innerHTML;
@@ -805,7 +813,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     copyAnalysisBtn.disabled = false;
                 }, 2000);
             }).catch(err => {
-                console.error('无法复制文本: ', err);
+                console.error('无法复制文本 (navigator.clipboard.writeText): ', err);
+                 alert(`复制失败: ${err.name} - ${err.message}\n请确保页面在安全环境(HTTPS)下运行，或检查浏览器权限。`);
                 const originalTitle = copyAnalysisBtn.title;
                 const originalIcon = copyAnalysisBtn.innerHTML;
                 copyAnalysisBtn.innerHTML = `
