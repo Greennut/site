@@ -10,73 +10,65 @@
     <style>
         body {
             font-family: 'Inter', 'Noto Sans SC', sans-serif;
-            background-color: #f4f4f5; /* stone-100 */
-            color: #3f3f46; /* stone-700 */
+            background-color: #f4f4f5; /* stone-100 from fallacyAI.html */
+            color: #3f3f46; /* stone-700 from fallacyAI.html */
         }
-        /* Fallacy Category Text Colors (Restored from fallacyAI.html) */
+        /* Fallacy Category Text Colors (from fallacyAI.html) */
         .category-text-red { color: #EF4444; }
         .category-text-orange { color: #F97316; }
         .category-text-yellow { color: #EAB308; }
         .category-text-green { color: #22C55E; }
-        .category-text-blue { color: #3B82F6; }
+        .category-text-slate { color: #3B82F6; }
 
         /* Sidebar Styles */
         #sidebar {
-            background-color: white;
+            background-color: white; /* As per previous preference for minimalist sidebar */
         }
         .sidebar-item, .sidebar-static-item {
-            background-color: white;
+            background-color: white; /* Default white for all items */
             transition: background-color 0.15s ease-in-out;
         }
-        .sidebar-item:hover { 
-            background-color: #f1f5f9; /* slate-100 for category and fallacy item hover */
+        .sidebar-item:hover { /* Hover for category buttons and fallacy links */
+            background-color: #f1f5f9; /* slate-100, light gray hover */
         }
-        #showCaseAnalyzerBtn:hover { /* Specific hover for analyzer button */
-            background-color: #e0e7ff; /* indigo-100, as per fallacyAI.html for this button */
+        /* Specific hover for static buttons - restored from fallacyAI.html */
+        #showCaseAnalyzerBtn:hover {
+            background-color: slate-100; /* slate-100 */
         }
-         /* Removed #aiSettingsBtn:hover here as it's globally positioned now, its hover is via Tailwind classes */
-
+        #aiSettingsBtn:hover {
+            background-color: #f1f5f9; /* slate-100 */
+         }
 
         /* Active state for CATEGORY BUTTONS */
         button.sidebar-item.sidebar-item-active {
-            background-color: #e2e8f0; /* slate-200 (浅灰色) */
+            background-color: #f1f5f9; /* slate-200 (浅灰色) */
             font-weight: 500; /* font-medium */
         }
         /* Active state for individual FALLACY LINKS */
         a.sidebar-item.sidebar-item-active {
-            background-color: #e2e8f0; /* slate-200 (浅灰色) */
+            background-color: #f1f5f9; /* slate-200 (浅灰色) */
+            /* Font color (text-slate-600) and weight (normal from text-xs) are default */
         }
         
-        /* "智能案例分析"按钮 - Style from fallacyAI.html */
-        /* Default state classes are applied in HTML directly */
-        /* Active state for "智能案例分析" button - Style from fallacyAI.html */
         .sidebar-static-item-active#showCaseAnalyzerBtn {
-            background-color: #dbeafe; /* blue-100 */
-            color: #1e40af;           /* blue-800 */
+            background-color: slate-200; /* slate-100 */
+            color: slate-800;           /* slate-800 */
             font-weight: 500; /* font-medium */
-            border-left: 4px solid #3b82f6 !important; 
+            border-left: 4px solid slate-100 !important; 
             margin-left: -4px;
-            padding-left: calc(0.75rem + 4px)!important;
+            padding-left: calc(0.75rem + 4px)!important; /* Assuming original px-3 for button */
         }
         .sidebar-static-item-active#showCaseAnalyzerBtn svg {
-            color: #1d4ed8; /* blue-700 */
+            color: slate-700 /* slate-700 */
         }
 
-        /* AI Settings Button - Default style defined by HTML classes. Popover positioning is key. */
-        #aiSettingsContainer { /* New container for fixed positioning */
-            position: fixed;
-            top: 1rem; /* 16px */
-            right: 1rem; /* 16px */
-            z-index: 50;
-        }
-        /* SVG style for AI settings button is in its HTML class */
 
         /* Fallacy Detail Accent Borders (Original Vibrant) */
         .category-accent-red { border-left: 4px solid #EF4444; }
         .category-accent-orange { border-left: 4px solid #F97316; }
         .category-accent-yellow { border-left: 4px solid #EAB308; }
         .category-accent-green { border-left: 4px solid #22C55E; }
-        .category-accent-blue { border-left: 4px solid #3B82F6; }
+        .category-accent-slate { border-left: 4px solid #3B82F6; }
 
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
@@ -89,51 +81,60 @@
         }
         @media (min-width: 768px) { .chart-container { height: 420px; } }
 
-        .gemini-btn, .analyze-case-btn { /* Unified button style for actions */
-            background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem;
-            font-weight: 500; transition: background-color 0.2s; flex-shrink: 0;
+        /* Buttons for "Generate Example" and "Analyze Case" - Restored vibrant slate */
+/* Buttons for "Generate Example" and "Analyze Case" - UNIFIED Slate Gray Style */
+        .gemini-btn, .analyze-case-btn {
+            background-color: #f1f5f9; /* slate-100 (非常浅的灰色) */
+            color: #475569;           /* slate-600 (对应的文字颜色) */
+            padding: 0.5rem 1rem; 
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500; 
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s; 
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0; /* slate-200 (一个柔和的边框) */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
         }
-        .gemini-btn:hover, .analyze-case-btn:hover { background-color: #2563EB; }
-        .gemini-btn:disabled, .analyze-case-btn:disabled { background-color: #93C5FD; cursor: not-allowed; }
+        .gemini-btn:hover, .analyze-case-btn:hover {
+            background-color: #e2e8f0; /* slate-200 */
+            border-color: #cbd5e1;    /* slate-300 */
+        }
+        .gemini-btn:disabled, .analyze-case-btn:disabled {
+            background-color: #f8fafc; /* slate-50 */
+            color: #94a3b8;           /* slate-400 */
+            border-color: #e2e8f0;    /* slate-200 */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
         .loader {
             border: 3px solid #e5e7eb; border-radius: 50%; width: 20px; height: 20px;
             animation: spin 0.8s linear infinite; margin-right: 8px;
         }
-        .gemini-loader, .analyzer-loader { border-top: 3px solid #3B82F6; }
+                /* Loaders to match new button style */
+        .gemini-loader, .analyzer-loader {
+             border-top: 3px solid #94a3b8; /* slate-400 for loaders */
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* AI Settings Popover - Adjusted for top-right button */
+        /* AI Settings Popover - Adjusted for top-sidebar button */
         .ai-settings-popover {
-            @apply absolute bg-white rounded-lg shadow-xl border border-slate-200 z-20; /* Removed p-3.5, w-full, mt-1.5 */
-            right: 0; /* Align to the right edge of its relative parent (aiSettingsContainer > div.relative) */
-            top: calc(100% + 0.25rem); /* Position below the button (100%) plus a small margin (mt-1) */
-            width: 17rem; /* w-68, a suitable fixed width, adjust as needed */
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(-0.75rem) scale(0.95); /* Start slightly above and smaller for dropdown effect */
-            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                        padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            @apply absolute left-0 bg-white p-3.5 rounded-lg shadow-xl border border-slate-200 w-full mt-1.5 z-20; /* Popover is full width of its relative parent */
+            max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-12px) scale(0.95);
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .ai-settings-popover.popover-active {
-            max-height: 500px; /* Or enough to fit content */
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            padding: 0.875rem; /* p-3.5, restored padding when active */
+            max-height: 500px; opacity: 1; transform: translateY(0) scale(1); padding: 0.875rem;
         }
         /* Removed .ai-settings-popover-bottom as it's no longer needed */
 
         .popover-input, .popover-select {
-            @apply w-full p-1.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-sky-400 focus:border-sky-400 outline-none placeholder-slate-400 mb-2 text-xs;
+            @apply w-full p-1.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-400 focus:border-slate-400 outline-none placeholder-slate-400 mb-2 text-xs;
         }
         .popover-btn { @apply px-2.5 py-1 rounded font-medium transition-colors duration-150 text-xs; }
-        .popover-btn-primary { @apply bg-sky-500 text-white hover:bg-sky-600; }
+        .popover-btn-primary { @apply bg-slate-500 text-white hover:bg-slate-600; }
         .popover-btn-secondary { @apply bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300; }
 
-        /* Case Analyzer Module Styles - As per previous good version */
+        /* Case Analyzer Module Styles */
         .case-analyzer-module {
             @apply bg-white p-6 sm:p-8 rounded-lg shadow-md border-t-4 border-slate-100;
         }
@@ -145,27 +146,33 @@
             @apply text-base font-normal text-slate-500 ml-1.5;
         }
         .case-analyzer-subtitle.text-xs { @apply text-slate-400; }
-        #caseInput::placeholder { color: #d1d5db; /* slate-300 */ }
-        .case-analyzer-module textarea#caseInput { /* More specific selector for textarea */
-            @apply w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-sky-300 focus:border-sky-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white/70 shadow-sm;
+        
+        /* Input area styling for Case Analyzer */
+        .case-analyzer-module label[for="caseInput"] {
+            @apply block text-xs font-medium text-slate-500 mb-1.5 mt-4;
+        }
+        .case-analyzer-module textarea#caseInput {
+            @apply w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-slate-300 focus:border-slate-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white shadow-sm; /* Restored bg-white from original */
             min-height: 130px;
         }
+        #caseInput::placeholder { color: #cbd5e1; /* slate-300 */ }
+
         .analyze-btn-wrapper { @apply mt-4 mb-6 flex justify-center; }
 
-        /* Output Area Styling (Gemini chat prompt style - low saturation gray-blue) */
+        /* Output Area Styling (Gemini chat prompt style - low saturation gray-slate) */
         .analysis-output-box-styled {
-            @apply mt-6 p-5 rounded-lg shadow-inner;
-            background-color: #f0f9ff; /* sky-50 */
-            border: 1px solid #e0f2fe;  /* sky-100 */
+            @apply mt-6 p-5 rounded-lg shadow-sm; /* Using p-5 for more "留白" */
+            background-color: slate-50; /* slate-50 (浅灰蓝) */
+            border: 1px solid: slate-100;  /* slate-100 (边框) */
         }
-        .analysis-output-box-styled h4 {
+        .analysis-output-box-styled h4 { /* Title inside the output box */
             @apply text-sm font-medium text-slate-700;
         }
         .analysis-output-box-styled #analysisResultContent {
             @apply text-xs text-slate-600 leading-relaxed whitespace-pre-wrap;
         }
         .analysis-output-box-styled #analysisResultContent strong {
-            @apply font-semibold text-sky-700;
+            @apply font-semibold text-slate-700;
         }
         .analysis-output-box-styled #analysisResultContent ul {
             @apply list-disc list-inside pl-2 space-y-1;
@@ -187,8 +194,8 @@
         #fallacyCategory { @apply text-lg md:text-xl font-semibold mb-2; }
         #fallacyEnglishName { @apply text-sm md:text-md text-stone-500 mb-4; }
         #fallacyDescription { @apply prose prose-sm sm:prose-base max-w-none text-slate-700 leading-relaxed mb-6;}
-        #aiExampleArea { @apply prose prose-sm sm:prose-base max-w-none p-4 border border-dashed border-sky-300 rounded-md bg-sky-50; }
-        #aiExampleArea h4 { @apply text-md font-semibold text-sky-700 mb-2; }
+        #aiExampleArea { @apply prose prose-sm sm:prose-base max-w-none p-4 border border-dashed border-slate-300 rounded-md bg-slate-50; }
+        #aiExampleArea h4 { @apply text-md font-semibold text-slate-700 mb-2; }
     </style>
     </head>
 <body class="bg-slate-100 text-slate-700">
@@ -199,21 +206,54 @@
 
         <div class="flex flex-1 overflow-hidden">
             <aside id="sidebar" class="w-1/3 lg:w-1/4 bg-white p-3 flex flex-col overflow-y-auto shadow-lg border-r border-slate-200">
-                <div class="flex-grow">
-                    <input type="text" id="searchInput" placeholder="搜索谬误 (编号/名称)..." class="w-full p-2 mb-3 border border-slate-300 rounded-md focus:ring-1 focus:ring-sky-400 focus:border-sky-400 outline-none text-sm shadow-sm">
-                    <nav id="fallacyNav" class="space-y-1.5"></nav>
+                <div class="relative mb-3">
+                    <button id="aiSettingsBtn" class="w-full flex items-center justify-center text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 p-2.5 rounded-lg transition-colors duration-150 relative shadow-sm border border-slate-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5 text-slate-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.646.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.333.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        AI 设置
+                    </button>
+                    <div id="aiSettingsPopover" class="ai-settings-popover"> <div class="flex justify-between items-center mb-2">
+                             <h3 class="text-sm font-medium text-slate-600">AI 配置</h3>
+                             <button id="closeAiSettingsPopoverBtn" class="text-slate-400 hover:text-slate-600 p-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div>
+                            <label for="aiModelSelect" class="block text-xs font-medium text-slate-500 mb-0.5">选择 AI 模型:</label>
+                            <select id="aiModelSelect" class="popover-select">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash (推荐)</option>
+                                <option value="gemini-pro">Gemini Pro</option>
+                            </select>
+                            <label for="popoverApiKeyInput" class="block text-xs font-medium text-slate-500 mb-0.5 mt-1.5">API 密钥:</label>
+                            <input type="password" id="popoverApiKeyInput" class="popover-input" placeholder="请输入 API Key">
+                            <p class="text-xs text-slate-400 mt-0.5 mb-2.5">部分模型需要。留空则使用默认配置。</p>
+                            <div class="flex justify-end space-x-2">
+                                <button id="cancelAiSettingsBtn" class="popover-btn popover-btn-secondary">取消</button>
+                                <button id="saveAiSettingsBtn" class="popover-btn popover-btn-primary">保存</button>
+                            </div>
+                            <p id="settingsSavedMsg" class="text-xs text-green-500 mt-1.5 text-center hidden">设置已保存!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="text" id="searchInput" placeholder="搜索谬误 (编号/名称)..." class="w-full p-2 mb-3 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-400 focus:border-slate-400 outline-none text-sm shadow-sm">
+                
+                <button id="showCaseAnalyzerBtn" class="w-full flex items-center text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 sidebar-static-item bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent shadow-sm mb-3">
+                    <svg class="w-5 h-5 mr-2 shrink-0 text-slate-600 opacity-80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C9.243 2 7 4.243 7 7v3.586l-1.707 1.707-1.414-1.414L6 8.757V7c0-3.309 2.691-6 6-6s6 2.691 6 6v1.757l2.121 2.122-1.414 1.414L17 10.586V7c0-2.757-2.243-5-5-5zm0 13c-1.654 0-3-1.346-3-3h6c0 1.654-1.346 3-3 3zm4.268-4H7.732c-.29 0-.551-.16-.69-.421-.139-.26-.066-.578.179-.757L10.586 7H13.414l3.364 2.822c.245.179.318.497.179-.757-.139.261-.399.421-.689.421zM12 4a3 3 0 100 6 3 3 0 000-6z"/>
+                        <path d="M12 17c1.93 0 3.5-1.57 3.5-3.5S13.93 10 12 10s-3.5 1.57-3.5 3.5S10.07 17 12 17zm0-5c.827 0 1.5.673 1.5 1.5S12.827 15 12 15s-1.5-.673-1.5-1.5S11.173 12 12 12z"/>
+                    </svg>
+                    智能案例分析
+                </button>
+
+                <div class="flex-grow"> <nav id="fallacyNav" class="space-y-1.5"></nav>
                 </div>
 
-                <div class="mt-auto pt-3 border-t border-slate-200 space-y-2">
-                    <button id="showCaseAnalyzerBtn" class="w-full flex items-center text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 sidebar-static-item bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-100 shadow-sm">
-                        <svg class="w-5 h-5 mr-2 shrink-0 text-blue-600 opacity-80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C9.243 2 7 4.243 7 7v3.586l-1.707 1.707-1.414-1.414L6 8.757V7c0-3.309 2.691-6 6-6s6 2.691 6 6v1.757l2.121 2.122-1.414 1.414L17 10.586V7c0-2.757-2.243-5-5-5zm0 13c-1.654 0-3-1.346-3-3h6c0 1.654-1.346 3-3 3zm4.268-4H7.732c-.29 0-.551-.16-.69-.421-.139-.26-.066-.578.179-.757L10.586 7H13.414l3.364 2.822c.245.179.318.497.179-.757-.139.261-.399.421-.689.421zM12 4a3 3 0 100 6 3 3 0 000-6z"/>
-                            <path d="M12 17c1.93 0 3.5-1.57 3.5-3.5S13.93 10 12 10s-3.5 1.57-3.5 3.5S10.07 17 12 17zm0-5c.827 0 1.5.673 1.5 1.5S12.827 15 12 15s-1.5-.673-1.5-1.5S11.173 12 12 12z"/>
-                        </svg>
-                        智能案例分析
-                    </button>
-                    </div>
-            </aside>
+                </aside>
 
             <main id="contentArea" class="flex-1 p-5 sm:p-6 lg:p-8 overflow-y-auto bg-white">
                 <div id="welcomeMessage" class="text-center py-8">
@@ -232,8 +272,8 @@
                         <span id="btnText">✨ 生成新案例</span>
                         <div id="loader" class="loader gemini-loader hidden"></div>
                     </button>
-                    <div id="aiExampleArea" class="hidden prose prose-sm sm:prose-base max-w-none p-4 border border-dashed border-sky-300 rounded-md bg-sky-50">
-                        <h4 class="text-md font-semibold text-sky-700 mb-2">AI 生成的新案例：</h4>
+                    <div id="aiExampleArea" class="hidden prose prose-sm sm:prose-base max-w-none p-4 border border-dashed border-slate-300 rounded-md bg-slate-50">
+                        <h4 class="text-md font-semibold text-slate-700 mb-2">AI 生成的新案例：</h4>
                         <p id="aiExampleText" class="text-slate-700 leading-relaxed"></p>
                         <p id="aiErrorText" class="text-red-500 text-sm hidden"></p>
                     </div>
@@ -245,14 +285,11 @@
                     <p class="case-analyzer-subtitle text-xs text-slate-400">在此输入一段对话或描述一个场景。AI将尝试分析其中可能存在的逻辑谬误，并给出反驳思路。</p>
 
                     <label for="caseInput" class="block text-xs font-medium text-slate-500 mb-1.5 mt-4">请输入案例内容：</label>
-                    <textarea id="caseInput" rows="5" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-sky-300 focus:border-sky-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white/70 shadow-sm mb-4" placeholder="例如：所有天鹅都是白的，因为我见过的天鹅都是白的。"></textarea>
+                    <textarea id="caseInput" rows="5" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-slate-300 focus:border-slate-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white/70 shadow-sm mb-4" placeholder="例如：所有天鹅都是白的，因为我见过的天鹅都是白的。"></textarea>
                     
                     <div class="analyze-btn-wrapper">
                         <button id="analyzeCaseBtn" class="analyze-case-btn">
-                            <svg class="w-5 h-5 mr-1.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C9.243 2 7 4.243 7 7v3.586l-1.707 1.707-1.414-1.414L6 8.757V7c0-3.309 2.691-6 6-6s6 2.691 6 6v1.757l2.121 2.122-1.414 1.414L17 10.586V7c0-2.757-2.243-5-5-5zm0 13c-1.654 0-3-1.346-3-3h6c0 1.654-1.346 3-3 3zm4.268-4H7.732c-.29 0-.551-.16-.69-.421-.139-.26-.066-.578.179-.757L10.586 7H13.414l3.364 2.822c.245.179.318.497.179-.757-.139.261-.399.421-.689.421zM12 4a3 3 0 100 6 3 3 0 000-6z"/>
-                                <path d="M12 17c1.93 0 3.5-1.57 3.5-3.5S13.93 10 12 10s-3.5 1.57-3.5 3.5S10.07 17 12 17zm0-5c.827 0 1.5.673 1.5 1.5S12.827 15 12 15s-1.5-.673-1.5-1.5S11.173 12 12 12z"/>
-                            </svg>
+                         
                             <span id="analyzeBtnText">开始分析</span>
                             <div id="analyzerLoader" class="loader analyzer-loader hidden"></div>
                         </button>
@@ -280,43 +317,6 @@
         </div>
     </div>
 
-    <div id="aiSettingsContainer" class="fixed top-4 right-4 z-50">
-        <div class="relative">
-            <button id="aiSettingsBtn" class="flex items-center justify-center text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 p-2.5 rounded-lg transition-colors duration-150 shadow-sm border border-slate-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5 text-slate-400">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.646.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.333.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                AI 设置
-            </button>
-            <div id="aiSettingsPopover" class="ai-settings-popover">
-                <div class="flex justify-between items-center mb-2">
-                     <h3 class="text-sm font-medium text-slate-600">AI 配置</h3>
-                     <button id="closeAiSettingsPopoverBtn" class="text-slate-400 hover:text-slate-600 p-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div>
-                    <label for="aiModelSelect" class="block text-xs font-medium text-slate-500 mb-0.5">选择 AI 模型:</label>
-                    <select id="aiModelSelect" class="popover-select">
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash (推荐)</option>
-                        <option value="gemini-pro">Gemini Pro</option>
-                    </select>
-                    <label for="popoverApiKeyInput" class="block text-xs font-medium text-slate-500 mb-0.5 mt-1.5">API 密钥:</label>
-                    <input type="password" id="popoverApiKeyInput" class="popover-input" placeholder="请输入 API Key">
-                    <p class="text-xs text-slate-400 mt-0.5 mb-2.5">部分模型需要。留空则使用默认配置。</p>
-                    <div class="flex justify-end space-x-2">
-                        <button id="cancelAiSettingsBtn" class="popover-btn popover-btn-secondary">取消</button>
-                        <button id="saveAiSettingsBtn" class="popover-btn popover-btn-primary">保存</button>
-                    </div>
-                    <p id="settingsSavedMsg" class="text-xs text-green-500 mt-1.5 text-center hidden">设置已保存!</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
 <script>
 const fallacyData = {
     categories: [
@@ -324,9 +324,9 @@ const fallacyData = {
         { id: 'cat2', name: '弱归纳或证据不足谬误', emoji: '🟠', accentClass: 'category-accent-orange', textClass: 'category-text-orange', description: '前提与结论有一定相关性，但前提的强度不足以支持结论，通常是由于证据不足、样本偏差、错误概括或错误的因果联系等。', fallacies: ['04', '06', '07', '10', '11', '22', '24', '25', '26', '36', '50', '51', '53', '55', '60', '63', '64', '65', '66', '73', '74', '75', '76', '78', '80', '84', '87', '88'] },
         { id: 'cat3', name: '预设或无端假设谬误', emoji: '🟡', accentClass: 'category-accent-yellow', textClass: 'category-text-yellow', description: '论证中包含了一些未经证实或不合理的假设作为其前提，或者以结论本身作为前提（循环论证）。', fallacies: ['12', '14', '19', '29', '33', '43', '46', '48', '49', '54', '57', '58', '62', '70', '72', '77', '83', '85'] },
         { id: 'cat4', name: '歧义或语言运用谬误', emoji: '🟢', accentClass: 'category-accent-green', textClass: 'category-text-green', description: '由于论证中所使用的词语或句法结构具有歧义，或者概念模糊、被偷换，导致论证产生误导。', fallacies: ['01', '02', '03', '44', '45', '47', '79'] },
-        { id: 'cat5', name: '概念、形式及其他问题', emoji: '🔵', accentClass: 'category-accent-blue', textClass: 'category-text-blue', description: '包括一些形式逻辑的错误、对逻辑原则的误用，以及一些更偏向认知偏差或特定情境下的推理问题。', fallacies: ['35', '38', '39', '40', '41', '42', '86'] }
+        { id: 'cat5', name: '概念、形式及其他问题', emoji: '🔵', accentClass: 'category-accent-slate', textClass: 'category-text-slate', description: '包括一些形式逻辑的错误、对逻辑原则的误用，以及一些更偏向认知偏差或特定情境下的推理问题。', fallacies: ['35', '38', '39', '40', '41', '42', '86'] }
     ],
-    fallacies: { /* ... (Your existing fallacy data as provided in fallacyAI.html) ... */
+    fallacies: { /* ... (Your existing fallacy data, ensure it's complete and correct) ... */
         '01': { name: '偷换概念', englishName: 'Equivocation', description: '老师在课堂上问：“有谁认识孙中山？”小明回答：“老师，我不认识孙中山。”这里，小明可能将老师通常指的“知道其人其事”的“认识”，偷换概念为“亲身见过或有私交”的“认识”。' },
         '02': { name: '混淆概念', englishName: 'Confusion of Concepts', description: '某商家宣传“买一送一”，消费者以为是买一件商品送同样一件商品，结果商家送的是小礼品。商家故意混淆了“一”所代表的商品概念，让消费者产生误解。' },
         '03': { name: '模糊概念', englishName: 'Vague Concept', description: '有人说“长得高的人更有优势”，但“长得高”没有明确标准，多高算长得高并不清晰，导致概念模糊，无法准确判断哪些人属于“长得高的人”从而有优势。' },
@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fallacyNameEl.textContent = `[${fallacyNumber}] ${fallacy.name}`;
             fallacyEnglishNameEl.textContent = fallacy.englishName;
             fallacyDescriptionEl.innerHTML = `<p>${fallacy.description.replace(/\n/g, '</p><p>')}</p>`;
-            fallacyDetail.classList.remove('category-accent-red', 'category-accent-orange', 'category-accent-yellow', 'category-accent-green', 'category-accent-blue');
+            fallacyDetail.classList.remove('category-accent-red', 'category-accent-orange', 'category-accent-yellow', 'category-accent-green', 'category-accent-slate');
             fallacyDetail.classList.add(category.accentClass, 'p-6', 'rounded-lg', 'bg-white');
             aiExampleArea.classList.add('hidden');
             aiExampleTextEl.textContent = '';
@@ -791,7 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (!navigator.clipboard) { // Check if clipboard API is available
+            if (!navigator.clipboard) { 
                 alert("抱歉，您的浏览器不支持安全剪贴板 API。");
                 console.error("Clipboard API not available.");
                 return;
