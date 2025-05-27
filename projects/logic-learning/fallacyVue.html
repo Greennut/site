@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逻辑谬误一点通 - AI增强版 (Vue 重构版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-color: #f4f4f5; /* stone-100 */
+            color: #3f3f46; /* stone-700 */
+        }
+        /* 谬误分类文本颜色 */
+        .category-text-red { color: #EF4444; }
+        .category-text-orange { color: #F97316; }
+        .category-text-yellow { color: #EAB308; }
+        .category-text-green { color: #22C55E; }
+        .category-text-slate { color: #3B82F6; }
+
+        /* 侧边栏样式 */
+        #sidebar {
+            background-color: white;
+        }
+        .sidebar-item, .sidebar-static-item {
+            background-color: white;
+            transition: background-color 0.15s ease-in-out;
+        }
+        .sidebar-item:hover {
+            background-color: #f1f5f9; /* slate-100, light gray hover */
+        }
+        /* 静态按钮的特定悬停效果 */
+        #showCaseAnalyzerBtn:hover, #aiSettingsBtn:hover {
+            background-color: #f1f5f9; /* slate-100 */
+        }
+
+        /* 侧边栏激活状态 */
+        button.sidebar-item.sidebar-item-active {
+            background-color: #f1f5f9; /* slate-200 (浅灰色) */
+            font-weight: 500; /* font-medium */
+        }
+        a.sidebar-item.sidebar-item-active {
+            background-color: #f1f5f9; /* slate-200 (浅灰色) */
+        }
+        .sidebar-static-item-active#showCaseAnalyzerBtn {
+            background-color: #f1f5f9; /* slate-100 */
+            color: #3f3f46;           /* slate-700 */
+            font-weight: 500; /* font-medium */
+            border-left: 4px solid #cbd5e1 !important; /* slate-300 */
+            margin-left: -4px;
+            padding-left: calc(0.75rem + 4px)!important;
+        }
+        .sidebar-static-item-active#showCaseAnalyzerBtn svg {
+            color: #64748b; /* slate-600 */
+        }
+
+        /* 谬误详情边框颜色 */
+        .category-accent-red { border-left: 4px solid #EF4444; }
+        .category-accent-orange { border-left: 4px solid #F97316; }
+        .category-accent-yellow { border-left: 4px solid #EAB308; }
+        .category-accent-green { border-left: 4px solid #22C55E; }
+        .category-accent-slate { border-left: 4px solid #3B82F6; }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
+        ::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 10px;}
+        ::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
+
+        /* 图表容器 */
+        .chart-container {
+            position: relative; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto;
+            height: 380px; max-height: 450px;
+        }
+        @media (min-width: 768px) { .chart-container { height: 420px; } }
+
+        /* 按钮样式 */
+        .gemini-btn, .analyze-case-btn {
+            background-color: #f1f5f9; /* slate-100 */
+            color: #475569;           /* slate-600 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+        .gemini-btn:hover, .analyze-case-btn:hover {
+            background-color: #e2e8f0; /* slate-200 */
+            border-color: #cbd5e1;    /* slate-300 */
+        }
+        .gemini-btn:disabled, .analyze-case-btn:disabled {
+            background-color: #f8fafc; /* slate-50 */
+            color: #94a3b8;           /* slate-400 */
+            border-color: #e2e8f0;    /* slate-200 */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 加载器样式 */
+        .loader {
+            border: 3px solid #e5e7eb; border-radius: 50%; width: 20px; height: 20px;
+            animation: spin 0.8s linear infinite; margin-right: 8px;
+        }
+        .gemini-loader, .analyzer-loader {
+             border-top: 3px solid #94a3b8; /* slate-400 for loaders */
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* AI 设置弹窗样式 */
+        .ai-settings-popover {
+            @apply absolute left-0 bg-white rounded-lg shadow-xl border border-slate-200 z-20;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            max-height: 0;
+            overflow-y: hidden;
+            opacity: 0;
+            transform: translateY(-12px) scale(0.95);
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ai-settings-popover.popover-active {
+            max-height: 500px;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            padding: 0.875rem; /* p-3.5 */
+            overflow-y: auto;
+        }
+
+        .popover-input, .popover-select {
+            @apply w-full p-1.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-sky-400 focus:border-sky-400 outline-none placeholder-slate-400 mb-2 text-xs;
+            white-space: nowrap;
+            overflow-x: auto;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .popover-btn { @apply px-2.5 py-1 rounded font-medium transition-colors duration-150 text-xs; }
+        .popover-btn-primary { @apply bg-slate-500 text-white hover:bg-slate-600; }
+        .popover-btn-secondary { @apply bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300; }
+
+        .ai-settings-popover .flex.justify-end.space-x-2 {
+            flex-shrink: 0;
+            margin-top: 0.5rem;
+        }
+
+        /* 案例分析模块样式 */
+        .case-analyzer-module {
+            @apply bg-white p-6 sm:p-8 rounded-lg shadow-md border-t-4 border-slate-100;
+        }
+        .case-analyzer-title {
+            @apply text-xl font-semibold text-slate-700 mb-1 text-center flex items-baseline justify-center;
+        }
+        .case-analyzer-title-main {}
+        .case-analyzer-title-sub {
+            @apply text-base font-normal text-slate-500 ml-1.5;
+        }
+        .case-analyzer-subtitle.text-xs { @apply text-slate-400; }
+
+        .case-analyzer-module label[for="caseInput"] {
+            @apply block text-xs font-medium text-slate-500 mb-1.5 mt-4;
+        }
+        .case-analyzer-module textarea#caseInput {
+            @apply w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-slate-300 focus:border-slate-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white shadow-sm;
+            min-height: 130px;
+        }
+        #caseInput::placeholder { color: #cbd5e1; /* slate-300 */ }
+
+        .analyze-btn-wrapper { @apply mt-4 mb-6 flex justify-center; }
+
+        /* 输出区域样式 */
+        .analysis-output-box-styled {
+            @apply mt-6 p-5 rounded-lg shadow-sm;
+            background-color: #f8fafc; /* slate-50 */
+            border: 1px solid #f1f5f9;  /* slate-100 */
+        }
+        .analysis-output-box-styled h4 {
+            @apply text-sm font-medium text-slate-700;
+        }
+        .analysis-output-box-styled #analysisResultContent {
+            @apply text-xs text-slate-600 leading-relaxed whitespace-pre-wrap;
+        }
+        .analysis-output-box-styled #analysisResultContent strong {
+            @apply font-semibold text-slate-700;
+        }
+        .analysis-output-box-styled #analysisResultContent ul {
+            @apply list-disc list-inside pl-2 space-y-1;
+        }
+        .analysis-output-box-styled #analysisResultContent li {
+             @apply mb-1;
+        }
+        .analysis-output-box-styled #analysisErrorText {
+            @apply text-red-600 text-xs mt-2;
+        }
+        #matchedFallacyDisplay { @apply mt-4 pt-3 border-t border-slate-200 text-xs; }
+        #matchedFallacyDisplay p { @apply font-medium text-slate-600 mb-1.5; }
+        #matchedFallacyLink { @apply font-medium hover:underline focus:outline-none cursor-pointer p-1 -ml-1 rounded-md; }
+        #matchedFallacyLink .emoji-prefix { @apply mr-1.5; }
+
+        /* 谬误详情样式 */
+        #fallacyDetail { @apply p-6 rounded-lg bg-white shadow-md; }
+        #fallacyName { @apply text-2xl md:text-3xl font-bold mb-1 text-stone-800; }
+        #fallacyCategory { @apply text-lg md:text-xl font-semibold mb-2; }
+        #fallacyEnglishName { @apply text-sm md:text-md text-stone-500 mb-4; }
+        #fallacyDescription { @apply prose prose-sm sm:prose-base max-w-none text-slate-700 leading-relaxed mb-6;}
+        #aiExampleArea { @apply prose prose-sm sm:prose-base max-w-none p-4 border border-dashed border-slate-300 rounded-md bg-slate-50; }
+        #aiExampleArea h4 { @apply text-md font-semibold text-slate-700 mb-2; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-700">
+
+    <div id="app" class="flex flex-col h-screen">
+       <header class="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-30 p-4">
+          <a href="#" @click.prevent="showWelcome" class="block text-xl font-semibold text-center text-slate-700 cursor-pointer hover:text-slate-800 transition-colors duration-200">
+            <h1>逻辑谬误一点通 - AI增强版</h1>
+          </a>
+       </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <aside id="sidebar" class="w-1/3 lg:w-1/4 bg-white p-3 flex flex-col overflow-y-auto shadow-lg border-r border-slate-200">
+                <div class="relative mb-3">
+                    <button id="aiSettingsBtn"
+                            @click="toggleAiSettingsPopover"
+                            :class="{'sidebar-static-item-active': isAiSettingsPopoverOpen}"
+                            class="w-full flex items-center justify-center text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 p-2.5 rounded-lg transition-colors duration-150 relative shadow-sm border border-slate-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5 text-slate-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.646.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.333.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        AI 设置
+                    </button>
+                    <div id="aiSettingsPopover"
+                         :class="{'popover-active': isAiSettingsPopoverOpen}"
+                         class="ai-settings-popover"
+                         @click.stop> <div class="flex justify-between items-center mb-2">
+                             <h3 class="text-sm font-medium text-slate-600">AI 配置</h3>
+                             <button @click="toggleAiSettingsPopover(false)" class="text-slate-400 hover:text-slate-600 p-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div>
+                            <label for="aiModelSelect" class="block text-xs font-medium text-slate-500 mb-0.5">选择 AI 模型:</label>
+                            <select id="aiModelSelect" v-model="aiModel" class="popover-select">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash (推荐)</option>
+                                <option value="gemini-pro">Gemini Pro</option>
+                            </select>
+                            <label for="popoverApiKeyInput" class="block text-xs font-medium text-slate-500 mb-0.5 mt-1.5">API 密钥:</label>
+                            <input type="password" id="popoverApiKeyInput" v-model="apiKey" class="popover-input" placeholder="请输入 API Key">
+                            <p class="text-xs text-slate-400 mt-0.5 mb-2.5">部分模型需要。留空则使用默认配置。</p>
+                            <div class="flex justify-end space-x-2">
+                                <button @click="cancelAiSettings" class="popover-btn popover-btn-secondary">取消</button>
+                                <button @click="saveAiSettings" class="popover-btn popover-btn-primary">保存</button>
+                            </div>
+                            <p v-if="settingsSavedMsgVisible" class="text-xs text-green-500 mt-1.5 text-center">设置已保存!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="text" v-model="searchText" placeholder="搜索谬误 (编号/名称)..." class="w-full p-2 mb-3 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-400 focus:border-slate-400 outline-none text-sm shadow-sm">
+
+                <button id="showCaseAnalyzerBtn"
+                        @click="showCaseAnalyzer"
+                        :class="{'sidebar-static-item-active': currentView === 'caseAnalysisModule'}"
+                        class="w-full flex items-center text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 sidebar-static-item bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent shadow-sm mb-3">
+                    <svg class="w-5 h-5 mr-2 shrink-0 text-slate-600 opacity-80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C9.243 2 7 4.243 7 7v3.586l-1.707 1.707-1.414-1.414L6 8.757V7c0-3.309 2.691-6 6-6s6 2.691 6 6v1.757l2.121 2.122-1.414 1.414L17 10.586V7c0-2.757-2.243-5-5-5zm0 13c-1.654 0-3-1.346-3-3h6c0 1.654-1.346 3-3 3zm4.268-4H7.732c-.29 0-.551-.16-.69-.421-.139-.26-.066-.578.179-.757L10.586 7H13.414l3.364 2.822c.245.179.318.497.179-.757-.139.261-.399.421-.689.421zM12 4a3 3 0 100 6 3 3 0 000-6z"/>
+                        <path d="M12 17c1.93 0 3.5-1.57 3.5-3.5S13.93 10 12 10s-3.5 1.57-3.5 3.5S10.07 17 12 17zm0-5c.827 0 1.5.673 1.5 1.5S12.827 15 12 15s-1.5-.673-1.5-1.5S11.173 12 12 12z"/>
+                    </svg>
+                    智能案例分析
+                </button>
+
+                <div class="flex-grow">
+                    <nav id="fallacyNav" class="space-y-1.5">
+                        <div v-for="category in filteredCategories" :key="category.id" class="mb-1.5">
+                            <button @click="toggleCategory(category.id)"
+                                    :class="[
+                                        'w-full text-left px-3 py-2 rounded-md font-medium text-sm sidebar-item flex justify-between items-center',
+                                        category.textClass,
+                                        {'sidebar-item-active': activeCategory === category.id && !category.isExpanded}
+                                    ]">
+                                <span>{{ category.emoji }} {{ category.name }}</span>
+                                <span class="arrow text-xs">{{ category.isExpanded ? '▲' : '▼' }}</span>
+                            </button>
+                            <ul :class="['ml-3 pl-1 mt-1 space-y-0.5 border-l border-slate-200', {'hidden': !category.isExpanded}]">
+                                <li v-for="fallacyNumber in category.fallacies" :key="fallacyNumber">
+                                    <a href="#"
+                                       @click.prevent="selectFallacy(fallacyNumber, category)"
+                                       :class="[
+                                           'block px-2.5 py-1 rounded-md text-xs text-slate-600 hover:bg-slate-50 sidebar-item',
+                                           {'sidebar-item-active': currentFallacy && currentFallacy.number === fallacyNumber}
+                                       ]">
+                                        [{{ fallacyNumber }}] {{ fallacyData.fallacies[fallacyNumber].name }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            <main id="contentArea" class="flex-1 p-5 sm:p-6 lg:p-8 overflow-y-auto bg-white">
+                <div v-if="currentView === 'welcome'" class="text-center py-8">
+                     <h2 class="text-2xl font-semibold mb-4 text-stone-700">欢迎使用逻辑谬误一点通</h2>
+                    <p class="mb-6 text-stone-500">请从左侧选择一个谬误分类或具体条目进行查看，或使用搜索功能快速定位。</p>
+                    <div class="chart-container mx-auto">
+                        <canvas id="fallacyChart"></canvas>
+                    </div>
+                </div>
+
+                <div v-if="currentView === 'fallacyDetail' && currentFallacy"
+                     :class="[
+                         'p-6 rounded-lg bg-white shadow-md',
+                         currentFallacyCategory ? currentFallacyCategory.accentClass : ''
+                     ]">
+                    <h3 :class="['text-xl font-semibold mb-2', currentFallacyCategory ? currentFallacyCategory.textClass : '']">
+                        {{ currentFallacyCategory ? currentFallacyCategory.emoji : '' }} {{ currentFallacyCategory ? currentFallacyCategory.name : '' }}
+                    </h3>
+                    <h2 class="text-3xl font-bold mb-1 text-stone-800">[{{ currentFallacy.number }}] {{ currentFallacy.name }}</h2>
+                    <p class="text-md text-stone-500 mb-4">{{ currentFallacy.englishName }}</p>
+                    <div class="prose prose-sm sm:prose-base max-w-none text-slate-700 leading-relaxed mb-6" v-html="formattedDescription"></div>
+
+                    <button @click="generateExample" :disabled="isGeneratingExample" class="gemini-btn mb-4 flex items-center justify-center">
+                        <span v-if="!isGeneratingExample">✨ 生成新案例</span>
+                        <span v-else>生成中...</span>
+                        <div v-if="isGeneratingExample" class="loader gemini-loader"></div>
+                    </button>
+
+                    <div v-if="aiExampleText || aiErrorText" class="prose prose-sm sm:prose-base max-w-none p-4 border border-dashed border-slate-300 rounded-md bg-slate-50">
+                        <h4 class="text-md font-semibold text-slate-700 mb-2">AI 生成的新案例：</h4>
+                        <p v-if="aiExampleText" class="text-slate-700 leading-relaxed">{{ aiExampleText }}</p>
+                        <p v-if="aiErrorText" class="text-red-500 text-sm">{{ aiErrorText }}</p>
+                    </div>
+                </div>
+
+                <div v-if="currentView === 'caseAnalysisModule'" class="case-analyzer-module">
+                    <h2 class="case-analyzer-title">
+                        <span class="case-analyzer-title-main">案例智能分析：</span><span class="case-analyzer-title-sub">这是什么逻辑谬误？</span>
+                    </h2>
+                    <p class="case-analyzer-subtitle text-xs text-slate-400">在此输入一段对话或描述一个场景。AI将尝试分析其中可能存在的逻辑谬误，并给出反驳思路。</p>
+
+                    <label for="caseInput" class="block text-xs font-medium text-slate-500 mb-1.5 mt-4">请输入案例内容：</label>
+                    <textarea id="caseInput" v-model="caseInputText" rows="5" class="w-full p-3 border border-slate-200 rounded-lg focus:ring-1 focus:ring-slate-300 focus:border-slate-300 outline-none placeholder-slate-300 text-sm leading-relaxed bg-white/70 shadow-sm mb-4" placeholder="例如：所有天鹅都是白的，因为我见过的天鹅都是白的。"></textarea>
+
+                    <div class="analyze-btn-wrapper">
+                    <button @click="analyzeCase" :disabled="isAnalyzingCase" class="analyze-case-btn text-sm py-1 px-3">
+                            <span v-if="!isAnalyzingCase">开始分析</span>
+                            <span v-else>分析中...</span>
+                            <div v-if="isAnalyzingCase" class="loader analyzer-loader"></div>
+                        </button>
+                    </div>
+
+                    <div v-if="analysisResultContent || analysisErrorText || matchedFallacy" class="analysis-output-box-styled">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-medium text-slate-700">AI 分析结果：</h4>
+                            <button @click="copyAnalysisResult" title="复制分析结果" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-md transition-colors duration-150">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div v-if="analysisResultContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap p-1" v-html="analysisResultContent"></div>
+                        <p v-if="analysisErrorText" class="text-red-500 text-xs mt-2">{{ analysisErrorText }}</p>
+                        <div v-if="matchedFallacy" class="mt-4 pt-3 border-t border-slate-200 text-xs">
+                            <p class="font-medium text-slate-600 mb-1.5">AI识别的谬误在知识库中匹配到：</p>
+                            <button @click="selectMatchedFallacy(matchedFallacy.number, matchedFallacy.category)" class="font-medium text-left p-1 -ml-1 rounded-md" :class="matchedFallacy.category.textClass">
+                                <span class="emoji-prefix mr-1.5">{{ matchedFallacy.category.emoji }}</span>
+                                <span>[{{ matchedFallacy.number }}] {{ matchedFallacy.name }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+<script>
+    // 原始的谬误数据
+    const fallacyData = {
+        categories: [
+            { id: 'cat1', name: '相关性谬误', emoji: '🔴', accentClass: 'category-accent-red', textClass: 'category-text-red', description: '论证的前提与其结论在逻辑上不相关，或者说前提的引入是为了分散注意力，而非真正支持结论。', fallacies: ['05', '08', '09', '13', '15', '16', '17', '18', '20', '21', '23', '27', '28', '30', '31', '32', '34', '37', '52', '56', '59', '61', '67', '68', '69', '71', '81', '82'] },
+            { id: 'cat2', name: '弱归纳或证据不足谬误', emoji: '🟠', accentClass: 'category-accent-orange', textClass: 'category-text-orange', description: '前提与结论有一定相关性，但前提的强度不足以支持结论，通常是由于证据不足、样本偏差、错误概括或错误的因果联系等。', fallacies: ['04', '06', '07', '10', '11', '22', '24', '25', '26', '36', '50', '51', '53', '55', '60', '63', '64', '65', '66', '73', '74', '75', '76', '78', '80', '84', '87', '88'] },
+            { id: 'cat3', name: '预设或无端假设谬误', emoji: '🟡', accentClass: 'category-accent-yellow', textClass: 'category-text-yellow', description: '论证中包含了一些未经证实或不合理的假设作为其前提，或者以结论本身作为前提（循环论证）。', fallacies: ['12', '14', '19', '29', '33', '43', '46', '48', '49', '54', '57', '58', '62', '70', '72', '77', '83', '85'] },
+            { id: 'cat4', name: '歧义或语言运用谬误', emoji: '🟢', accentClass: 'category-accent-green', textClass: 'category-text-green', description: '由于论证中所使用的词语或句法结构具有歧义，或者概念模糊、被偷换，导致论证产生误导。', fallacies: ['01', '02', '03', '44', '45', '47', '79'] },
+            { id: 'cat5', name: '概念、形式及其他问题', emoji: '🔵', accentClass: 'category-accent-slate', textClass: 'category-text-slate', description: '包括一些形式逻辑的错误、对逻辑原则的误用，以及一些更偏向认知偏差或特定情境下的推理问题。', fallacies: ['35', '38', '39', '40', '41', '42', '86'] }
+        ],
+        fallacies: {
+            '01': { name: '偷换概念', englishName: 'Equivocation', description: '老师在课堂上问：“有谁认识孙中山？”小明回答：“老师，我不认识孙中山。”这里，小明可能将老师通常指的“知道其人其事”的“认识”，偷换概念为“亲身见过或有私交”的“认识”。' },
+            '02': { name: '混淆概念', englishName: 'Confusion of Concepts', description: '某商家宣传“买一送一”，消费者以为是买一件商品送同样一件商品，结果商家送的是小礼品。商家故意混淆了“一”所代表的商品概念，让消费者产生误解。' },
+            '03': { name: '模糊概念', englishName: 'Vague Concept', description: '有人说“长得高的人更有优势”，但“长得高”没有明确标准，多高算长得高并不清晰，导致概念模糊，无法准确判断哪些人属于“长得高的人”从而有优势。' },
+            '04': { name: '归纳谬误', englishName: 'Inductive Fallacy / Hasty Generalization example', description: '在澳大利亚被发现之前，欧洲人看到的天鹅都是白色的，就归纳出“所有天鹅都是白色的”结论。但后来在澳大利亚发现了黑天鹅，证明这个归纳是错误的。' },
+            '05': { name: '协和谬误', englishName: 'Sunk Cost Fallacy', description: '某公司投入大量资金研发一款产品，研发过程中发现市场需求已经转变，继续研发成功后也难以盈利，但因为前期投入巨大，公司还是坚持把产品研发完，结果造成更大损失，这就是陷入了协和谬误，被沉没成本束缚。' },
+            '06': { name: '滑坡谬误', englishName: 'Slippery Slope', description: '有人警告说：“孩子如果上不了好学校，就会接触到不好的圈子，然后就容易学坏，沾染恶习，最终可能会走上犯罪道路，毁掉一生。”这种论证将“上不了好学校”通过一系列可能但非必然的连锁反应，推向一个极端负面的结果。' },
+            '07': { name: '赌徒谬误', englishName: 'Gambler\'s Fallacy', description: '一个赌徒在赌场玩轮盘赌，连续多次出现红色，他就认为下一次出现黑色的概率会大大增加，觉得“都这么多次红色了，该出黑色了”，但实际上每次轮盘赌出现红色或黑色的概率都是独立的，并不会因为之前的结果而改变。' },
+            '08': { name: '诉诸怜悯', englishName: 'Appeal to Pity', description: '在法庭上，被告律师说：“我的当事人从小家庭贫困，父母早逝，在艰难的环境中长大，所以他这次犯错是情有可原的，希望法庭从轻发落。”律师没有从法律和事实层面为被告辩护，而是通过打感情牌，利用人们的怜悯心。' },
+            '09': { name: '诉诸大众', englishName: 'Appeal to Popularity', description: '某网红产品宣传时说“大家都在买，销量突破多少万，所以这款产品一定很好”，但实际上很多人购买可能是因为跟风或者广告营销，产品本身质量不一定好，这是利用大众的从众心理来推销产品。' },
+            '10': { name: '诉诸个体', englishName: 'Anecdotal Fallacy', description: '当讨论“长时间看电子屏幕对视力有害”时，有人反驳道：“我天天抱着手机玩游戏、看视频，一看就是好几个小时，也没见我近视啊！” 这是用个人经验来否定普遍性的健康忠告，忽略了个体差异和概率。' },
+            '11': { name: '诉诸经验', englishName: 'Appeal to Experience', description: '一位老股民凭借过去在牛市中炒股赚钱的经验，在市场环境已经发生变化的熊市中，依然沿用之前的操作策略，结果导致大量亏损。他没有意识到市场情况不同了，单纯依赖过去的经验是不行的。' },
+            '12': { name: '诉诸无知', englishName: 'Appeal to Ignorance', description: '有人声称“因为目前还没有科学能证明外星人不存在，所以外星人一定存在” ，将缺乏证据证明某事不存在，当作某事存在的依据，这是不合理的。' },
+            '13': { name: '诉诸规则以外', englishName: 'Special Pleading', description: '一个学生在考试中作弊被抓，却辩解道：“我平时成绩很好，这次只是太紧张了，而且我就一次，能不能不按考试作弊规则处理我。”试图以自己的特殊情况逃避规则处罚。' },
+            '14': { name: '诉诸完美', englishName: 'Perfect Solution Fallacy / Nirvana Fallacy', description: '在讨论城市垃圾分类方案时，有人说：“这个方案不能完全解决垃圾分类问题，还会增加管理成本，所以这个方案不行。”但任何方案都不可能一开始就完美无缺，不能因为方案不完美就完全否定它。' },
+            '15': { name: '诉诸最差', englishName: 'Appeal to the Worst Case', description: '在选择出行方式时，有人说：“坐飞机万一失事就没命了，坐火车也可能晚点，坐汽车又不舒服，反正都有不好的地方，干脆别出门了。”只考虑各种出行方式最差的情况，而不综合权衡利弊。' },
+            '16': { name: '诉诸信心', englishName: 'Appeal to Faith/Confidence', description: '一些保健品推销人员对老年人说：“您只要相信我们的产品，坚持服用，就一定能健康长寿。”没有任何科学依据和事实证明，只是让老人盲目相信。' },
+            '17': { name: '诉诸恐惧', englishName: 'Appeal to Fear', description: '某保险公司推销保险时说：“现在环境污染这么严重，疾病高发，要是您不买我们的健康险，万一哪天生病了，您和您的家人可就没有保障了，以后日子可怎么过啊。”通过制造恐惧来促使人们购买保险。' },
+            '18': { name: '诉诸反诘', englishName: 'Appeal to Rhetorical Question / Evading the Question', description: '在讨论是否应该提高最低工资标准时，一方说：“你说不应该提高，那你能保证现在的工资水平能让大家生活得很好吗？”没有正面回应对方观点，而是通过反问来转移话题焦点。' },
+            '19': { name: '诉诸沉默', englishName: 'Argument from Silence', description: '在一场辩论中，一方提出一个观点后，另一方没有立即回应，提出观点的一方就说：“你不说话就是默认我的观点是对的。”把对方的沉默当作默认，这是不合理的。' },
+            '20': { name: '诉诸势力', englishName: 'Appeal to Force', description: '在公司会议上，领导提出一个方案，有员工虽然觉得方案有问题，但因为害怕领导权威，不敢提出反对意见，而领导就认为大家都同意他的方案，这是利用领导的权势来压制不同声音。' },
+            '21': { name: '动机论', englishName: 'Ad Hominem - Motive/Circumstantial', description: '有人看到某明星做慈善，就说：“他就是为了炒作自己，提高知名度才去做慈善的，根本不是真心想帮助别人。”没有任何证据，就以恶意的动机揣测明星的慈善行为。' },
+            '22': { name: '诉诸权威', englishName: 'Appeal to Authority', description: '某护肤品广告请了一位知名皮肤科专家代言，声称这款护肤品能解决所有皮肤问题，很多消费者因为相信专家的权威就盲目购买。但实际上这款护肤品可能并没有那么神奇的功效，只是利用了专家的权威形象。' },
+            '23': { name: '重复谎言', englishName: 'Argument by Repetition / Ad Nauseam', description: '某些虚假的网络谣言，比如“某食物致癌”，即使被辟谣多次，但造谣者不断重复传播，时间久了一些人就会相信这个谣言，即使没有任何科学依据。' },
+            '24': { name: '强制推理', englishName: 'Forcing a Conclusion / Questionable Cause', description: '有人说：“今天我看到一只黑猫从面前走过，然后我就丢了钥匙，所以是黑猫给我带来了厄运。”把黑猫走过和丢钥匙这两件没有因果关系的事强行联系起来。' },
+            '25': { name: '因果混淆', englishName: 'Confusing Cause and Effect / Questionable Cause', description: '有人发现游泳运动员身材都很好，就认为只要去游泳就能拥有好身材。实际上是因为游泳运动员经过长期专业训练才身材好，而不是游泳这个行为必然导致好身材，混淆了因果关系。' },
+            '26': { name: '惯性思维', englishName: 'Inertial Thinking', description: '在手机功能机时代，很多手机厂商一直按照传统的设计和功能模式生产手机，当智能手机时代来临，他们还按照原来的惯性思维，没有及时转型，导致被市场淘汰。' },
+            '27': { name: '诉诸出身', englishName: 'Genetic Fallacy / Ad Hominem by Origin', description: '在招聘中，有人因为应聘者毕业于普通院校，就认为他能力不行，不录用他，而不是根据应聘者的实际技能和面试表现来判断，以出身来评判个人能力。' },
+            '28': { name: '诉诸人身', englishName: 'Ad Hominem - Abusive', description: '在学术争论中，一方不针对对方的学术观点进行反驳，而是说：“你这个人平时就不严谨，所以你这次的观点肯定也是错的。”通过攻击对方人格来否定其观点。' },
+            '29': { name: '循环论证', englishName: 'Circular Reasoning / Begging the Question', description: '有人说：“因为你是坏人，所以你做的事都是坏事。而你做的事是坏事，又证明了你是坏人。”用结论来证明前提，陷入循环论证。' },
+            '30': { name: '稻草人谬误', englishName: 'Straw Man', description: '在讨论是否应该加强对网络游戏的监管时，一方说：“对方认为网络游戏完全不需要监管，让青少年沉迷其中也无所谓。”但实际上对方并没有这么说，是歪曲了对方观点进行攻击。' },
+            '31': { name: '转移论题', englishName: 'Red Herring / Missing the Point', description: '在讨论城市交通拥堵治理方案时，有人说：“现在汽车太多了，要是大家都骑自行车就不会堵了。不过，骑自行车也有缺点，比如速度慢、风吹日晒的。”话题从交通拥堵治理方案转移到了骑自行车的缺点上。' },
+            '32': { name: '诉诸感觉', englishName: 'Appeal to Intuition/Gut Feeling', description: '有人说：“我感觉这个项目肯定能成功，不用做市场调研和风险评估了。”仅仅凭借自己的感觉，而不是基于客观事实和理性分析来判断项目可行性。' },
+            '33': { name: '预设谬误', englishName: 'Complex Question / Loaded Question', description: '在问“你还在继续偷东西吗？”这个问题时，已经预设了对方曾经偷过东西，无论对方回答“是”或“否”，都相当于承认了这个预设。' },
+            '34': { name: '诉诸后果', englishName: 'Appeal to Consequences', description: '在讨论一项科学研究是否应该进行时，有人说：“如果这项研究结果被滥用，会造成严重后果，所以这项研究不应该进行。”只考虑可能的不良后果，而没有全面评估研究本身的价值和可以采取的预防措施。' },
+            '35': { name: '否定前件', englishName: 'Denying the Antecedent', description: '有人说：“如果一个人感冒了，他就会咳嗽。这个人没感冒，所以他不会咳嗽。”但实际上除了感冒，其他原因也可能导致咳嗽，否定前件并不能必然否定后件。' },
+            '36': { name: '机械类比', englishName: 'Faulty Analogy', description: '有人说：“地球和火星都是行星，都有自转和公转，地球有生命存在，所以火星也一定有生命存在。”仅仅根据一些表面相似性，就进行类比，忽略了火星和地球在环境等方面的巨大差异。' },
+            '37': { name: '无理假设', englishName: 'Unreasonable/Contrary-to-Fact Hypothesis', description: '有人说：“如果我当初买彩票中了大奖，我现在就已经是亿万富翁，过上无忧无虑的生活了。”这种假设没有实际意义，是不切实际的空想。' },
+            '38': { name: '双否定前提', englishName: 'Fallacy of two negative premises', description: '“没有动物是植物，没有植物是微生物，所以没有动物是微生物。”从两个否定前提得出的结论是不可靠的，这是不符合逻辑规则的推理。' },
+            '39': { name: '不当周延', englishName: 'Illicit Major/Minor/Undistributed Middle', description: '“所有的猫都是动物，所有的狗都不是猫，所以所有的狗都不是动物。”在这个推理中，“动物”在前提中不周延，但在结论中周延了，导致推理错误。' },
+            '40': { name: '罗素悖论', englishName: 'Russell\'s Paradox', description: '一个理发师宣布：“我只给不给自己理发的人理发。”那么他自己该不该给自己理发呢？如果他给自己理发，就不符合他所说的规则；如果他不给自己理发，按照规则他又应该给自己理发，这就陷入了罗素悖论。' },
+            '41': { name: '排中律', englishName: 'Law of Excluded Middle - misuse can lead to fallacy', description: '在判断一个人是否有罪时，不能既说他有罪，又说他无罪，必须在这两个相互矛盾的判断中选择其一，这体现了排中律。' },
+            '42': { name: '充足理由律', englishName: 'Principle of Sufficient Reason - lack thereof weakens argument', description: '在法庭上，法官判定一个人有罪，必须要有充足的证据和合理的法律依据，不能随意下结论，这就是充足理由律的体现。' },
+            '43': { name: '范畴错误', englishName: 'Category Mistake', description: '说“数字5是绿色的”，这是将颜色的范畴错误地应用到数字上，数字属于数量范畴，不具备颜色属性。' },
+            '44': { name: '断章取义', englishName: 'Quoting out of Context', description: '有人引用名人的话“生命在于运动”，但却忽略了后面的“但也要注意适度”，只截取前面部分来强调过度运动，这就是断章取义。' },
+            '45': { name: '结构歧义', englishName: 'Amphiboly', description: '“他背着总经理和副总经理偷偷挪用了公款”，这句话可以理解为他背着总经理，和副总经理一起挪用公款；也可以理解为他背着总经理和副总经理两个人，自己偷偷挪用公款，结构导致歧义。' },
+            '46': { name: '隐含命题', englishName: 'Implicit Premise/Suppressed Evidence - if unwarranted', description: '“你居然还在抽烟！”这句话隐含了“你之前就抽烟，并且我不希望你抽烟”这个命题。' },
+            '47': { name: '同构意悖', englishName: 'Oxymoron/Contradiction in terms - if due to ambiguity', description: '“这件事情很简单，做起来却很难”，前后结构相似，但意思相悖，体现了同构意悖。' },
+            '48': { name: '分解问题', englishName: 'Fallacy of Division', description: '在分析一个企业的成功因素时，只关注员工个体的努力，而忽略了企业的管理模式、市场环境等整体因素，错误地分解问题，无法全面理解企业成功的原因。' },
+            '49': { name: '虚假两分', englishName: 'False Dilemma / Bifurcation', description: '在讨论是否应该支持某项政策时，有人说：“你要么支持这个政策，要么就是不希望社会进步。”实际上除了支持和反对，还可能有其他态度，比如中立、提出改进意见等，这是不合理的虚假两分。' },
+            '50': { name: '事实断言', englishName: 'Unsupported Assertion', description: '有人说：“明天股票肯定会涨。”但没有任何依据，只是随意做出的事实断言。' },
+            '51': { name: '隐瞒证据', englishName: 'Suppressed Evidence / Cherry Picking', description: '在推销二手车时，卖家只说车的优点，比如外观好看、动力不错等，却隐瞒了车辆曾发生过严重事故、存在安全隐患等重要证据。' },
+            '52': { name: '答非所问', englishName: 'Irrelevant Answer / Ignoratio Elenchi', description: '问：“你觉得这个项目的预算应该怎么安排？”答：“我觉得这个项目的前景很好，肯定能吸引很多投资。”回答没有针对预算安排的问题，属于答非所问。' },
+            '53': { name: '绝对化谬误', englishName: 'Dicto Simpliciter / Sweeping Generalization', description: '说“所有的学生只要努力学习，就一定能考上重点大学”，忽略了其他影响因素，如学习方法、考试难度等，表述过于绝对。' },
+            '54': { name: '二难诡辩术', englishName: 'False Dilemma - manipulative', description: '有人对员工说：“你要么加班完成任务，要么就别想保住工作。”故意设置这样看似两难的困境，让员工只能选择加班，而忽略了可能存在其他解决办法，比如合理安排工作流程、增加人手等。' },
+            '55': { name: '简化因果关系', englishName: 'Oversimplified Cause', description: '有人说“孩子学习成绩差，就是因为玩游戏太多”，忽略了孩子可能存在学习方法不当、学习环境不好、自身学习能力差异等多种原因，简单地将成绩差归结为玩游戏这一个因素。' },
+            '56': { name: '故意歪解', englishName: 'Intentional Misinterpretation', description: '在讨论环保问题时，有人说“我们要倡导绿色出行，减少碳排放”，另一个人却故意歪解为“就是不让我们开车出门了呗”，歪曲对方原本的意思。' },
+            '57': { name: '命名谬误', englishName: 'Naming Fallacy / Nominal Fallacy', description: '有人认为给一种疾病起了一个新名字，就等于找到了治疗这种疾病的方法，比如把某种罕见病命名为“XX综合征”，就觉得对这种病有了更深入的了解和解决办法，实际上只是命名，并没有真正解决问题。' },
+            '58': { name: '同语反复', englishName: 'Tautology - if used as proof', description: '说“乐观主义者就是乐观地对待生活的人”，用相近的词语重复表述，没有真正解释“乐观主义者”的内涵。' },
+            '59': { name: '一厢情愿', englishName: 'Wishful Thinking', description: '在追求爱情时，有人认为只要自己一直对对方好，对方就一定会爱上自己，完全从自己的意愿出发，忽略了对方的感受和想法。' },
+            '60': { name: '区群谬误', englishName: 'Ecological Fallacy', description: '根据某个地区的平均收入水平高，就推断这个地区的每个人收入都高。实际上平均收入高不代表个体收入都高，可能存在贫富差距，这是将群体特征错误地应用到个体上。' },
+            '61': { name: '直觉思维', englishName: 'Intuitive Thinking', description: '一个投资者看到某只股票价格连续上涨，凭直觉就认为这只股票还会继续涨，于是大量买入，而没有分析公司的财务状况、行业趋势等因素，结果买入后股票下跌。' },
+            '62': { name: '预期理由', englishName: 'Begging the Question variant / Hypothetical Reasoning as Factual', description: '在论证某个项目会成功时，说“这个项目肯定会得到很多投资，因为它前景很好”，但“会得到很多投资”这个理由还没有成为事实，是预期的，不能作为可靠的论证依据。' },
+            '63': { name: '巧合谬误', englishName: 'Coincidence Fallacy / Post Hoc variant', description: '有人在买彩票前梦到了一组数字，然后买了这组数字的彩票，结果中奖了，就认为是梦带来了好运。实际上中奖只是巧合，梦和中奖之间并没有必然联系。' },
+            '64': { name: '因果倒置', englishName: 'Wrong Direction / Reversing Cause and Effect', description: '有人发现经常去健身房锻炼的人身体很健康，就认为是去健身房锻炼导致了健康。但有可能是本身身体健康的人才更愿意去健身房锻炼，颠倒了因果关系。' },
+            '65': { name: '回归谬误', englishName: 'Regression Fallacy', description: '一个学生某次考试成绩特别差，老师批评后，下一次考试成绩有所提高，老师就认为是批评起了作用。但实际上可能是学生这次考试发挥失常，下次成绩回归到正常水平，而不是批评导致成绩提高。' },
+            '66': { name: '推不出来', englishName: 'Non Sequitur', description: '有人说“这个人经常参加公益活动，所以他一定是个道德高尚的人”。参加公益活动和道德高尚之间没有必然的逻辑推导关系，不能仅仅因为参加公益活动就得出道德高尚的结论。' },
+            '67': { name: '设定条件', englishName: 'Hypothetical Condition', description: '在评价一个人的工作能力时，说“如果他在理想的工作环境下，肯定能取得很好的成绩” ，但这种理想环境并不存在，设定的这个条件不合理，不能以此来评价他的工作能力。' },
+            '68': { name: '无足轻重', englishName: 'Trivial Objections / Focusing on Trivialities', description: '在讨论城市发展规划时，有人一直强调一些无关紧要的小细节，比如路边花坛的颜色搭配，而忽略了交通、基础设施建设等重要问题。' },
+            '69': { name: '诉诸传统', englishName: 'Appeal to Tradition', description: '在企业管理中，有人说“我们公司一直都是这样管理的，所以不需要改变”，仅仅因为是传统管理方式就坚持，而不考虑是否适应现代企业发展需求。' },
+            '70': { name: '说即劝说', englishName: 'Assuming Persuasion from Statement', description: '在会议上，领导陈述了一个方案，然后就认为大家都应该支持这个方案，把自己的陈述当作是对大家的劝说，没有考虑其他人的意见和想法。' },
+            '71': { name: '以人为据', englishName: 'Argument from Authority/Person', description: '在学术评价中，因为某个学者是权威，就认为他的所有观点都是正确的，而不看观点本身的合理性，以人的身份地位来判断观点。' },
+            '72': { name: '说文解字', englishName: 'Etymological Fallacy', description: '有人对“忍”字进行解读，说“忍就是把心放在刀刃上，所以人要学会忍受痛苦”，过度从字面拆解来解读含义，而忽略了字在不同语境下的丰富内涵。' },
+            '73': { name: '过度引申', englishName: 'Overextension / Exaggeration', description: '看到一个人偶尔迟到一次，就说这个人工作态度不认真、没有责任心，还会影响整个团队的工作效率，把一次迟到的行为过度引申到工作态度和团队影响上。' },
+            '74': { name: '不当类比', englishName: 'Faulty Analogy', description: '有人说：“汽车和自行车都有轮子，都能载人。既然汽车可以在高速公路上开到120公里/小时，那么自行车也应该被允许在高速公路上骑那么快。” 这种类比是错误的，因为它忽略了汽车和自行车在动力系统、安全性能、设计用途以及高速公路的通行规则等方面的巨大差异。' },
+            '75': { name: '诉诸传言', englishName: 'Appeal to Rumor/Hearsay', description: '有人听到传言说“某知名品牌的护肤品含有致癌物质”，就信以为真，不再购买该品牌产品，而不去查证传言是否属实，也不关注专业机构的检测报告。' },
+            '76': { name: '破除迷信', englishName: 'Magical Thinking - example provided', description: '有些人盲目相信风水之说，认为在办公室摆放特定的摆件就能提升事业运。比如听说在办公桌上放一个水晶球可以招财进宝、升职加薪，就毫不犹豫地照做，而不通过自身努力提升工作能力。' },
+            '77': { name: '简单答案不存在', englishName: 'Argument against solution because it\'s not simple', description: '在讨论如何解决城市交通拥堵问题时，有人提出“多修路就可以解决拥堵”。但实际上，城市交通拥堵是由多种因素导致的，如车辆保有量过多、交通管理不合理、道路规划不完善等，单纯多修路并不能从根本上解决问题，这是在追求简单答案。' },
+            '78': { name: '触类旁通', englishName: 'Reasoning by Analogy - if faulty', description: '看到邻居通过种植花卉赚了钱，就认为自己也可以通过种植花卉轻松获利，没有考虑到不同花卉品种的种植难度、市场需求差异以及自身是否具备相应的种植技术和销售渠道等因素，盲目进行类推。' },
+            '79': { name: '中性词语', englishName: 'Use of Neutral Words to mislead or create ambiguity', description: '在评价一个人时，说“他是个很有想法的人”，“有想法”是中性词，但在特定语境下，可能会让人误解为他是个爱耍心眼、不踏实的人，由于词语表意模糊导致理解偏差。' },
+            '80': { name: '追踪思维', englishName: 'Tracking thinking - if leading to confirmation bias', description: '警方在追捕嫌疑人时，发现嫌疑人在某一地点出现过，之后一直沿着嫌疑人可能逃跑的路线追踪，却忽略了嫌疑人可能采用声东击西的策略，折返或者从其他隐蔽路线逃脱，一味地追踪既定路线而没有灵活思考。' },
+            '81': { name: '合理化', englishName: 'Rationalization', description: '一个学生考试不及格，他为自己找理由说：“这次考试题目出得太偏了，老师教的重点都没考，不是我没学好。”通过找借口来让自己考试不及格这件事看起来合理，而不是反思自己学习是否存在问题。' },
+            '82': { name: '集体思维', englishName: 'Groupthink', description: '在公司团队讨论项目方案时，大部分成员都倾向于一个方案，少数成员虽然觉得方案存在问题，但因为担心被视为异类，不敢提出反对意见，最终导致团队采用了一个并非最优的方案，这是集体思维导致的决策失误。' },
+            '83': { name: '诱导性问题', englishName: 'Leading Question', description: '在法庭询问证人时，律师问：“你那天晚上看到的那个可疑的、形迹十分不正常的人，是不是被告？”这种提问方式带有诱导性，容易让证人按照律师的暗示去回答，影响证词的客观性。' },
+            '84': { name: '求易思维', englishName: 'Simplicity-seeking thinking - if ignoring complexity', description: '在选择学习一门新语言时，有人觉得日语里有很多汉字，看起来比较容易学，就选择学习日语，而没有考虑到日语的语法体系、发音规则等方面的学习难度，单纯因为表面上看起来容易就做出选择。' },
+            '85': { name: '组合思维', englishName: 'Fallacy of Composition', description: '在设计一款新产品时，设计师只是简单地把现有的一些产品功能组合在一起，认为这样就能创造出一款受欢迎的产品，却没有考虑这些功能组合起来是否真正满足用户需求，是否存在使用上的冲突等问题。' },
+            '86': { name: '逆向思维', englishName: 'Reverse Thinking - if misapplied', description: '有人为了提高产品销量，采用逆向思维，故意减少产品在市场上的供应量，制造稀缺感，以为这样就能刺激消费者购买。但结果却导致很多消费者因为买不到产品而选择了其他替代品，销量反而下降，没有正确运用逆向思维。' },
+            '87': { name: '在此之后', englishName: 'Post Hoc Ergo Propter Hoc', description: '有人在吃了某种保健品后，身体感觉舒服了一些，就认为是这种保健品起了作用。但实际上可能是自身身体的自然恢复或者心理作用，仅仅因为吃保健品在前，身体感觉舒服在后，就认定两者存在因果关系。' },
+            '88': { name: '固定联想', englishName: 'Fixed Association / Stereotyping', description: '一提到“律师”这个职业，很多人就固定联想到他们总是在法庭上巧舌如簧、只为金钱服务。这种固定联想忽略了律师在维护法律公正、为当事人合法权益辩护等方面的积极作用，是一种片面的认知。' }
+        }
+    };
+
+    const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            // --- 响应式数据 ---
+            const currentView = ref('welcome'); // 'welcome', 'fallacyDetail', 'caseAnalysisModule'
+            const searchText = ref('');
+            const currentFallacy = ref(null); // { number, name, description, englishName }
+            const currentFallacyCategory = ref(null); // { id, name, emoji, accentClass, textClass }
+            const categories = ref(fallacyData.categories.map(cat => ({ ...cat, isExpanded: false })));
+
+            // AI 设置
+            const isAiSettingsPopoverOpen = ref(false);
+            const aiModel = ref('gemini-2.0-flash');
+            const apiKey = ref('');
+            const settingsSavedMsgVisible = ref(false);
+
+            // AI 案例生成
+            const isGeneratingExample = ref(false);
+            const aiExampleText = ref('');
+            const aiErrorText = ref('');
+
+            // AI 案例分析
+            const caseInputText = ref('');
+            const isAnalyzingCase = ref(false);
+            const analysisResultContent = ref('');
+            const analysisErrorText = ref('');
+            const matchedFallacy = ref(null); // { number, name, category }
+
+            // --- 计算属性 ---
+            const filteredCategories = computed(() => {
+                const searchTerm = searchText.value.toLowerCase();
+                return categories.value.map(category => {
+                    const categoryFilteredFallacies = category.fallacies.filter(num => {
+                        const f = fallacyData.fallacies[num];
+                        return num.includes(searchTerm) ||
+                            (f.name && f.name.toLowerCase().includes(searchTerm)) ||
+                            (f.englishName && f.englishName.toLowerCase().includes(searchTerm));
+                    });
+
+                    const categoryMatches = category.name.toLowerCase().includes(searchTerm);
+
+                    // 只有当有搜索词且分类名匹配，或者分类下有匹配的谬误时，才默认展开
+                    const shouldExpand = (searchTerm && (categoryMatches || categoryFilteredFallacies.length > 0));
+
+                    return {
+                        ...category,
+                        fallacies: categoryFilteredFallacies,
+                        isExpanded: shouldExpand || category.isExpanded // 保持用户手动展开的状态，或者在搜索时自动展开
+                    };
+                }).filter(category => category.fallacies.length > 0 || category.name.toLowerCase().includes(searchTerm) || !searchTerm); // 如果无搜索词，显示所有分类
+            });
+
+            const formattedDescription = computed(() => {
+                return currentFallacy.value ? currentFallacy.value.description.replace(/\n/g, '</p><p>') : '';
+            });
+
+            // --- 方法 ---
+
+            // AI 设置相关
+            const loadAiSettings = () => {
+                const savedModel = localStorage.getItem('aiModel');
+                const savedApiKey = localStorage.getItem('aiApiKey');
+                aiModel.value = savedModel || 'gemini-2.0-flash';
+                apiKey.value = savedApiKey || '';
+            };
+
+            const saveAiSettings = () => {
+                localStorage.setItem('aiModel', aiModel.value);
+                localStorage.setItem('aiApiKey', apiKey.value.trim());
+                settingsSavedMsgVisible.value = true;
+                setTimeout(() => {
+                    settingsSavedMsgVisible.value = false;
+                    isAiSettingsPopoverOpen.value = false;
+                }, 1200);
+            };
+
+            const cancelAiSettings = () => {
+                loadAiSettings(); // 恢复到上次保存的设置
+                isAiSettingsPopoverOpen.value = false;
+            };
+
+            const toggleAiSettingsPopover = (show) => {
+                if (typeof show === 'boolean') {
+                    isAiSettingsPopoverOpen.value = show;
+                } else {
+                    isAiSettingsPopoverOpen.value = !isAiSettingsPopoverOpen.value;
+                }
+                if (isAiSettingsPopoverOpen.value) {
+                    loadAiSettings(); // 每次打开时加载最新设置
+                }
+            };
+
+            // 导航和内容显示
+            const showWelcome = () => {
+                currentView.value = 'welcome';
+                currentFallacy.value = null;
+                currentFallacyCategory.value = null;
+                // 确保图表在欢迎页显示时渲染
+                nextTick(() => {
+                    renderChart();
+                });
+            };
+
+            const selectFallacy = (fallacyNumber, category) => {
+                const fallacy = fallacyData.fallacies[fallacyNumber];
+                if (fallacy) {
+                    currentFallacy.value = { ...fallacy, number: fallacyNumber };
+                    currentFallacyCategory.value = category;
+                    currentView.value = 'fallacyDetail';
+                    aiExampleText.value = '';
+                    aiErrorText.value = '';
+                    isGeneratingExample.value = false;
+
+                    // 展开当前谬误所在的分类
+                    categories.value.forEach(cat => {
+                        if (cat.id === category.id) {
+                            cat.isExpanded = true;
+                        } else {
+                            cat.isExpanded = false; // 关闭其他分类
+                        }
+                    });
+
+                    // 确保滚动到顶部
+                    nextTick(() => {
+                        document.getElementById('contentArea').scrollTop = 0;
+                    });
+                }
+            };
+
+            const selectMatchedFallacy = (fallacyNumber, category) => {
+                selectFallacy(fallacyNumber, category);
+                searchText.value = ''; // 清空搜索框
+            };
+
+
+            const showCaseAnalyzer = () => {
+                currentView.value = 'caseAnalysisModule';
+                currentFallacy.value = null;
+                currentFallacyCategory.value = null;
+                analysisResultContent.value = '';
+                analysisErrorText.value = '';
+                matchedFallacy.value = null;
+                caseInputText.value = '';
+                // 确保滚动到顶部
+                nextTick(() => {
+                    document.getElementById('contentArea').scrollTop = 0;
+                });
+                // 关闭所有分类展开状态
+                categories.value.forEach(cat => cat.isExpanded = false);
+            };
+
+            const toggleCategory = (categoryId) => {
+                const category = categories.value.find(cat => cat.id === categoryId);
+                if (category) {
+                    category.isExpanded = !category.isExpanded;
+
+                    // 如果收起，且当前选中的谬误属于此分类，则取消选中，并显示欢迎页
+                    if (!category.isExpanded && currentFallacy.value && category.fallacies.includes(currentFallacy.value.number)) {
+                        showWelcome();
+                    }
+                    // 如果展开，且当前没有选中的谬误，或者选中的谬误不在此分类下，则显示欢迎页
+                    else if (category.isExpanded && (!currentFallacy.value || !category.fallacies.includes(currentFallacy.value.number))) {
+                        showWelcome();
+                    }
+                }
+            };
+
+            // AI API 调用
+            async function callGeminiAPI(prompt) {
+                const apiKeyToUse = apiKey.value || "";
+                const modelToUse = aiModel.value || "gemini-2.0-flash";
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKeyToUse}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    let errorMessage = errorData.error ? errorData.error.message : `API 请求失败，状态码: ${response.status}`;
+                    if (response.status === 400 && errorMessage.includes("API key not valid")) {
+                        errorMessage = "API 密钥无效或不适用于所选模型。请在“AI设置”中检查。";
+                    } else if (response.status === 403) {
+                         errorMessage = "API 请求被拒绝。请检查API密钥权限或项目设置。";
+                    }
+                    throw new Error(errorMessage);
+                }
+                const result = await response.json();
+                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("未能从AI获取有效回应。");
+                }
+            }
+
+            async function generateExample() {
+                if (!currentFallacy.value) return;
+
+                isGeneratingExample.value = true;
+                aiExampleText.value = '';
+                aiErrorText.value = '';
+
+                const prompt = `你是一个逻辑学专家。请为逻辑谬误 "${currentFallacy.value.name}" (属于分类 "${currentFallacyCategory.value.name}") 生成一个新的、原创的、清晰简短的日常对话或情景案例。这个谬误的定义是：“${currentFallacy.value.description}”。请确保案例通俗易懂，并且直接展示该谬误是如何发生的。请只提供案例本身，不要包含任何额外的解释或引言。请用中文回答。`;
+
+                try {
+                    const text = await callGeminiAPI(prompt);
+                    aiExampleText.value = text;
+                } catch (error) {
+                    console.error("生成案例错误:", error);
+                    aiErrorText.value = `抱歉，生成案例时出错：${error.message}`;
+                } finally {
+                    isGeneratingExample.value = false;
+                }
+            }
+
+            async function analyzeCase() {
+                const caseText = caseInputText.value.trim();
+                if (!caseText) {
+                    analysisErrorText.value = "请输入需要分析的案例内容。";
+                    analysisResultContent.value = '';
+                    matchedFallacy.value = null;
+                    return;
+                }
+
+                isAnalyzingCase.value = true;
+                analysisResultContent.value = '';
+                analysisErrorText.value = '';
+                matchedFallacy.value = null;
+
+                const prompt = `你是一位逻辑学和沟通专家。请分析以下用户提供的案例：\n\n"${caseText}"\n\n请识别其中最主要的逻辑谬误（如果存在）。如果识别出谬误，请：\n1. 清晰指出你判断的谬误的名称。\n2. 简要解释为什么这个案例构成了该谬误。\n3. 提供1-2条针对性的、有礼貌且有效的“回怼”或澄清话术，帮助用户应对这种情况。\n4. **重要：接下来，请尝试将你识别的谬误与我们提供的已知谬误列表中的一个进行最接近的匹配。如果在列表中找到一个非常相似的条目，请严格按照以下格式单独一行输出：“匹配到的已知谬误：[编号] 谬误全名”。例如：“匹配到的已知谬误：[04] 归纳谬误”。如果找不到非常精确的匹配，请明确说明“未在已知列表中找到高度相似的谬误”。**\n\n已知谬误列表 (部分，用于AI参考匹配，AI应优先使用自己判断的谬误名称，然后尝试匹配)：\n${Object.entries(fallacyData.fallacies).map(([num, data]) => `- [${num}] ${data.name} (${data.englishName})`).join('\n')}\n\n如果案例中没有明显的逻辑谬误，或者难以判断，请如实说明。\n请用中文回答，并用以下格式组织您的回答（除了匹配信息外）：\n\n**识别到的谬误：** [AI判断的谬误名称]\n\n**原因分析：** [解释]\n\n**建议话术：**\n- [话术1]\n- [话术2 (可选)]\n\n（如果未识别到明确谬误，请在此说明原因）`;
+
+                try {
+                    const textResponse = await callGeminiAPI(prompt);
+                    let mainAnalysisContent = textResponse;
+
+                    const matchRegex = /匹配到的已知谬误：\s*\[(\d+)\]\s*([^\n<]+)/im;
+                    const match = textResponse.match(matchRegex);
+
+                    if (match && match[1] && match[2]) {
+                        const fallacyNumber = match[1];
+                        let fallacyNameFromAI = match[2].trim().replace(/\.$/, "").trim();
+                        const knownFallacy = fallacyData.fallacies[fallacyNumber];
+                        const category = fallacyData.categories.find(cat => cat.fallacies.includes(fallacyNumber));
+
+                        if (knownFallacy && category) {
+                            // 进一步验证匹配的准确性，防止误匹配
+                            const isMatchRelevant = knownFallacy.name === fallacyNameFromAI ||
+                                knownFallacy.name.toLowerCase().includes(fallacyNameFromAI.toLowerCase()) ||
+                                fallacyNameFromAI.toLowerCase().includes(knownFallacy.name.toLowerCase()) ||
+                                (knownFallacy.englishName && knownFallacy.englishName.toLowerCase().includes(fallacyNameFromAI.toLowerCase()));
+
+                            if (isMatchRelevant) {
+                                matchedFallacy.value = {
+                                    number: fallacyNumber,
+                                    name: knownFallacy.name,
+                                    category: category
+                                };
+                                mainAnalysisContent = mainAnalysisContent.replace(matchRegex, "").trim();
+                            }
+                        }
+                    }
+
+                    // 格式化输出内容
+                    let formattedResponse = mainAnalysisContent
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n\n/g, '<br><br>')
+                        .replace(/\n- /g, '<li>');
+
+                    // 处理列表的 ul 标签
+                    if (formattedResponse.includes('<li>')) {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = formattedResponse;
+                        const listItems = Array.from(tempDiv.querySelectorAll('li'));
+                        if (listItems.length > 0) {
+                            const ul = document.createElement('ul');
+                            ul.className = 'list-disc list-inside pl-2 space-y-1';
+                            listItems.forEach(li => ul.appendChild(li));
+                            // 找到原始的 `<li>` 文本块在 `formattedResponse` 中的位置
+                            const firstLiText = listItems[0].outerHTML;
+                            const lastLiText = listItems[listItems.length - 1].outerHTML;
+                            const startIndex = formattedResponse.indexOf(firstLiText);
+                            const endIndex = formattedResponse.indexOf(lastLiText) + lastLiText.length;
+
+                            if (startIndex !== -1 && endIndex !== -1) {
+                                formattedResponse = formattedResponse.substring(0, startIndex) + ul.outerHTML + formattedResponse.substring(endIndex);
+                            }
+                        }
+                    }
+                    analysisResultContent.value = formattedResponse;
+
+                } catch (error) {
+                    console.error("案例分析错误:", error);
+                    analysisErrorText.value = `抱歉，分析案例时出错：${error.message}`;
+                } finally {
+                    isAnalyzingCase.value = false;
+                }
+            }
+
+            const copyAnalysisResult = () => {
+                let textToCopy = "";
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = analysisResultContent.value;
+                textToCopy = tempDiv.textContent || tempDiv.innerText || "";
+
+                if (!textToCopy.trim()) {
+                    // 显示内容为空的提示
+                    const copyBtn = document.querySelector('#copyAnalysisBtn');
+                    const originalTitle = copyBtn.title;
+                    const originalIcon = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>`;
+                    copyBtn.title = "内容为空!";
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalIcon;
+                        copyBtn.title = originalTitle;
+                    }, 2000);
+                    return;
+                }
+
+                if (!navigator.clipboard) {
+                    alert("抱歉，您的浏览器不支持安全剪贴板 API。");
+                    console.error("Clipboard API not available.");
+                    return;
+                }
+
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const copyBtn = document.querySelector('#copyAnalysisBtn');
+                    const originalTitle = copyBtn.title;
+                    const originalIcon = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>`;
+                    copyBtn.title = "已复制!";
+
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalIcon;
+                        copyBtn.title = originalTitle;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('无法复制文本 (navigator.clipboard.writeText): ', err);
+                    alert(`复制失败: ${err.name} - ${err.message}\n请确保页面在安全环境(HTTPS)下运行，或检查浏览器权限。`);
+                    const copyBtn = document.querySelector('#copyAnalysisBtn');
+                    const originalTitle = copyBtn.title;
+                    const originalIcon = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>`;
+                    copyBtn.title = "复制失败!";
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalIcon;
+                        copyBtn.title = originalTitle;
+                    }, 2500);
+                });
+            };
+
+            // Chart.js 渲染
+            let chartInstance = null;
+            const renderChart = () => {
+                const ctx = document.getElementById('fallacyChart')?.getContext('2d');
+                if (!ctx) return;
+
+                if (chartInstance) {
+                    chartInstance.destroy(); // 销毁旧实例，避免重复渲染
+                }
+
+                const categoryNames = fallacyData.categories.map(cat => `${cat.emoji} ${cat.name}`);
+                const fallacyCounts = fallacyData.categories.map(cat => cat.fallacies.length);
+                const backgroundColors = [ 'rgba(239, 68, 68, 0.6)', 'rgba(249, 115, 22, 0.6)', 'rgba(234, 179, 8, 0.6)', 'rgba(34, 197, 94, 0.6)', 'rgba(59, 130, 246, 0.6)' ];
+                const borderColors = [ 'rgba(239, 68, 68, 1)', 'rgba(249, 115, 22, 1)', 'rgba(234, 179, 8, 1)', 'rgba(34, 197, 94, 1)', 'rgba(59, 130, 246, 1)' ];
+
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: categoryNames,
+                        datasets: [{
+                            label: '谬误数量',
+                            data: fallacyCounts,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 5, color: '#6b7280' },
+                                grid: { color: '#e5e7eb' }
+                            },
+                            x: {
+                                ticks: {
+                                    callback: function(v) {
+                                        const l = this.getLabelForValue(v);
+                                        return l.length > 8 ? l.substring(0,8)+'...' : l;
+                                    },
+                                    autoSkip: false,
+                                    maxRotation: 40,
+                                    minRotation: 30,
+                                    color: '#6b7280'
+                                },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { title: (ti) => ti[0].label } }
+                        }
+                    }
+                });
+            };
+
+            // --- 生命周期钩子 ---
+            onMounted(() => {
+                loadAiSettings();
+                showWelcome(); // 初始显示欢迎页和图表
+
+                // 点击页面其他地方关闭AI设置弹窗
+                document.addEventListener('click', (e) => {
+                    const aiSettingsBtn = document.getElementById('aiSettingsBtn');
+                    const aiSettingsPopover = document.getElementById('aiSettingsPopover');
+                    if (isAiSettingsPopoverOpen.value && !aiSettingsPopover.contains(e.target) && !aiSettingsBtn.contains(e.target)) {
+                        isAiSettingsPopoverOpen.value = false;
+                    }
+                });
+            });
+
+            // 监听搜索文本变化，更新导航栏展开状态
+            watch(searchText, (newVal) => {
+                categories.value.forEach(cat => {
+                    const searchTerm = newVal.toLowerCase();
+                    const categoryMatches = cat.name.toLowerCase().includes(searchTerm);
+                    const fallaciesMatch = cat.fallacies.some(num => {
+                        const f = fallacyData.fallacies[num];
+                        return num.includes(searchTerm) ||
+                            (f.name && f.name.toLowerCase().includes(searchTerm)) ||
+                            (f.englishName && f.englishName.toLowerCase().includes(searchTerm));
+                    });
+                    cat.isExpanded = categoryMatches || fallaciesMatch;
+                });
+            });
+
+            return {
+                fallacyData,
+                currentView,
+                searchText,
+                currentFallacy,
+                currentFallacyCategory,
+                categories,
+                filteredCategories,
+                formattedDescription,
+                isAiSettingsPopoverOpen,
+                aiModel,
+                apiKey,
+                settingsSavedMsgVisible,
+                isGeneratingExample,
+                aiExampleText,
+                aiErrorText,
+                caseInputText,
+                isAnalyzingCase,
+                analysisResultContent,
+                analysisErrorText,
+                matchedFallacy,
+                toggleAiSettingsPopover,
+                saveAiSettings,
+                cancelAiSettings,
+                selectFallacy,
+                selectMatchedFallacy,
+                showCaseAnalyzer,
+                toggleCategory,
+                generateExample,
+                analyzeCase,
+                copyAnalysisResult,
+                renderChart // 暴露给模板，尽管直接在 mounted 中调用
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
