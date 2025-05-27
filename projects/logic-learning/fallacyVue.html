@@ -7,7 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/marked@12.0.0/marked.min.js"></script>
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         /* 全局样式 */
         body {
@@ -217,11 +218,7 @@
 <body class="bg-slate-100 text-slate-700">
 
     <div id="app" class="flex flex-col h-screen">
-        <header class="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-30 p-4">
-          <h1 @click="showWelcome" class="text-xl font-semibold text-center text-slate-700 cursor-pointer hover:text-slate-800 transition-colors duration-200">
-        逻辑谬误一点通 - AI增强版
-          </h1>
-         </header>
+  
 
         <div class="flex flex-1 overflow-hidden">
             <aside id="sidebar" class="w-1/3 lg:w-1/4 bg-white p-3 flex flex-col overflow-y-auto shadow-lg border-r border-slate-200">
@@ -267,6 +264,17 @@
 
                 <input type="text" v-model="searchText" placeholder="搜索谬误 (编号/名称)..." class="w-full p-2 mb-3 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-400 focus:border-slate-400 outline-none text-sm shadow-sm">
 
+                <button id="overviewBtn"
+                  @click="showOverview"
+                  :class="{'sidebar-static-item-active': currentView === 'overview'}"
+                  class="w-full flex items-center text-left px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 sidebar-static-item bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent shadow-sm mb-3">
+                  <svg class="w-5 h-5 mr-2 shrink-0 text-slate-600 opacity-80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.002 0-1.94.204-2.813.562M12 6.042V12m0-5.958A9.065 9.065 0 0 1 18 3.75c.806 0 1.57.18 2.267.505M12 6.042V12m0 0a8.967 8.967 0 0 1 6 2.25c1.002 0 1.94-.204 2.813-.562M12 12a8.967 8.967 0 0 0-6 2.25c-1.002 0-1.94-.204-2.813-.562m0 0 1.57-1.57M4.687 16.215l1.57-1.57m10.876-2.125l1.57-1.57m-1.57 1.57a9.065 9.065 0 0 1-2.267.505M12 12v5.958m0 0a8.967 8.967 0 0 0 6 2.25c1.002 0 1.94-.204 2.813-.562m-1.57-1.57l1.57 1.57m-10.876 2.125l-1.57 1.57m1.57-1.57A9.065 9.065 0 0 1 6 20.25c.806 0 1.57-.18 2.267-.505" />
+                  </svg>
+                总览
+                </button>
+
+
                 <button id="showCaseAnalyzerBtn"
                         @click="showCaseAnalyzer"
                         :class="{'sidebar-static-item-active': currentView === 'caseAnalysisModule'}"
@@ -308,7 +316,13 @@
             </aside>
 
             <main id="contentArea" class="flex-1 p-5 sm:p-6 lg:p-8 overflow-y-auto bg-white">
-                <div v-if="currentView === 'welcome'" class="text-center py-8">
+              
+                      <div v-if="currentView === 'overview'" class="overview-module prose prose-sm sm:prose-base max-w-none text-slate-700 p-6 rounded-lg bg-white shadow-md">
+                         <h2 class="text-2xl font-semibold mb-4 text-stone-700">应用总览</h2>
+                         <div id="overviewContent" v-html="parsedOverviewContent"></div>
+                      </div>
+                  
+                      <div v-if="currentView === 'welcome'" class="text-center py-8">
                      <h2 class="text-2xl font-semibold mb-4 text-stone-700">欢迎使用逻辑谬误一点通</h2>
                     <p class="mb-6 text-stone-500">请从左侧选择一个谬误分类或具体条目进行查看，或使用搜索功能快速定位。</p>
                     <div class="chart-container mx-auto">
@@ -512,6 +526,36 @@
             const analysisResultContent = ref('');
             const analysisErrorText = ref('');
             const matchedFallacy = ref(null); // { number, name, category }
+            
+            // 总览页面内容（这里是硬编码的Markdown内容，你可以替换成你自己的）
+            const overviewMarkdown = ref(`
+# 逻辑谬误一点通：应用总览
+
+欢迎来到“逻辑谬误一点通”的智能分析工具。本应用旨在帮助您识别和理解日常交流中常见的逻辑谬误，提升批判性思维能力。
+
+## 主要功能：
+
+* **逻辑谬误库**：左侧导航栏包含了80多种常见的逻辑谬误，每个谬误都有详细的定义、英文名称和生动的中文案例。
+* **智能案例分析**：通过AI技术，您可以输入一段对话或情景描述，AI将尝试识别其中可能存在的逻辑谬误，并提供反驳思路和匹配知识库中的谬误。
+* **AI 案例生成**：针对特定谬误，AI可以生成新的、原创的日常案例，帮助您更深入地理解谬误的结构和表现形式。
+* **AI 设置**：您可以自定义AI模型（如Gemini 2.0 Flash、Gemini Pro）和API密钥，以获得更灵活的AI服务体验。
+* **数据可视化**：在欢迎页面，通过图表直观展示不同类别谬误的数量分布，帮助您快速了解谬误的整体结构。
+
+## 如何使用：
+
+1.  在左侧导航栏选择您感兴趣的谬误分类，或直接点击具体的谬误条目查看详情。
+2.  使用顶部的搜索框，通过编号或名称快速定位谬误。
+3.  点击“智能案例分析”按钮，进入分析模块，输入您的案例。
+4.  在谬误详情页，点击“生成新案例”按钮，获取AI针对该谬误生成的示例。
+5.  在“AI 设置”中配置您的API密钥和模型。
+`);
+
+
+             // 解析 Markdown 内容为 HTML
+            const parsedOverviewContent = computed(() => {
+            // Marked.js 的转换
+                 return marked.parse(overviewMarkdown.value);
+            });
 
             // --- 计算属性 ---
             const filteredCategories = computed(() => {
@@ -585,6 +629,19 @@
                 // 确保图表在欢迎页显示时渲染
                 nextTick(() => {
                     renderChart();
+                });
+            };
+            
+             // 新增：显示总览页面
+            const showOverview = () => {
+                currentView.value = 'overview'; // 告诉网页，现在要切换到“总览”形态
+                currentFallacy.value = null; // 清除之前可能选中的谬误
+                currentFallacyCategory.value = null; // 清除之前可能选中的分类
+             // 关闭所有分类展开状态
+                categories.value.forEach(cat => cat.isExpanded = false);
+             // 确保滚动到顶部
+                nextTick(() => {
+                    document.getElementById('contentArea').scrollTop = 0;
                 });
             };
 
@@ -963,6 +1020,8 @@
                 selectFallacy,
                 selectMatchedFallacy,
                 showCaseAnalyzer,
+                showOverview, // 新增的这一行
+                showWelcome,
                 toggleCategory,
                 generateExample,
                 analyzeCase,
