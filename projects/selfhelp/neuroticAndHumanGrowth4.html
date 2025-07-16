@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神经症与人的成长解读 - 卡伦·霍妮</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+:root {
+    /* Default Theme: Apple Light Blue (Low Saturation) */
+    --page-bg-color: #FFFFFF;
+    --text-color-main: #1D1D1F;
+    --text-color-light: #F5F5F7; /* For dark backgrounds */
+    --heading-color-h1: #5B92E5; /* Low Sat Apple Blue for main site title */
+    --heading-color-h2: #1D1D1F; /* Dark for H2 on light bg */
+    --heading-color-h3: #333333; /* Slightly lighter dark for H3 */
+    --link-color: #5B92E5;
+    --link-hover-color: #4A7AC7; /* Darker Low Sat Apple Blue */
+    --navbar-bg-color: rgba(248, 249, 250, 0.85); /* Light, slightly transparent */
+    --navbar-link-color: #333333;
+    --navbar-link-hover-color: #5B92E5;
+    --content-card-bg-color: #FFFFFF;
+    --content-card-border-color: #E5E5EA; /* Apple's light gray border */
+    --blockquote-border-color: #5B92E5;
+    --blockquote-bg-color: #F8F9FA;
+    --blockquote-text-color: #555555;
+    --footer-bg-color: #F8F9FA;
+    --footer-text-color: #6c757d;
+    --button-text-color: #5B92E5; /* For theme toggle button text */
+    --quiz-discussion-bg-color: #F0F7FF; /* Light blue for discussion box */
+    --quiz-discussion-title-color: #5B92E5; /* Matching blue for title */
+    --interactive-toc-part-hover-bg: rgba(91, 146, 229, 0.1); /* For ToC part hover */
+    --interactive-toc-link-hover-bg: rgba(91, 146, 229, 0.05); /* For ToC link hover */
+    --interactive-toc-active-link-color: #3B71CA; /* A slightly darker blue for active ToC links */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--page-bg-color);
+    color: var(--text-color-main);
+    transition: background-color 0.3s, color 0.3s;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html { scroll-behavior: smooth; }
+
+#navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: var(--navbar-bg-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background-color 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.text-title { color: var(--heading-color-h1); transition: color 0.3s; }
+.nav-link-color { color: var(--navbar-link-color); transition: color 0.3s; }
+.nav-link-color:hover { color: var(--navbar-link-hover-color); background-color: rgba(127,127,127,0.05); }
+#nav-toggle svg { fill: var(--button-text-color); transition: fill 0.3s; }
+
+.content-bg {
+    background-color: var(--content-card-bg-color);
+    border: 1px solid var(--content-card-border-color);
+    transition: background-color 0.3s, border-color 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+
+.prose h2:not(.interactive-toc-title) { /* Exclude ToC title from prose H2 styling if needed */
+    font-size: 1.875rem; margin-top: 2rem; margin-bottom: 1rem;
+    border-bottom: 1px solid var(--content-card-border-color);
+    padding-bottom: 0.5rem; color: var(--heading-color-h2);
+    transition: color 0.3s, border-color 0.3s;
+}
+.prose h3 {
+    font-size: 1.5rem; margin-top: 1.5rem; margin-bottom: 0.75rem;
+    color: var(--heading-color-h3); transition: color 0.3s;
+}
+.prose p, .prose li { line-height: 1.75; margin-bottom: 1rem; color: var(--text-color-main); }
+/* Adjusted to specifically exclude ToC lists from prose styling */
+.prose ul:not(.interactive-toc-parts-list):not(.interactive-toc-chapters-list) {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+}
+.prose ol { list-style-type: decimal; margin-left: 1.5rem; }
+.prose blockquote {
+    border-left: 3px solid var(--blockquote-border-color);
+    padding-left: 1rem; margin-left: 0; font-style: italic;
+    color: var(--blockquote-text-color);
+    background-color: var(--blockquote-bg-color);
+    border-radius: 4px;
+    transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+}
+/* Adjusted to specifically exclude ToC links from general prose link styling */
+.prose a:not(.interactive-toc-chapter-link) {
+    color: var(--link-color);
+    transition: color 0.3s;
+    text-decoration: none;
+    font-weight: 500;
+}
+.prose a:not(.interactive-toc-chapter-link):hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
+
+
+.footer-bg { background-color: var(--footer-bg-color); transition: background-color 0.3s; }
+.footer-text { color: var(--footer-text-color); transition: color 0.3s; }
+
+#nav-menu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: var(--navbar-bg-color); }
+#nav-menu.open { max-height: 100vh; overflow-y: auto; }
+
+.content-section { padding-top: 70px; margin-top: -70px; }
+.nav-link { display: block; padding: 0.75rem 1rem; }
+
+/* Theme Selector Styles */
+.theme-selector-container { position: relative; }
+.theme-toggle-button {
+    background-color: transparent; border: none; color: var(--button-text-color);
+    padding: 0.35rem 0.6rem; font-size: 0.75rem; font-weight: 500;
+    cursor: pointer; border-radius: 6px; transition: color 0.3s, background-color 0.2s;
+    line-height: 1;
+}
+.theme-toggle-button:hover { background-color: rgba(127, 127, 127, 0.1); }
+.theme-options-list {
+    display: none; list-style: none; padding: 0; margin: 0; margin-top: 0.35rem;
+    background-color: var(--navbar-bg-color); border: 1px solid var(--content-card-border-color);
+    border-radius: 8px; box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    position: absolute; right: 0; width: max-content; min-width: 160px; z-index: 70;
+    transition: background-color 0.3s, border-color 0.3s; overflow: hidden;
+}
+.theme-options-list li button {
+    display: block; width: 100%; padding: 0.6rem 1.1rem; font-size: 0.875rem;
+    text-align: left; background: none; border: none; cursor: pointer;
+    color: var(--navbar-link-color); transition: background-color 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.theme-options-list li button:hover {
+    background-color: rgba(127, 127, 127, 0.08);
+    color: var(--navbar-link-hover-color);
+}
+
+.quiz-discussion-box { background-color: var(--quiz-discussion-bg-color); transition: background-color 0.3s; border-radius: 6px;}
+.quiz-discussion-title { color: var(--quiz-discussion-title-color); transition: color 0.3s; }
+
+/* Styles for Interactive Table of Contents */
+.interactive-toc-title { /* Custom class for ToC H2 if needed, or style directly */
+    color: var(--heading-color-h2);
+    border-bottom: 1px solid var(--content-card-border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.75rem; /* Slightly smaller than main content H2 */
+    font-weight: 600;
+}
+
+.interactive-toc-parts-list {
+    list-style: none;
+    padding-left: 0;
+}
+.interactive-toc-parts-list > li {
+    margin-bottom: 0.5rem; /* Space between parts */
+    border-bottom: 1px dashed var(--content-card-border-color); /* Separator for parts */
+    padding-bottom: 0.5rem;
+}
+.interactive-toc-parts-list > li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.interactive-toc-part-title {
+    font-weight: 600; /* Semibold */
+    font-size: 1.125rem; /* text-lg */
+    color: var(--heading-color-h3);
+    cursor: pointer;
+    display: flex; /* For alignment of icon and text */
+    align-items: center;
+    padding: 0.6rem 0.25rem; /* Adjusted padding */
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+.interactive-toc-part-title:hover {
+    background-color: var(--interactive-toc-part-hover-bg);
+}
+.interactive-toc-part-title .expansion-indicator {
+    display: inline-block;
+    margin-right: 0.6em;
+    transition: transform 0.2s ease-in-out;
+    width: 1em; /* Ensure consistent spacing */
+    text-align: center;
+}
+.interactive-toc-part-title.expanded .expansion-indicator {
+    transform: rotate(90deg);
+}
+
+.interactive-toc-chapters-list {
+    list-style: none;
+    padding-left: 1.75rem; /* Indent chapter list further (indicator + space) */
+    margin-top: 0.25rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out;
+}
+.interactive-toc-chapters-list.expanded {
+    max-height: 1000px; /* Large enough for content */
+    margin-top: 0.5rem; /* Space when expanded */
+    margin-bottom: 0.75rem;
+}
+.interactive-toc-chapters-list li {
+    margin-bottom: 0.125rem; /* Smaller space between chapter links */
+}
+.interactive-toc-chapter-link {
+    color: var(--link-color);
+    text-decoration: none;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
+    font-weight: 400; /* Normal weight */
+    font-size: 0.95rem;
+}
+.interactive-toc-chapter-link:hover {
+    background-color: var(--interactive-toc-link-hover-bg);
+    color: var(--link-hover-color);
+}
+.interactive-toc-chapter-link.active-chapter-link {
+    font-weight: 600; /* Semibold for active */
+    color: var(--interactive-toc-active-link-color); /* Use a distinct active color */
+    background-color: var(--interactive-toc-link-hover-bg); /* Subtle background for active */
+}
+.interactive-toc-chapter-link .chapter-title-en {
+    font-size: 0.8em;
+    color: var(--text-color-main);
+    opacity: 0.7;
+    display: block; /* Ensure it's on a new line or handled by layout */
+    margin-top: 0.1rem;
+}
+.active-chapter-link .chapter-title-en {
+    opacity: 0.8;
+}
+
+
+/* Styles for hiding/showing chapter content */
+.main-chapter-content {
+    display: none; /* Hidden by default */
+    padding-top: 1.5rem; /* Add some space above the displayed chapter */
+}
+.main-chapter-content.active {
+    display: block; /* Shown when active */
+}
+
+    </style>
+</head>
+<body>
+
+    <nav id="navbar" class="shadow-md w-full">
+        <div class="container mx-auto px-4 sm:px-6 py-3 md:flex md:justify-between md:items-center">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a class="text-xl font-bold text-title hover:opacity-80 md:text-2xl" href="#home">神经症与人的成长解读</a>
+                </div>
+                <div class="flex items-center md:hidden">
+                    <div id="theme-selector-container-mobile" class="theme-selector-container mr-2">
+                        <button id="theme-toggle-button-mobile" class="theme-toggle-button">主题</button>
+                        <ul id="theme-options-mobile" class="theme-options-list">
+                            {/* Theme buttons will be populated by JS */}
+                        </ul>
+                    </div>
+                    <button type="button" id="nav-toggle" class="p-1 rounded hover:bg-opacity-10 focus:outline-none" aria-label="toggle menu">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6"><path fill-rule="evenodd" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="nav-menu" class="w-full md:flex md:items-center md:justify-end">
+                <div class="flex flex-col mt-2 md:mt-0 md:flex-row md:items-center md:mx-0 md:py-0">
+                    <div id="theme-selector-container-desktop" class="theme-selector-container hidden md:block relative mr-3">
+                         <button id="theme-toggle-button-desktop" class="theme-toggle-button">主题</button>
+                         <ul id="theme-options-desktop" class="theme-options-list">
+                            {/* Theme buttons will be populated by JS */}
+                         </ul>
+                    </div>
+                    <a href="#home" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">首页</a>
+                    <a href="#interactive-toc-section" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">章节导读</a>
+                    <a href="#intro-moral" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">导言</a>
+                    <a href="#ch1" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">1. 荣耀</a>
+                    <a href="#ch2" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">2. 主张</a>
+                    <a href="#ch3" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">3. 应该</a>
+                    <a href="#ch4" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">4. 骄傲</a>
+                    <a href="#ch5" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">5. 自我憎恨</a>
+                    <a href="#ch6" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">6. 自我疏离</a>
+                    <a href="#ch7" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">7. 缓解紧张</a>
+                    <a href="#ch8" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">8. 扩展型</a>
+                    <a href="#ch9" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">9. 谦逊型</a>
+                    <a href="#ch10" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">10. 病态依赖</a>
+                    <a href="#ch11" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">11. 辞职型</a>
+                    <a href="#ch12" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">12. 人际障碍</a>
+                    <a href="#ch13" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">13. 工作障碍</a>
+                    <a href="#ch14" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">14. 治疗之路</a>
+                    <a href="#ch15" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">15. 理论思考</a>
+                    <a href="#quiz" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">核心概念测验</a>
+                    <a href="#about" class="nav-link nav-link-color rounded md:mx-1 main-nav-item">关于本书与作者</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 sm:px-6 py-8 prose lg:prose-xl max-w-4xl">
+        <section id="home" class="content-section">
+            <header class="text-center mb-12">
+                <h1 class="text-3xl md:text-4xl font-bold text-title">神经症与人的成长解读</h1>
+                <p class="text-xl text-gray-400 mt-4">深入探索卡伦·霍妮《神经症与人的成长：自我实现的奋斗》的核心洞见</p>
+            </header>
+            <div class="content-bg p-6 md:p-8 shadow-lg">
+                <h2>引言</h2>
+                <p>欢迎来到卡伦·霍妮《神经症与人的成长》一书的中文解读网站。本书是霍妮后期思想的成熟代表作，深刻剖析了神经症的本质——即个体在不利环境下，其追求自我实现的生命能量如何转向了追求虚幻的“理想化自我”，从而引发一系列内心冲突和痛苦。</p>
+                <p>本网站将逐章梳理书中的核心概念，如“真实自我”与“理想化自我”、“追求荣耀”、“神经质的主张”、“‘应该’的暴政”、“神经质骄傲”、“自我憎恨与自我蔑视”、“自我疏离”，以及神经症的各种主要解决方案。同时，也将探讨霍妮对于精神分析治疗的看法和理论思考。愿本站能助您理解霍妮对人性的深刻洞察，并对个人成长有所启发。</p>
+                <h2>核心概念预览</h2>
+                <ul>
+                    <li><strong>真实自我 (Real Self):</strong> 个体天生的、健康的潜能和生命力的核心，是成长的深层源泉。在有利环境下，它会自发地趋向自我实现。</li>
+                    <li><strong>理想化自我 (Idealized Self):</strong> 在内心压力和不安全感下，个体为了应对现实而构建的一个完美的、虚假的自我形象。神经症患者将精力从实现真实自我转向实现这个理想化自我。</li>
+                    <li><strong>追求荣耀 (Search for Glory):</strong> 实现理想化自我的驱动力，包括对完美的追求、神经质的野心和对报复性胜利的渴求。</li>
+                    <li><strong>“应该”的暴政 (Tyranny of the Shoulds):</strong> 一系列严苛的内在指令，强迫个体必须成为其理想化自我所规定的样子，无视现实可能性和个人真实感受。</li>
+                    <li><strong>自我疏离 (Alienation from Self):</strong> 由于追求理想化自我，个体逐渐远离其真实的感受、愿望和信念，失去了作为自身生活主动决定力量的感觉。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="interactive-toc-section" class="content-section">
+            <div class="content-bg p-6 md:p-8 shadow-lg">
+                <h2 class="interactive-toc-title">书籍结构与章节导读</h2>
+                <ul class="interactive-toc-parts-list">
+                    <li>
+                        <strong class="interactive-toc-part-title"><span class="expansion-indicator">▶</span>引言：进化的道德 (Introduction: The Morality of Evolution)</strong>
+                        <ul class="interactive-toc-chapters-list">
+                            <li><a href="#intro-moral" class="interactive-toc-chapter-link" data-target="intro-moral">引言 (Introduction)<span class="chapter-title-en">Introduction</span></a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong class="interactive-toc-part-title"><span class="expansion-indicator">▶</span>第一部分：追求荣耀 (Part 1: The Search for Glory)</strong>
+                        <ul class="interactive-toc-chapters-list">
+                            <li><a href="#ch1" class="interactive-toc-chapter-link" data-target="ch1">第一章：追求荣耀<span class="chapter-title-en">The Search for Glory</span></a></li>
+                            <li><a href="#ch2" class="interactive-toc-chapter-link" data-target="ch2">第二章：神经质的主张<span class="chapter-title-en">Neurotic Claims</span></a></li>
+                            <li><a href="#ch3" class="interactive-toc-chapter-link" data-target="ch3">第三章：“应该”的暴政<span class="chapter-title-en">The Tyranny of the Shoulds</span></a></li>
+                            <li><a href="#ch4" class="interactive-toc-chapter-link" data-target="ch4">第四章：神经质的骄傲<span class="chapter-title-en">Neurotic Pride</span></a></li>
+                            <li><a href="#ch5" class="interactive-toc-chapter-link" data-target="ch5">第五章：自我憎恨和自我蔑视<span class="chapter-title-en">Self-Hate and Self-Contempt</span></a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong class="interactive-toc-part-title"><span class="expansion-indicator">▶</span>第二部分：疏离与解决方案 (Part 2: Alienation and Solutions)</strong>
+                        <ul class="interactive-toc-chapters-list">
+                            <li><a href="#ch6" class="interactive-toc-chapter-link" data-target="ch6">第六章：自我疏离<span class="chapter-title-en">Alienation from Self</span></a></li>
+                            <li><a href="#ch7" class="interactive-toc-chapter-link" data-target="ch7">第七章：缓解紧张局势的一般措施<span class="chapter-title-en">General Measures to Relieve Tension</span></a></li>
+                            <li><a href="#ch8" class="interactive-toc-chapter-link" data-target="ch8">第八章：扩张型解决方案：掌控的吸引力<span class="chapter-title-en">The Expansive Solution: The Appeal of Mastery</span></a></li>
+                            <li><a href="#ch9" class="interactive-toc-chapter-link" data-target="ch9">第九章：谦逊型解决方案：爱的吸引力<span class="chapter-title-en">The Self-Effacing Solution: The Appeal of Love</span></a></li>
+                            <li><a href="#ch10" class="interactive-toc-chapter-link" data-target="ch10">第十章：病态依赖<span class="chapter-title-en">Morbid Dependency</span></a></li>
+                            <li><a href="#ch11" class="interactive-toc-chapter-link" data-target="ch11">第十一章：辞职：自由的呼唤<span class="chapter-title-en">Resignation: The Appeal of Freedom</span></a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong class="interactive-toc-part-title"><span class="expansion-indicator">▶</span>第三部分：障碍与治疗 (Part 3: Disturbances and Therapy)</strong>
+                        <ul class="interactive-toc-chapters-list">
+                            <li><a href="#ch12" class="interactive-toc-chapter-link" data-target="ch12">第十二章：人际关系中的神经质障碍<span class="chapter-title-en">Neurotic Disturbances in Interpersonal Relations</span></a></li>
+                            <li><a href="#ch13" class="interactive-toc-chapter-link" data-target="ch13">第十三章：工作中的神经质障碍<span class="chapter-title-en">Neurotic Disturbances in Work</span></a></li>
+                            <li><a href="#ch14" class="interactive-toc-chapter-link" data-target="ch14">第十四章：精神分析治疗之路<span class="chapter-title-en">The Road of Psychoanalytic Therapy</span></a></li>
+                        </ul>
+                    </li>
+                     <li>
+                        <strong class="interactive-toc-part-title"><span class="expansion-indicator">▶</span>最终思考 (Final Thoughts)</strong>
+                        <ul class="interactive-toc-chapters-list">
+                            <li><a href="#ch15" class="interactive-toc-chapter-link" data-target="ch15">第十五章：理论思考<span class="chapter-title-en">Theoretical Considerations</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section id="intro-moral" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>导言：进化的道德 (Introduction: The Moral of Evolution)</h2>
+                <p>霍妮在导言中提出，神经症过程是人类发展的一种特殊且不幸的形式，它浪费建设性能量。健康的人类成长是实现个体与生俱来的潜能，而神经症发展则是朝向塑造一个“理想化的自我”。</p>
+                <p>她探讨了追求完美这一道德问题，并基于对人性的不同信念提出了三种道德目标概念：</p>
+                <ol>
+                    <li>若人性本恶（如弗洛伊德观点），则道德目标是驯服或克服自然状态。</li>
+                    <li>若人性兼具善恶，则目标是确保善胜过恶，常依赖超自然辅助或坚定理性/意志，暗示使用内在指令。</li>
+                    <li>若人性蕴含进化建设性力量并趋向自我实现（霍妮的信念），则道德问题不同。这种信念不预设人性本善，而是认为人会自愿追求自我实现，其价值观源于此追求。</li>
+                </ol>
+                <p>基于第三种信念，霍妮提出了一种“进化的道德”(an ethic of evolution)，其标准是：某种态度或驱动力是促进还是阻碍了“我的”成长？ 在这种道德观下，无需内心的束缚或指令来追求完美，因为它们会损害成长。更好的方式是真正超越自身的破坏性力量，途径是不断提升自我认知和理解。自我认知本身不是目的，而是释放自发成长力量的手段。因此，努力工作（在自我认知上）成为主要的道德义务和特权。</p>
+                <p>当我们摆脱神经质的自我执念，自由成长时，也能自由地去爱和关怀他人，并希望帮助他们实现自我。理想是释放和培育通往自我实现的力量。</p>
+            </div>
+        </section>
+
+        <section id="ch1" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第一章：追求荣耀 (The Search for Glory)</h2>
+                <p>本章探讨神经症发展的核心动力——追求荣耀。霍妮首先阐述了“真实自我”(real self)的概念，它是个体独有的、充满活力的核心，是自发情感、思想和意志力的源泉，趋向于自我实现。 这种成长需要有利的环境，如温暖、安全感和与他人的健康互动。</p>
+                <p>然而，不利环境（如父母自身的神经症导致无法真正爱孩子）会使孩子无法发展归属感，产生“基本焦虑”(basic anxiety)——一种在潜在敌对世界中感到孤立无援的感觉。 为应对这种焦虑，孩子会发展出特定的行为模式：亲近他人、对抗他人或疏远他人。这些模式变得极端和僵化，形成“基本冲突”(basic conflict)。</p>
+                <p>个体试图通过让某种行为模式占主导来解决这一冲突，但这导致内在力量削弱、自信缺乏、自卑感和自我疏离。 为了弥补这些缺陷，个体通过想象创造出一个“理想化的自我形象”(idealized image)，赋予自己无限力量和高尚品质。 这个形象逐渐演变成“理想化的自我”(idealized self)，个体开始放弃真实自我，转而追求这个虚假的、但能满足其迫切需求的自我。</p>
+                <p>这种向理想化自我的转变，其能量从自我实现转向了实现理想自我，霍妮称之为“追求荣耀”(the search for glory)。 它包含三个主要元素：</p>
+                <ul>
+                    <li><strong>对完美的追求 (The need for perfection):</strong> 通过一套严格的“应该”(shoulds)体系，将整个人格塑造成理想化的自我。</li>
+                    <li><strong>神经质的野心 (Neurotic ambition):</strong> 追求外在的成功和卓越，通常表现在特定时期最能带来优越感的领域，内容可能随时间改变，但核心是超越他人。</li>
+                    <li><strong>对报复性胜利的追求 (The drive toward a vindictive triumph):</strong> 其主要目的是通过自身成功羞辱或击败他人，或通过权力施加痛苦，源于对童年羞辱的复仇冲动。</li>
+                </ul>
+                <p>追求荣耀具有两个共同特征：</p>
+                <ol>
+                    <li><strong>强迫性 (Compulsiveness):</strong> 它由内在需求驱动，而非真实愿望，个体必须遵循，否则会产生焦虑。它不顾个体真实利益，具有无差别性和永不满足的特质，对挫折的反应也极其强烈。</li>
+                    <li><strong>想象力的巨大作用 (Role of imagination):</strong> 个体不仅通过想象创造理想自我，还持续用想象力扭曲现实以维持这种荣耀感，追求绝对、无限、无穷。</li>
+                </ol>
+                <p>霍妮最后区分了健康的奋斗与神经质的荣耀追求：前者源于真实自我的发展倾向，是自发的，承认局限，感受进化，关注存在和真理；后者源于实现理想自我的需要，是强迫性的，否认局限，渴望辉煌结果，关注表象和幻想。</p>
+            </div>
+        </section>
+
+        <section id="ch2" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第二章：神经质的主张 (Neurotic Claims)</h2>
+                <p>当神经症患者沉浸在追求荣耀的幻想境界时，现实会以两种方式介入：他自身的人类局限性与神一般的理想形象不符；外界也不会像对待神一样对待他。 面对这种矛盾，他不会修正幻想，而是向外界提出要求，即“神经质的主张”。他认为自己有权因其夸大的自我认知而受到特殊对待。</p>
+                <p>霍妮强调，这些主张并非简单的“夸大主张”，因为其内容有时看似合理。核心问题在于，一个可以理解的愿望或需求，转变成了一种“权利”或“资格”，一旦未能实现，就会被视为不公，并引发愤慨。 因此，她称之为“非理性或神经质的诉求”。</p>
+                <p>这些主张的内容因个体神经症结构而异，但通常涵盖所有对他重要的神经质需求都应得到满足，且其行为不应带来不良后果。 主张不仅针对人，也针对制度乃至生命本身。</p>
+                <h3>主张的特征：</h3>
+                <ul>
+                    <li><strong>不切实际 (Unrealistic):</strong> 个体设定的资格只存在于其头脑中，很少考虑实现的可能性，例如免于疾病、衰老和死亡的主张。</li>
+                    <li><strong>自我中心 (Egocentric):</strong> 患者的需求应绝对优先，难以察觉他人需求和感受。这与儿童的自我中心不同，后者源于未发展出关联感，而神经症的自我中心源于被自身内心需求驱动。</li>
+                    <li><strong>期望不劳而获 (Expectation of effortless occurrence):</strong> 认为事物应自动降临，无需努力。</li>
+                    <li><strong>潜在的报复性 (Vindictive nature):</strong> 感到委屈并坚持要求报复，这在许多主张中都可能存在。</li>
+                </ul>
+                <p>个体通常没有意识到其主张的毫无根据或不合理性，反而会构建论据使其合法化，如基于文化原因、优越感、“爱”的价值、无助和痛苦，或“正义”。 当这些主张受挫时，普遍反应是愤怒，通常是带有“义愤填膺”特征的愤怒，因为他们主观上认为自己的主张是公正的。</p>
+                <p>神经质主张的后果包括：弥漫的挫败感和不满；使生活中的困难显得更加难以承受；产生嫉妒和对他人的麻木不仁；对自身权利的不确定性；以及导致惰性，因为主张取代了积极解决问题的努力。 尽管这些主张会带来负面后果且徒劳无功，但患者仍会坚持，因为他们潜意识里相信凭借神奇的意志力可以实现，并且这些主张是他未来荣耀的保证，也是将责任推卸给外界的手段。</p>
+            </div>
+        </section>
+
+        <section id="ch3" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第三章：“应该”的暴政 (The Tyranny of the Shoulds)</h2>
+                <p>本章探讨个体如何试图通过内在指令系统，即“应该的暴政”，将自己塑造成理想化的完美形象。 这些“应该”涵盖了个体认为自己应该能做到、应该成为、应该感受到和应该知道的一切，以及相应的“不应该”的禁忌。</p>
+                <h3>“应该”的特征：</h3>
+                <ul>
+                    <li><strong>漠视可行性 (Disregard for feasibility):</strong> 许多“应该”是人类无法满足的，但个体并未意识到其异想天开，即使理性上明白，也难以改变。</li>
+                    <li><strong>无视实现条件 (Disregard for conditions of fulfillment):</strong> 例如，期望快速完成分析而忽视智力无关，或期望轻松写出论文而忽视实际工作。</li>
+                    <li><strong>无视个体当下的心理状态 (Disregard for the psychic condition of the person):</strong> 命令自己不应感到受伤或应始终富有同情心，而不顾及现有的脆弱性或情感状态。</li>
+                    <li><strong>回顾性的“应该” (Retrospective "shoulds"):</strong> 对过去提出不切实际的要求，如本应不受童年逆境影响，或本应在过去做得更好，这导致虚假的责任感和徒劳的自我批评。</li>
+                    <li><strong>对当前不足的难以忍受 (Intolerance of present shortcomings):</strong> 任何困难都必须迅速消除，通常通过幻想或意志力，但这并不能带来真正的改变，反而可能将问题转入地下。</li>
+                    <li><strong>缺乏真正理想的道德严肃性 (Lack of moral seriousness of genuine ideals):</strong> 追求的是绝对的、通常是想象中实现的完美，而非更高程度的诚实等，最多达到行为主义的完美。这与超我不同，霍妮认为“应该”是不道德的现象，因其充满傲慢并包含不诚实。</li>
+                    <li><strong>强制性 (Coerciveness):</strong> 遵守“应该”并非出于自愿，而是被迫，不遵守则会引发焦虑、绝望、自责等强烈情绪反应。</li>
+                </ul>
+                <p>个体对“应该”的暴政的态度和体验方式因其主要神经症解决方案而异：</p>
+                <ul>
+                    <li><strong>扩张型 (Expansive type):</strong> 倾向于认同“应该”，并为自己的标准感到自豪，相信自己确实达到了这些标准，常通过想象来实现。</li>
+                    <li><strong>谦逊型 (Self-effacing type):</strong> 同样认为“应该”是法则，但在试图达到时，常常感到自己可怜地失败，主要体验是自我批评和内疚。</li>
+                    <li><strong>顺从/辞职型 (Resigned type):</strong> 最倾向于反抗内心的暴政，因为对任何强制都异常敏感。可能消极反抗（变得无精打采）或积极反抗（走向另一极端）。</li>
+                </ul>
+                <p>“应该”的过程常被外化，体验为发生在自我与他人之间，如将自己的标准强加于人，或感觉他人对自己有不切实际的期望。 “应该”会导致持续的紧张感，扰乱人际关系（如对批评过度敏感），并进一步削弱感受、愿望、思想和信念的自发性，使个体相信或感受到他“应该”相信或感受到的东西，而非真实的体验。 最终，它们与自我憎恨交织在一起，构成了一个恐怖的制度。</p>
+            </div>
+        </section>
+
+        <section id="ch4" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第四章：神经质的骄傲 (Neurotic Pride)</h2>
+                <p>尽管神经症患者竭力追求完美，并相信自己已臻完美，但他仍然缺乏真正的自信和自尊。 健康的自信和自豪感基于真实的个人资产和成就，而神经质的骄傲则基于与理想化自我相关的虚幻因素，如外在的声望价值或自以为是的特质和能力。</p>
+                <p>神经质骄傲的来源：</p>
+                <ul>
+                    <li><strong>声望价值 (Prestige values):</strong> 如与特定群体、家庭、物品的联系，或受欢迎程度。过度依赖这些表明个体与自我极度疏离，自尊很大程度置于自身之外。</li>
+                    <li><strong>理想化形象赋予的属性 (Attributes ascribed in the idealized image):</strong> 患者不为真实自我或真实优势感到骄傲，而是为那些构成其理想化形象的特质感到骄傲，即使这些特质是虚构的（如想象中的圣人、大师）。 尤其常见的是对智力、理性、意志力等精神力量的骄傲。</li>
+                    <li><strong>自认为理所当然的能力和特权 (Capacities and privileges taken for granted):</strong> 如虚幻的无敌状态、好运、或成功维护自身主张的能力。</li>
+                    <li><strong>满足内心指令 (Living up to inner dictates):</strong> 对自己能符合“应该”的标准感到骄傲，即使这种符合是虚伪的或标准本身缺乏客观价值。例如，为自己独特的诚实而自豪的人，可能充满不诚实。</li>
+                    <li><strong>标准的崇高和严厉本身 (Sheer loftiness and stringency of standards):</strong> 仅仅知道“正确”的道德价值观就让他觉得自己是道德奇迹，无论实际行为如何。</li>
+                </ul>
+                <p>神经质骄傲的特点是价值观的逆转：个体将神经质需求和倾向美化为值得骄傲的资产，而压抑和鄙视那些阻碍实现理想自我的特质。 例如，矛盾变成自由，安抚变成善良，剥削变成精明。</p>
+                <p>神经质骄傲是脆弱的，极易受到来自内心和外部的伤害，典型的反应是羞耻（若自身行为违背骄傲）和屈辱（若他人行为伤害骄傲）。 这些反应的强度和性质取决于个体的神经症结构（扩张型更易感羞辱，谦逊型更易感羞耻）。 对骄傲受伤的反应还可能转化为愤怒、恐惧、焦虑或惊恐，或者被压抑导致身心症状或情感普遍消退。</p>
+                <p>为了修复和保护受损的骄傲，个体会采取多种策略（挽回面子）：</p>
+                <ul>
+                    <li><strong>报复性胜利 (Vindictive triumph):</strong> 通过反击并超越冒犯者来恢复自尊。</li>
+                    <li><strong>失去兴趣 (Losing interest):</strong> 对那些无法满足其卓越渴望的情境或人失去兴趣。</li>
+                    <li><strong>否认、歪曲、找借口 (Denial, distortion, excuses):</strong> 拒绝承担责任，将错误归咎于外部因素。</li>
+                    <li><strong>运用幽默 (Using humor):</strong> 通过自嘲来缓解难以忍受的羞耻感。</li>
+                </ul>
+                <p>个体还会构建回避系统以规避未来的伤害，如回避可能失败的严肃事业、社交或情感投入，这可能导致生活受限，甚至放弃对真实自我的兴趣。 骄傲系统（包括骄傲与自我憎恨）是追求荣耀的必然结果和巩固。</p>
+            </div>
+        </section>
+
+        <section id="ch5" class="content-section main-chapter-content">
+             <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第五章：自我憎恨和自我蔑视 (Self-Hate and Self-Contempt)</h2>
+                <p>当个体将重心转向理想化的自我时，他不仅抬高自己，也必然会从理想化自我的完美视角来看待真实的自我，从而鄙视甚至憎恨这个真实的、充满局限和缺陷的自我。真实的自我不断干扰其追求荣耀的努力，因此成为憎恨的对象。</p>
+                <p>骄傲与自我憎恨是同一过程的两个方面，霍妮称之为“骄傲系统”(pride system)。 自我憎恨不仅针对真实自我的局限，更深层次地，它针对真实自我中任何试图成长的建设性力量。这种真实自我与骄傲系统之间的冲突，霍妮称之为“核心内在冲突”(central inner conflict)。</p>
+                <p>自我憎恨的力量源于：</p>
+                <ol>
+                    <li>骄傲的自我因感到被真实的自我羞辱和阻碍而产生的愤怒。</li>
+                    <li>这种愤怒因依赖真实自我（无法彻底消灭）而产生的无能为力感，使其更加残酷。</li>
+                    <li>自我憎恨有助于维持自我美化，通过谴责不完美来确认神圣标准。</li>
+                    <li>与自我的疏离，使个体对自己缺乏同情，难以意识到自我压抑。</li>
+                </ol>
+                <p>自我憎恨本质上是无意识的过程，其影响常被外化，体验为来自外部的攻击或自身对外部世界的攻击。</p>
+                <h3>自我憎恨的主要表现形式：</h3>
+                <ul>
+                    <li><strong>无情的自我要求 (“应该”的暴政):</strong> 这些“应该”不仅由自尊心决定，也由自我憎恨决定，未能满足则会释放自我憎恨的狂怒。它们旨在消灭个性，甚至内容本身就具有自我毁灭性。</li>
+                    <li><strong>无情的自我谴责:</strong> 对自身存在的困境、动机或无法控制的逆境施加道德谴责，将问题视为不可救药的污点，而非可解决的神经症问题。这阻碍了建设性的自我批评和从错误中学习。</li>
+                    <li><strong>自我蔑视:</strong> 各种削弱自信的方式，如自我贬低、自我怀疑、自我嘲讽。它针对任何进步或成就的努力，使个体将自己与他人比较并处于劣势，对批评和拒绝极度敏感，甚至遭受他人过多的谩骂。</li>
+                    <li><strong>自我挫败:</strong> 通过内在禁忌阻止自己享受生活、追求希望或实现抱负。例如，对享乐的禁忌，对希望和抱负的粉碎。</li>
+                    <li><strong>自我折磨:</strong> 除了上述形式带来的痛苦外，还可能存在主动的自我折磨驱动力，如通过疑病症吓唬自己，或在施虐幻想中将针对自身的虐待冲动外化。</li>
+                    <li><strong>自我毁灭的冲动和行为:</strong> 从轻微的“坏习惯”到想象中的暴力冲动，再到实际的鲁莽行为、酗酒吸毒，甚至对器质性疾病的潜在影响。这代表了对身体、心理和精神的最终摧毁。</li>
+                </ul>
+                <p>自我憎恨是追求无限荣耀的必然代价，如同魔鬼契约中出卖灵魂换取力量，最终却坠入内心地狱。</p>
+            </div>
+        </section>
+        
+        <section id="ch6" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第六章：自我疏离 (Alienation from Self)</h2>
+                <p>本章聚焦于神经症的核心问题——自我疏离。霍妮强调“真实自我”是我们自身鲜活、独特、个人的中心，是唯一能够也渴望成长的部分。 神经症的发展过程，特别是骄傲系统的形成，使得个体逐渐远离这个真实自我。</p>
+                <p>自我疏离的表现形式多样：</p>
+                <ul>
+                    <li><strong>极端形式：</strong> 如失忆症、人格解体，个体失去身份认同感。</li>
+                    <li><strong>普遍形式：</strong> 生活如在迷雾中，对自身思想情感、他人及情境都感觉模糊不清；或内心体验无法进入意识。</li>
+                    <li><strong>与“物质自我”疏离：</strong> 对自己身体几乎没有感觉，或感觉不到家是自己的，钱是自己的。</li>
+                </ul>
+                <p>核心的自我疏离是指个体远离自身的感受、愿望、信念和能量，失去作为自身生活中积极决定力量的感觉和有机整体感。真实自我孕育自发情感、兴趣、能量、意志力和决策能力，带来真正的整合与统一感。</p>
+                <p>霍妮区分了“实际自我”（个体在特定时刻的一切）、“理想化自我”（想象中应成为的样子）和“真实自我”（个人成长和成就的原始力量，是“可能的自我”）。</p>
+                <h3>导致自我疏离的力量：</h3>
+                <ol>
+                    <li><strong>神经症的强迫性因素：</strong> 任何强迫性驱动（与人相关或与自我理想化相关）都剥夺了自主性和自发性。</li>
+                    <li><strong>主动远离真实自我的过程：</strong>
+                        <ul>
+                            <li><strong>追求荣耀：</strong> 决心将自己塑造成并非所是的样子，“应该”的暴政迫使其感受“应该”感受的。</li>
+                            <li><strong>神经质主张：</strong> 放弃自身努力，坚持要求他人满足自己。</li>
+                            <li><strong>神经质骄傲：</strong> 对真实自我感到羞耻，主动撤回对自身的兴趣。</li>
+                            <li><strong>外化过程：</strong> 将内在体验投射到外部。</li>
+                        </ul>
+                        
+                    </li>
+                    <li><strong>主动违背真实自我的举动（自我憎恨）：</strong> 真实的自我被视为敌人，被鄙视和威胁，导致个体潜意识里渴望对自己没有清晰认知，变得“又聋又哑又瞎”。</li>
+                </ol>
+                <p>自我疏离的后果是对自身和整个人生的关系变得非人格化和失去活力。 它影响情感生活（贫乏、缺乏真诚性、自发性和深度），削弱能量的可控性，导致人生方向感的缺乏，损害承担真正责任的能力，并最终破坏个体的整合能力。 这种疏离形成恶性循环：疏离越深，个体越无力抵抗骄傲系统的侵蚀，从而进一步疏离。</p>
+            </div>
+        </section>
+
+        <section id="ch7" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第七章：缓解紧张局势的一般措施 (General Measures to Relieve Tension)</h2>
+                <p>本章概述了神经症患者为应对骄傲系统带来的破坏性冲突、难以忍受的紧张和潜在恐怖而采取的无意识措施。这些措施旨在消除冲突、缓和紧张、防止恐惧，并维持一种人为的平衡。它们是内在整合力量的体现，但与自我理想化这一更“创造性”的解决方案相比，它们更多源于内在状态受损后的权宜之计。</p>
+                <h3>主要措施：</h3>
+                <ol>
+                    <li><strong>自我疏离 (Alienation from Self):</strong> 这是最重要的措施之一。通过否认或压制真实自我及其感受、愿望，个体可以减少内在冲突的体验。如果真实自我被“放逐”，它与骄傲系统之间的冲突自然减弱。 这种疏离表现为对自身问题的混淆和对内在真假的敏感度降低。</li>
+                    <li><strong>外化 (Externalization):</strong> 将内心过程感知或感觉为发生在自我与外部世界之间。这包括将自己的缺点归咎于他人，或将自己的攻击性/受虐感投射到他人身上。这能缓解内在紧张，但代价是内在贫乏和人际关系恶化。 几乎所有内心过程（如同情、对内在指令的反抗、傲慢等）都可能被外化。</li>
+                    <li><strong>精神碎裂/区域化 (Compartmentalization / Fragmentation):</strong> 以零碎的方式体验自我，仿佛由互不相通的部分组成。个体拒绝看到自身共存的矛盾价值观或心理因素之间的因果联系，从而回避潜在冲突，维持虚假的统一感。 例如，不认为自己的不满与自己的要求有关。</li>
+                    <li><strong>自动控制 (Automatic Control):</strong> 一种内在的“警报系统”，当不想要的情感（如恐惧、愤怒、喜爱）出现时，会自动发出警报并加以抑制。这表现为肌肉紧张、面部僵硬等。它旨在维持人格各部分的整合，但也进一步压抑了自发性。 有些人会为这种控制感到自豪（尊严、沉着），有些人则为此苦恼。</li>
+                    <li><strong>对精神至上的信仰 (Supremacy of the Mind):</strong> 当情感因难以驾驭而被怀疑和控制时，精神（想象力和理性）被赋予至高无上的地位。心灵可以成为自我的旁观者（超然观察，不带情感参与），可以充当协调者（通过合理化、辩护来维持虚构世界），也可以如同上帝般成为神奇的统治者（认为认知本身就是改变）。</li>
+                </ol>
+                <p>这些措施都是部分解决方案，旨在维持现状，但它们也阻碍了真正的成长和对核心问题的面对。它们是神经症患者在不放弃其基本神经症结构的前提下，试图保持内心平静的权宜之计。</p>
+            </div>
+        </section>
+
+        <section id="ch8" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第八章：扩展解决方案：诉诸精通 (The Expansive Solution: The Appeal to Mastery)</h2>
+                <p>本章开始探讨个体为解决由骄傲系统引发的内在冲突（主要是被高举的骄傲自我与被鄙视的自我之间的冲突，以及这两者与真实自我的冲突）而采取的三种主要神经症解决方案。这些解决方案决定了个体的生活方式、价值观和人际关系模式。第一种是扩展型解决方案，其核心是认同理想化的、被高举的自我，并追求对生活的“精通”。</p>
+                <p>扩展型个体的主要特征是渴望克服一切障碍，坚信自己应该能够并且确实能够掌控一切——包括命运、困境、他人以及自身的内心冲突。他们对任何暗示无助的事物都感到恐惧。 他们会压抑自我贬低的倾向（如内疚、怀疑、蔑视），因为这些会威胁其优越感和掌控感。他们必须通过想象、强调优点、贬低他人、追求行为完美和外化来维持一个值得骄傲的自我形象。</p>
+                <h3>扩展型解决方案的三个主要亚型：</h3>
+                <ol>
+                    <li><strong>自恋型 (The Narcissistic Type):</strong> 个体认同并崇拜其理想化的自我形象。他们相信自己的伟大和独特性，并期望他人以钦佩和忠诚来不断确认这一点。他们常有魅力，试图给所有人留下深刻印象，并可能表现出慷慨和深情以换取崇拜。他们倾向于高估自己的能力和计划，不考虑局限性，可能因兴趣分散或厌恶细节和持续努力而导致工作效率低下或项目半途而废。他们对批评极其敏感，并可能因人际关系中的“不完美”对待而感到怨恨和孤独。</li>
+                    <li><strong>完美主义型 (The Perfectionistic Type):</strong> 个体通过认同自己高标准的道德和智力来获得优越感，并因此看不起他人。他们会努力通过实际行为（尽职尽责、行为得体）来达到“应该”的标准，并在头脑中将“了解”道德等同于“是”道德的。他们需要他人的尊重而非溢美之词，并相信自己与生活达成了“交易”：因为自己的完美，理应受到公平对待。任何不幸都可能动摇其精神根基，并引发自我憎恨的爆发。</li>
+                    <li><strong>傲慢-报复型 (The Arrogant-Vindictive Type):</strong> 其主要动力是对报复性胜利的渴求，这成为一种生活方式。他们极具竞争意识，无法容忍他人优于自己，并会不择手段地击败对手。他们坚信他人充满恶意，因此自身行为（如傲慢、利用、羞辱他人）是正当的。他们对他人的要求苛刻，对挫折的反应是暴怒。他们通过压抑自身更脆弱的情感（如同情、爱）来维持强硬姿态，并对自己的智力、远见和自给自足感到骄傲。他们害怕任何形式的无助和依赖，并需要通过他人的屈服来确认自己的力量。其自我憎恨尤其强烈，并通过主动外化（指责和惩罚他人）和严格的自我控制来防御。</li>
+                </ol>
+                <p>所有扩展型解决方案都致力于通过不同的方式掌控生活，这赋予了他们生活的意义和一定的热情。但这些解决方案都建立在压抑和否认个体另一部分的基础上，因此是脆弱和不稳定的。</p>
+            </div>
+        </section>
+
+        <section id="ch9" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第九章：谦逊解决方案：诉诸爱 (The Self-Effacing Solution: The Appeal to Love)</h2>
+                <p>本章探讨第二种主要的神经症解决方案——谦逊型解决方案，它与扩展型解决方案在方向上截然相反。谦逊型个体压抑所有膨胀的态度和驱动力（如骄傲、野心、报复心、为自身利益而战），而使自我克制的趋势占主导地位。 他们将自己体验为被压抑的、渺小的自我，容易感到内疚、自卑或卑微。</p>
+                <h3>谦逊型解决方案的主要特征：</h3>
+                <ul>
+                    <li><strong>回避骄傲、胜利或优越感：</strong> 他们害怕在竞争中获胜，害怕成功和赞誉，因为这会让他们处于优越地位，从而感到不安。他们倾向于否认或轻描淡写自己的优势和成就。</li>
+                    <li><strong>自我最小化和禁忌：</strong> 他们系统性地避免任何被认为是“冒昧”或“自私”的想法、感受或举动。为自己做事（如改善外貌、花钱、自我分析）会引发内疚或被视为“放肆”。</li>
+                    <li><strong>强调无助和痛苦：</strong> 与扩张型相反，他们不憎恶无助和痛苦，反而会培养并无意识地夸大它们。</li>
+                    <li><strong>对“爱”的极端需求：</strong> “爱”（广义上包括被接纳、认可、需要、渴望、喜欢、欣赏、同情）成为他们生活的核心，是获得价值感、安全感和意义的唯一途径。他们期望他人提供帮助、保护和无条件的爱。</li>
+                    <li><strong>压抑攻击性和扩张性：</strong> 他们害怕争斗和摩擦，难以表达厌恶或持续的敌意。报复性冲动被压抑，只能间接表达。批评、责备或指责他人对他们来说极为困难。</li>
+                    <li><strong>理想化自我形象：</strong> 主要由“可爱”品质构成，如无私、善良、慷慨、谦逊、圣洁、同情心。拥有深厚的情感也是其形象的一部分。</li>
+                    <li><strong>对骄傲的矛盾态度：</strong> 他们为自己神圣可爱的品质感到隐秘的骄傲，但又必须消除任何有意识的骄傲感，这导致了自我萎缩的过程。</li>
+                    <li><strong>在自我憎恨面前的无助：</strong> 由于禁忌攻击性和扩张性，他们无法有效抵御自身的自我谴责、自我蔑视和自我折磨，只能默默承受，并通过强调自己的痛苦来安抚自我憎恨。</li>
+                    <li><strong>对他人的盲目乐观和理想化：</strong> 尽管经常受虐，他们仍强迫性地期待他人的善意，难以辨别真伪，因为他们需要他人的爱和支持来巩固内心地位。</li>
+                    <li><strong>神经质主张的基础：</strong> 基于自身的“可爱”品质、无助和痛苦，以及受虐感，认为自己有权获得他人的爱、帮助和弥补。</li>
+                    <li><strong>通过痛苦表达报复：</strong> 当怨恨积累时，主要通过加剧自身痛苦来让对方感到内疚，以此作为报复的手段。</li>
+                    <li><strong>神经质痛苦的功能：</strong> 痛苦不仅是真实的，还具有功能性：成为主张的基础，维持解决方案，表达报复，为未能享受生活或实现目标提供借口，甚至在某种程度上被视为高尚的证明或通向胜利的途径。</li>
+                </ul>
+                <p>谦逊型解决方案的核心在于通过压抑扩张性自我，强调自我牺牲和依赖，并诉诸“爱”来寻求安全和整合。然而，这种解决方案充满了内在矛盾，极易受到人际关系中挫折的影响，并常常导致更深的痛苦和自我毁灭的倾向。</p>
+            </div>
+        </section>
+
+        <section id="ch10" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第十章：病态依赖 (Morbid Dependency)</h2>
+                <p>本章深入探讨谦逊型解决方案中一个特别重要且具破坏性的方面——病态依赖，尤其是在情爱关系中的表现。霍妮指出，对于谦逊型个体，爱情（广义上指各种积极情感的接纳）是赋予生命积极内容的唯一源泉，其重要性无与伦比。 爱情似乎承诺终结一切苦难，提供保护、支持、关爱，并最终实现理想自我中的“可爱”特质，获得价值确认。</p>
+                <p>依赖型个体不仅渴望被爱，也强烈渴望去爱——这源于其对臣服和与他人融合以寻求统一性的深刻需求。 这种对“可爱”的执着，使得任何被拒绝的体验都极为痛苦，不仅意味着失去希望，也意味着感到自身毫无价值。</p>
+                <h3>病态依赖的动态：</h3>
+                <ul>
+                    <li><strong>伴侣选择：</strong> 依赖型个体常被那些展现出他们自身所压抑的扩张性特质（如强大、优越、独立、傲慢、攻击性）的人所吸引。他们将自己的扩张驱动力外化并钦佩于伴侣身上，试图通过爱一个“骄傲”的人并与之融合来间接体验掌控感。 特别是傲慢-报复型伴侣，其侮辱性行为可能成为依赖关系开始的催化剂，因为它能击垮依赖者的骄傲，开启自我臣服的可能性。</li>
+                    <li><strong>关系的投入：</strong> 依赖者会将伴侣置于生活的绝对中心，其他兴趣、关系（包括与子女、朋友的关系）和自我利益都为之牺牲。她会努力满足伴侣的一切期望，害怕得罪或失去对方。</li>
+                    <li><strong>内在冲突的激化：</strong> 尽管初期可能看似和谐（一方需要掌控，一方需要臣服），但双方神经症结构本质上的对立迟早会引发冲突。依赖者对爱、关怀和亲密的坚持，与扩张型伴侣（尤其傲慢-报复型）对积极情感的恐惧和蔑视相冲突。伴侣的攻击和贬低会引发依赖者的焦虑和更强的依附，而依赖者的依附又会使伴侣感到恐惧和排斥，并将其视为胁迫而反击。</li>
+                    <li><strong>依赖者的矛盾态度：</strong> 面对虐待，依赖者一方面因其固有的谦逊模式而倾向于顺从、自责和理想化伴侣；另一方面，其自我贬低的驱动力（渴望通过屈辱来实现彻底臣服）也使其暗中欢迎并配合伴侣的贬低行为。这在性行为中可能表现为受虐倾向。</li>
+                    <li><strong>怨恨的滋生与冲突的升级：</strong> 随着被拒和受挫感的积累，依赖者会产生怨恨，但又因害怕失去关系和触犯自身“应该”（如应理解、宽容）而压抑。怨恨的积压与对实现“幸福结局”的执着（常带有报复性胜利的色彩）交织，使关系更加紧张。同时，自我憎恨也会加剧，因为她既憎恨自己未能赢得爱，也憎恨自己的依赖和报复倾向。</li>
+                    <li><strong>最终的危机：</strong> 内在混乱达到顶点，依赖者面临崩溃。她可能考虑或尝试自杀，生病，道德败坏，或彻底失去生活热情。但也可能产生健康的挣扎，试图摆脱依赖。这一过程极为痛苦，因为她不仅要面对失去关系的恐惧，还要面对自身被压抑的骄傲和憎恨。</li>
+                </ul>
+                <p>霍妮强调，病态依赖是一个复杂的过程，而非静态，不能简单归因于性受虐狂、逆向施虐或单纯的自我毁灭。它是多种神经质需求、冲突、解决方案和防御机制相互作用的结果，其核心是对通过与“强大”伴侣融合来实现内心统一和价值的虚幻期望。</p>
+            </div>
+        </section>
+
+        <section id="ch11" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第十一章：辞职：自由的呼唤 (Resignation: The Appeal to Freedom)</h2>
+                <p>本章介绍第三种主要的神经症解决方案——“辞职”或顺从型。其核心在于个体从内心的战场中退出，宣称对冲突漠不关心，以期获得某种程度的内心平静。这种解决方案通常意味着放弃积极的生活和成长，因此带有一定的限制和静态特征。</p>
+                <h3>顺从型/辞职型的主要特征：</h3>
+                <ul>
+                    <li><strong>作为生活的旁观者：</strong> 对自己和生活保持一种超然的观察态度，不积极参与。即使在分析中，也可能表现出理智上的兴趣，但缺乏情感体验和改变的动力。</li>
+                    <li><strong>缺乏认真追求和厌恶努力：</strong> 无意识地拒绝成就和努力，可能贬低自身优势，满足于现状。对“应该”费力完成的事情（如写作、规划）表现出惰性，倾向于等待灵感或幻想。</li>
+                    <li><strong>愿望的限制：</strong> 认为最好不要奢望或期待任何事物，可能伴随悲观的人生观。即使有吸引事物，也难以激起具体鲜活的愿望，因为强烈的愿望会带来被打扰和依赖的风险。 其主张是生活应轻松无痛，自己不应被打扰。</li>
+                    <li><strong>人际关系的疏离：</strong> 与他人保持情感距离，避免深层情感投入，因为任何强烈的依恋都会限制其“自由”，并可能导致依赖。性关系可能是短暂的、好奇驱动的，或完全排除在外。</li>
+                    <li><strong>对影响、压力、胁迫的极端敏感：</strong> 对任何形式的束缚（合同、约定、规则、他人期望）都感到憎恨，并可能以消极方式（不回应、遗忘）来反抗。这种敏感性源于其惰性、愿望的收回以及害怕被他人更强的意志所控制。</li>
+                    <li><strong>厌恶改变和新事物：</strong> 倾向于维持现状，害怕改变带来的风险和努力。认为事情是不可改变的，对内在的成长和进化过程也缺乏真正的兴趣。</li>
+                    <li><strong>扩张与谦逊倾向并存（但被“冻结”）：</strong> 与其他两种主要解决方案不同，辞职型似乎并未完全压抑扩张或谦逊的某一方，而是试图将两者都固定下来，通过放弃对荣耀的积极追求来实现。他可能仍有宏大幻想（扩张性），也可能低估自己（谦逊性），但这些都不再是积极的驱动力。</li>
+                    <li><strong>对“自由”和“独立”的执着：</strong> 这是辞职型解决方案中核心的积极诉求。他们渴望不受干涉，随心所欲。这种对自由的渴望源于早期经历中感到被束缚或吞噬的体验，疏离成为保持内心生活完整性的手段。</li>
+                    <li><strong>内在指令的外化与消极抵抗：</strong> 将“应该”外化为他人的期望，并对这些期望以及自身未外化的“应该”进行消极抵抗（如拖延、无精打采），导致普遍的惰性。</li>
+                </ul>
+                <h3>辞职型解决方案的后续发展可能：</h3>
+                <ol>
+                    <li><strong>持续顺从：</strong> 生活受限，但可能在帮助他人中找到些许满足，或完全陷入惰性（如冈察洛夫笔下的奥勃洛莫夫），甚至导致情感麻木。</li>
+                    <li><strong>积极反抗：</strong> 被压抑的对自由的渴望爆发，可能表现为对外部环境（家庭、工作、习俗）的公开反抗，或更内在的、针对内心暴政的反抗，可能释放创造力（如毛姆笔下的斯特里克兰德）。</li>
+                    <li><strong>生活肤浅化：</strong> 当放弃的负面属性持续，而积极价值（如维护内在完整性）消退时，个体可能走向生活的边缘。表现为：
+                        <ul>
+                            <li><strong>注重享乐：</strong> 通过不断消遣来压制徒劳感。</li>
+                            <li><strong>机会主义式成功：</strong> 为金钱或声望而行动，缺乏内在动力和道德约束（如乔治·艾略特笔下的提托）。</li>
+                            <li><strong>“适应良好”的机器人：</strong> 缺乏真实思考和情感，融入环境，遵循他人准则（如弗洛姆描述的“市场导向”）。</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p>霍妮认为，即使是“肤浅生活”也并非天生缺陷，而是神经症过程的结果，其下隐藏着被压抑的冲突和情感深度。治疗的关键在于认识到“辞职”是一种神经症障碍，并帮助个体重新连接其真实自我和生命活力。</p>
+            </div>
+        </section>
+
+        <section id="ch12" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第十二章：人际关系中的神经质障碍 (Neurotic Disturbances in Human Relationships)</h2>
+                <p>本章系统概述了骄傲系统如何从原则上影响个体与他人的关系。霍妮强调，内在过程与人际过程持续相互作用。</p>
+                <h3>骄傲系统对人际关系的影响：</h3>
+                <ol>
+                    <li><strong>自我中心主义导致隔离：</strong> 神经症患者生活在自己的私人世界中，遵守自己的法则（“应该”），被自尊心的铁丝网包围。这使他们难以将他人视为独立的个体，而更多是将他人视为满足自身需求（如确认其理想化形象、提供自恋供给）的工具或障碍。</li>
+                    <li><strong>对他人的认知扭曲：</strong>
+                        <ul>
+                            <li><strong>基于自身需求：</strong> 对他人的看法被自身需求所塑造。例如，对钦佩的渴望使他人成为崇拜的听众；对胜利的渴望使他人分裂为追随者和对手。</li>
+                            <li><strong>外化作用：</strong> 这是影响最大的扭曲因素。个体将自身的内在过程（如自我理想化、内在暴政、自我憎恨）投射到他人身上。他人被视为完美的、卑鄙的、暴君或审判者。这种外化使个体难以识别他人的真实面貌，并对自身反应的来源产生混淆。</li>
+                        </ul>
+                    </li>
+                    <li><strong>对他人根本性的不确定感：</strong> 由于认知扭曲和自我疏离，神经症患者对他人的看法缺乏持久力，容易从尊重转向敌意或失去兴趣。他们不知道自己与他人的关系如何，以及他人与自己的关系如何；也无法确定在何种程度上可以信任他人。</li>
+                    <li><strong>强化基本焦虑：</strong> 骄傲系统使个体感到更孤立、更无助，并对他人充满恐惧和敌意，同时又以至关重要的方式需要他们。这种不协调进一步强化了基本焦虑。</li>
+                    <li><strong>对他人需求的强迫性：</strong> 个体需要他人来直接印证其虚假的价值观（通过钦佩、认可、爱等）；需要他人来为自己的行为辩护，以抵御自我憎恨；需要他人作为外化自我憎恨的对象；并常常从他人那里获得行动的动力。</li>
+                </ol>
+                <h3>爱与性在神经症关系中的作用：</h3>
+                <p>神经症患者对爱与性的态度和功能也深受其内在过程的影响。</p>
+                <ul>
+                    <li><strong>不被爱的感觉：</strong> 普遍存在，源于：1) 自身爱的能力受损（因自我陶醉、脆弱、恐惧等）；2) 自我憎恨及其外化（不相信在自身不可接受的情况下会被爱）；3) 对爱的期望超过其所能给予的（如期望爱能减轻自我憎恨）。</li>
+                    <li><strong>性的功能被放大和扭曲：</strong>
+                        <ul>
+                            <li><strong>非性心理紧张的释放：</strong> 性活动成为宣泄自卑感、自我折磨、焦虑的工具。</li>
+                            <li><strong>亲密关系的替代品或催化剂：</strong> 对于疏离者，性可能是唯一联系；或匆忙进入性关系以避免真正的情感了解。</li>
+                            <li><strong>与自尊而非愿望挂钩：</strong> 性功能、吸引力、经验更多服务于自尊而非真实享受。</li>
+                            <li><strong>强迫性：</strong> 由于服务于神经症需求，性活动常带有强迫性，并易受干扰（恐惧、压抑、同性恋问题等）。</li>
+                        </ul>
+                    </li>
+                    <li><strong>伴侣“选择”的局限性：</strong> 真正的选择能力受限。吸引力常基于对方能否满足其突出的神经症需求（如支配、臣服、提供自恋供给）。许多情况下，婚姻或关系的建立更多是偶然或他人意愿的结果，而非深思熟虑的选择。</li>
+                    <li><strong>对待爱与性的普遍倾向：</strong> 可能将爱排除在生活之外（如顺从型和傲慢-报复型）；或在想象中赋予爱崇高地位而在现实中无法实现；或在现实中过分强调爱与性（如谦逊型的臣服之爱，或自恋型的征服之爱）。</li>
+                </ul>
+                <p>霍妮总结，尽管良好的人际关系对儿童和某些情况下的成年人有益，但对于那些骄傲系统根深蒂固的神经症患者，单纯改善外部关系（包括分析关系本身）难以根除其内在的神经症结构。真正的成长需要个体面对并改变其内在的骄傲体系，发展与真实自我的连接，从而实现更健康的人际交往能力。</p>
+            </div>
+        </section>
+
+        <section id="ch13" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第十三章：工作中的神经质障碍 (Neurotic Disturbances in Work)</h2>
+                <p>本章探讨内在心理因素（骄傲系统）如何影响个体在创造性工作（需要个人主动性、远见、责任感等的工作）中的过程及其态度。所有神经症患者在工作中都存在一些普遍的共同困难：</p>
+                <ul>
+                    <li><strong>自信心不稳：</strong> 无论表面看起来如何，其自信根基都不稳固。</li>
+                    <li><strong>对工作内容和难度的评估不当：</strong> 倾向于低估或高估其难度和价值。</li>
+                    <li><strong>工作条件要求苛刻：</strong> 内在标准往往比外部要求更严格。</li>
+                    <li><strong>与工作本身的内在关联脆弱：</strong> 更关心自身表现而非工作本身。</li>
+                    <li><strong>工作中的快乐或满足感受损：</strong> 因强迫性、冲突、恐惧或主观贬低而减弱。</li>
+                </ul>
+                <p>具体的障碍表现因个体的主要神经症解决方案而异：</p>
+                <h3>扩展型的工作障碍：</h3>
+                <ul>
+                    <li><strong>共同特征：</strong> 倾向于高估自身能力和工作质量，低估他人和困难。对批评极其敏感，视为敌意攻击。渴望无止境的认可，并认为自己有权获得。难以赞扬他人。对精通的追求可能导致低估困难，承担过多。对批评的反应是回避而非审视。</li>
+                    <li><strong>自恋型：</strong> 可能因兴趣和精力分散（试图在所有领域都完美）而效率低下，或因厌恶细节和持续努力而频繁开始和放弃追求。其骄傲在于“毫不费力的优越感”，而非辛勤工作。高估自身想法，可能草率完成工作或依赖他人完成细节。</li>
+                    <li><strong>完美主义型：</strong> 工作有条不紊，但对细节过于一丝不苟，缺乏创意和自发性。因对自己要求极高而容易劳累过度。对他人也要求严格，可能影响团队合作。</li>
+                    <li><strong>傲慢-报复型：</strong> 通常是出色的工作者，不知疲倦。擅长周密规划和组织。但工作可能缺乏成果，因为更关心掌握主题而非丰富它，容易盗用他人想法并使其机械化。不擅长授权，倾向于独裁手段。在严峻考验下可能惊慌失措，因其只以胜利或失败来思考。</li>
+                </ul>
+                <h3>谦逊型的工作障碍：</h3>
+                <ul>
+                    <li><strong>普遍特征：</strong> 倾向于将目标定得太低，低估自身天赋和工作价值。饱受怀疑和自我批评困扰，容易感到“我做不到”。</li>
+                    <li><strong>依赖他人或为他人工作时表现更佳：</strong> 在为他人（如受尊敬的老师、需要帮助的客户）或在明确指导下工作时可能表现良好。但独立工作时（如整理研究结果、撰写报告）会遇到困难。可能停留在低于自身能力的水平，未意识到自身天赋。</li>
+                    <li><strong>独立工作时的困境：</strong> 当试图超越自身“萎缩过程”设定的界限时，会面临巨大困难。一方面追求完美，一方面又因对骄傲和优势的禁忌而不断自我贬低，害怕胜利。这导致在工作中反复出现创造性冲动后紧随自我毁灭性行为的循环（如画家毁掉有潜力的画作，作家撕掉手稿）。</li>
+                    <li><strong>慢性障碍：</strong> 即使冲突不那么戏剧化，也存在持续的自我贬低（如忘记自己已有的知识和想法）和处理主题的低效（因对主张、攻击性和掌控力的禁忌而难以抓住、处理和组织想法）。工作时常感到被强迫，缺乏专注力，容易分心和疲劳。</li>
+                </ul>
+                <h3>顺从/辞职型的工作障碍：</h3>
+                <ul>
+                    <li><strong>普遍特征：</strong> 与谦逊型一样可能满足于低水平工作，但原因是放弃积极生活的一部分。独处工作时效率更高，难以在有老板或严格规章的组织中工作。对压力的敏感性使最后期限等成为强制性约束，引发潜意识反抗和惰性。</li>
+                    <li><strong>惰性的影响：</strong> 普遍的惰性使其倾向于空想而非行动。工作效率低下，可能拖延或依赖笔记。与谦逊型不同，一旦开始做自己真正感兴趣的事情，惰性可能逆转（如医生在医院工作依赖笔记，但在业余时间能热情投入哲学写作和弹钢琴）。</li>
+                    <li><strong>反抗的影响：</strong> 若对顺从的反抗占据主导，可能减少为他人或有规律的工作，宁愿降低生活水平以追求“随心所欲”。这可能释放创造力，但也可能仅导致成为顽固的个人主义者。</li>
+                    <li><strong>肤浅生活的影响：</strong> 工作失去意义，成为必要之恶或获取金钱声望的手段，缺乏真正的投入和成长动力。</li>
+                </ul>
+                <p>霍妮最后讨论了艺术创造力与神经症的关系，认为天赋本身与神经症无关，但神经症因素（尤其是骄傲系统及其引发的冲突和焦虑）会阻碍天赋的发挥。虽然神经症冲突有时可能成为创作的主题或暂时激发创作冲动，但真正的创造力源于真实自我的活跃程度及其对自我实现的渴望。当这些能量被转移到证明虚假的理想自我时，创造力必然受损。</p>
+            </div>
+        </section>
+
+        <section id="ch14" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第十四章：精神分析治疗之路 (The Road of Psychoanalytic Therapy)</h2>
+                <p>本章阐述了霍妮关于神经症治疗的观点和方法。她认为神经症是一个凭借自身动力不断增长的过程，使个体越来越远离真实自我，危及其个人成长。治疗的目标是帮助患者找到自我，并由此开启自我实现的可能性，这包括建立良好人际关系、进行创造性工作和承担自身责任的能力。</p>
+                <h3>治疗的挑战：</h3>
+                <p>患者必须克服所有阻碍其成长的神经质需求、驱动力和态度，放弃对理想化自我的幻想和虚假目标，摆脱神经质骄傲和“应该”的强制力，并直面现有冲突。然而，患者的主观价值观（如其神经症解决方案——掌控、爱或自由；其自尊心；其“应该”）对他而言是唯一安全的、赋予其统一感和价值感的方式，因此他会坚守这些，并对任何试图改变的努力产生防御。</p>
+                <p>患者寻求分析的动机本身也可能与其神经症结构相关（如因自尊心受损而难以忍受某些症状，或期望分析能助其实现理想化自我的无限力量）。他们对分析工作的方式也常有不切实际的期望（如期望分析师施展魔力，或凭借自身意志力迅速解决问题）。</p>
+                <h3>治疗过程的核心：</h3>
+                <ol>
+                    <li><strong>认识骄傲系统及其后果（幻灭过程）：</strong> 患者必须逐渐意识到其追求荣耀的本质、神经质主张的不合理性、“应该”的暴政、神经质骄傲的虚幻性、自我憎恨的破坏性、自我疏离的程度、内在冲突的性质以及其特定解决方案的代价。这种认识不仅是理智上的，更重要的是情感上的体验——充分感受这些因素的强度、强制性和非理性。通过这种现实检验和价值检验，骄傲系统逐渐受到削弱。</li>
+                    <li><strong>重新连接并发展真实自我：</strong> 治疗的根本力量在于患者自身以及所有生物固有的建设性成长力量（真实自我）。分析师的任务是帮助患者对抗阻碍性力量，并调动这些建设性力量。
+                        <ul>
+                            <li><strong>利用现有动机：</strong> 即使是神经质的动机（如渴望摆脱症状、取悦分析师、对分析好奇）也可以在初期作为合作的起点。</li>
+                            <li><strong>通过梦境工作：</strong> 梦境常能揭示真实自我的感受、渴望和建设性力量，分析师帮助患者理解并连接这些。</li>
+                            <li><strong>鼓励对真实自我的兴趣：</strong> 当患者对“我是谁？”产生兴趣时，分析师会引导其关注自身真实的感受、愿望和信念，鼓励其独立思考和承担责任。</li>
+                            <li><strong>支持健康的自发行为：</strong> 鼓励和强调患者在分析内外表现出的任何更独立、更真诚、更负责任的迹象，并帮助其理解这些积极变化的影响。</li>
+                        </ul>
+                        
+                    </li>
+                    <li><strong>面对和解决核心内在冲突：</strong> 随着骄傲系统的削弱和真实自我的增强，患者能够更直接地体验和应对核心内在冲突——即骄傲系统与真实自我、追求理想化自我与发展自身潜能之间的斗争。这一时期可能充满动荡，因为患者面临着放弃虚幻荣耀、接受作为普通人的局限与可能性的根本抉择。</li>
+                    <li><strong>处理“成长的烦恼”：</strong> 在向真实自我迈进的过程中，患者可能会经历“反响”——即在取得进步后，由于旧有神经症模式的反扑（如自我憎恨、恐惧失去神经质支撑）而出现暂时的状态恶化或焦虑。分析师需要帮助患者理解这些是成长的正常部分，是与旧有模式的最后战斗。</li>
+                </ol>
+                <p>当患者能够持续地从真实自我的立场出发，其价值观、方向和目标会发生初步转变。他不再那么执着于虚假的骄傲和解决方案，而更渴望实现自身潜能。他开始接受真实的自己和困境，并将自我改造视为生活的一部分。他会努力更清晰地体验自身，发展能力，以真挚的情感与人交往，并从工作中寻求内在价值。最终，摆脱神经质的自我中心主义，他会更关注更广泛的议题，体验到作为更大整体一部分的归属感和确定性。</p>
+            </div>
+        </section>
+
+        <section id="ch15" class="content-section main-chapter-content">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>第十五章：理论思考 (Theoretical Considerations)</h2>
+                <p>在本章中，霍妮回顾了她在神经症理论方面思想的演变，并将其与弗洛伊德及阿德勒的理论进行了比较。</p>
+                <h3>霍妮理论的演变：</h3>
+                <ol>
+                    <li><strong>早期观点（人际关系为核心）：</strong> 最初，霍妮认为神经症本质上是人际关系的紊乱，源于文化条件和不利环境因素导致儿童产生“基本焦虑”，并通过强迫性的“亲近、对抗、疏远他人”的行为模式来应对，形成“基本冲突”。</li>
+                    <li><strong>理想化形象的引入：</strong> 后来，她认识到“理想化形象”不仅是解决内心冲突的尝试，更是一个核心概念，它夺走了个体自我实现的能量，使其转向实现虚构的理想化自我。这导致了对“追求荣耀”、神经质主张、神经质骄傲和“应该”的暴政的理解。</li>
+                    <li><strong>自我憎恨与骄傲系统的整合：</strong> 进一步地，她意识到自我憎恨与自我理想化是同一过程（骄傲系统）的两个方面。神经症被视为个体与自我及与他人关系的双重紊乱。</li>
+                    <li><strong>真实自我与核心内在冲突：</strong> 近期发展聚焦于真实自我的重要性，将整个神经症过程（从自我理想化开始）视为一种日益增长的自我疏离。自我憎恨最终是针对真实自我的。骄傲系统与真实自我之间的冲突被定义为“核心内在冲突”——健康力量与神经症力量之间的斗争。治疗的目标因此明确为助力自我实现。</li>
+                    <li><strong>神经症类型基于解决方案：</strong> 对不同神经症人格差异的兴趣，使她认识到这些差异源于对内心冲突的各种主要伪解决方案（扩张型、谦逊型、顺从型），这为神经症类型的划分提供了基础。</li>
+                </ol>
+                <h3>与弗洛伊德理论的比较：</h3>
+                <ul>
+                    <li><strong>对荣耀驱动力的观察：</strong> 霍妮承认弗洛伊德观察到了许多构成“追求荣耀”的因素（如对魔力的信仰、全能幻想、自恋、野心等），但认为弗洛伊德未能将它们视为一个统一的、由特定需求驱动的整体。
+                        <ul>
+                            <li><strong>文化因素的忽视：</strong> 弗洛伊德将许多在他那个时代普遍存在的对声望和成功的渴望视为普遍人性，而非特定文化条件下的产物。</li>
+                            <li><strong>力比多解释：</strong> 弗洛伊德倾向于将扩张性驱力解释为力比多现象（如自我美化是自恋，野心是阴茎嫉妒），这限制了对这些驱力自身影响和后果的探究。</li>
+                            <li><strong>进化机械论思想：</strong> 将当下表现视为过去（尤其是婴儿期力比多固着或退行）的重复，而非真正的新发展。这使得对神经症驱动力的理解停留在还原论层面。</li>
+                        </ul>
+                    </li>
+                    <li><strong>自我憎恨与死亡本能：</strong> 霍妮的自我憎恨概念与弗洛伊德的死亡本能（自我毁灭本能）有表面相似性。但弗洛伊德将其视为本能的、无法改变的人性属性，而霍妮则认为自我憎恨源于特定的心理状态（理想化自我与真实自我之间的冲突），是可以通过改变这些状态来克服的。弗洛伊德倾向于将自我憎恨解释为对他人的无意识憎恨或内化的权威（超我）的惩罚，而非个体因自身面貌而产生的直接憎恨。</li>
+                    <li><strong>“应该”与超我：</strong> 弗洛伊德的超我被视为正常的良知和道德代表（除非特别残忍），部分源于俄狄浦斯情结和本能力量。霍妮的“应该”则完全是神经质力量，是对道德和良知的伪造，源于个体将自己改造成理想化完美存在的潜意识驱动。这导致了治疗目标的不同：弗洛伊德旨在降低超我的严厉性，霍妮则旨在使个体摆脱内在指令的统治，根据真实愿望和信念生活。</li>
+                    <li><strong>对人性的看法：</strong> 弗洛伊德对人性持悲观态度，认为人注定不满足，只能在自身受苦或让他人受苦之间选择。霍妮则认为，尽管神经症具有悲剧性，但人类拥有建设性的、创造性的奋斗力量，可以实现自我。弗洛伊德的理论框架中缺乏对这种健康力量的清晰认识。</li>
+                </ul>
+                <p>霍妮认为，魔鬼契约的故事（以灵魂换取无限力量，最终导致地狱般的折磨）最能象征神经症过程的本质——追求无限完美和力量，最终导致自我憎恨和灵魂的丧失。她的理论核心是一个“自我”的问题：放弃真实自我，追求理想化自我，以及最终通过治疗重新找到真实自我的过程。</p>
+            </div>
+        </section>
+        <section id="quiz" class="content-section">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>核心概念测验</h2>
+                <p>以下测验基于卡伦·霍妮《神经症与人的成长》书中的核心概念设计，旨在帮助您回顾和理解一些关键思想。请注意，<strong>此测验仅为学习参考之用，不能作为专业的心理诊断依据。</strong></p>
+                <div class="mt-6">
+                    <p class="font-semibold">说明：请阅读以下问题，并思考它们与书中哪些概念相关。</p>
+                    <div class="mt-4 space-y-3">
+                        <p><strong>1. 当一个人为了应对内心的不安全感，而想象自己拥有超凡品质，并努力成为这个“完美”形象时，这主要指向霍妮的哪个概念？</strong> (提示：理想化自我)</p>
+                        <p><strong>2. “我应该总是高效的”，“我不应该感到受伤”，“我必须成为最好的”——这些内心指令属于霍妮所描述的什么现象？</strong> (提示：“应该”的暴政)</p>
+                        <p><strong>3. 如果一个人坚信自己有权得到特殊对待，认为火车时刻表应该为他而调整，否则就感到不公和愤怒，这体现了什么？</strong> (提示：神经质的主张)</p>
+                        <p><strong>4. 对完美的强迫性追求、永不满足的野心以及通过击败他人来获得满足感的驱动力，共同构成了什么？</strong> (提示：追求荣耀)</p>
+                        <p><strong>5. 当一个人因为未能达到自己内心设定的崇高标准而对自己产生强烈的厌恶、批评甚至惩罚时，这反映了什么？</strong> (提示：自我憎恨/自我蔑视)</p>
+                        <p><strong>6. 个体感觉与自己真实的感受、愿望和信念越来越远，仿佛自己生活的旁观者而非主导者，这是什么状态？</strong> (提示：自我疏离)</p>
+                        <p><strong>7. 霍妮认为，个体与生俱来的、健康的、趋向于发展自身独特潜能的核心力量是什么？</strong> (提示：真实自我)</p>
+                        <p><strong>8. 为了在潜在敌对的世界中感到安全，儿童可能发展出的僵化和极端的行为模式（如过度顺从、攻击或退缩）形成了什么？</strong> (提示：基本冲突)</p>
+                        <p><strong>9. 一个人主要通过压抑自身的扩张性需求，强调自己的无助和痛苦，并极度渴望他人的爱与接纳来获得安全感，这属于哪种主要的神经症解决方案？</strong> (提示：谦逊解决方案)</p>
+                        <p><strong>10. 霍妮提出的，以“促进还是阻碍了‘我的’成长？”为标准的道德观，被称为什么？</strong> (提示：进化的道德)</p>
+                    </div>
+                    <div class="mt-8 p-4 rounded-md quiz-discussion-box">
+                        <h4 class="font-semibold quiz-discussion-title">思考与讨论：</h4>
+                        <p class="mt-2 text-sm">这些概念是如何相互关联的？</p>
+                        <p class="mt-2 text-sm">根据霍妮的理论，神经症发展的最终代价是什么？</p>
+                        <p class="mt-2 text-sm">霍妮认为的健康成长之路是什么？</p>
+                    </div>
+                </div>
+                 <p class="mt-6 text-xs italic text-gray-400">免责声明：本测验不提供任何形式的诊断。其目的仅在于教育和信息分享。</p>
+            </div>
+        </section>
+
+        <section id="about" class="content-section">
+            <div class="content-bg p-6 md:p-8 shadow-lg mt-8">
+                <h2>关于本书与作者</h2>
+                <h3>关于《神经症与人的成长：自我实现的奋斗》</h3>
+                <p>《神经症与人的成长：自我实现的奋斗》(Neurosis and Human Growth: The Struggle Toward Self-Realization) 于1950年首次出版，是德裔美国精神分析学家卡伦·霍妮 (Karen Horney, 1885-1952) 最重要和最成熟的著作之一。这本书系统地阐述了她关于神经症发展的完整理论，特别是“理想化自我”和“真实自我”之间的核心冲突。</p>
+                <p>书中，霍妮详细描述了个体如何在不利的成长环境中，为了应对基本焦虑而逐渐偏离其真实自我的健康发展轨道，转而追求一个虚幻的、完美的理想化自我。这一追求（“追求荣耀”）表现为对完美的强迫性需求、神经质的野心和报复性的胜利渴望，并伴随着一系列内在机制，如“神经质的主张”、“‘应该’的暴政”、神经质的骄傲、自我憎恨和自我疏离。</p>
+                <p>霍妮进一步分析了为解决这些内在冲突而产生的几种主要的神经症“解决方案”或生活方式：扩展型（诉诸精通）、谦逊型（诉诸爱与依赖）和辞职型（诉诸自由与疏离）。她强调，这些解决方案虽然能暂时缓解紧张，但最终都会阻碍个体的真实成长和自我实现。</p>
+                <p>本书不仅是对神经症心理的深刻剖析，也体现了霍妮对人性潜能的积极看法以及对通过精神分析实现真正自我成长的信念。它对后来的精神分析理论、人本主义心理学以及自助文化都产生了深远影响。</p>
+
+                <h3>关于作者：卡伦·霍妮 (Karen Horney)</h3>
+                <p>卡伦·霍妮（1885年9月16日 - 1952年12月4日）是一位德国精神分析学家，后移民美国。她是新弗洛伊德主义的代表人物之一，对传统弗洛伊德精神分析的某些核心观点（如力比多理论、阴茎嫉妒等）提出了批判，并发展了更注重文化和社会因素、人际关系以及个体当前冲突的理论。</p>
+                <p>霍妮强调社会文化因素在人格形成和神经症发展中的作用，认为焦虑是神经症的核心，源于个体在童年期感受到的不安全感和敌意。她的主要贡献包括“基本焦虑”、“基本冲突”、神经症需求、“理想化自我”与“真实自我”等概念。</p>
+                <p>她的重要著作包括：</p>
+                <ul>
+                    <li>《我们时代的神经症人格》(The Neurotic Personality of Our Time, 1937)</li>
+                    <li>《精神分析新法》(New Ways in Psychoanalysis, 1939)</li>
+                    <li>《自我分析》(Self-Analysis, 1942)</li>
+                    <li>《我们的内心冲突》(Our Inner Conflicts, 1945)</li>
+                    <li>《神经症与人的成长》(Neurosis and Human Growth, 1950)</li>
+                </ul>
+                <p>霍妮的理论因其对女性心理的关注、对文化影响的强调以及对人类成长潜能的积极态度而受到广泛认可。她也是美国精神分析促进协会（Association for the Advancement of Psychoanalysis）的共同创始人之一。</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-bg py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-xs footer-text">&copy; <span id="currentYear"></span> 神经症与人的成长解读中文网站。内容基于卡伦·霍妮《神经症与人的成长》一书。</p>
+            <p class="text-xs mt-2 footer-text">本网站内容仅供学习参考，不能替代专业医疗建议。如有心理健康问题，请咨询专业人士。</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile navigation toggle
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('open');
+            });
+        }
+        
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // --- THEME SWITCHER SCRIPT ---
+        const themes = {
+            "apple_light_blue": { // Default Theme: Apple Light Blue (Low Saturation)
+                '--page-bg-color': '#FFFFFF', '--text-color-main': '#1D1D1F', '--text-color-light': '#F5F5F7',
+                '--heading-color-h1': '#5B92E5', '--heading-color-h2': '#1D1D1F', '--heading-color-h3': '#333333',
+                '--link-color': '#5B92E5', '--link-hover-color': '#4A7AC7',
+                '--navbar-bg-color': 'rgba(248, 249, 250, 0.85)', '--navbar-link-color': '#333333', '--navbar-link-hover-color': '#5B92E5',
+                '--content-card-bg-color': '#FFFFFF', '--content-card-border-color': '#E5E5EA',
+                '--blockquote-border-color': '#5B92E5', '--blockquote-bg-color': '#F8F9FA', '--blockquote-text-color': '#555555',
+                '--footer-bg-color': '#F8F9FA', '--footer-text-color': '#6c757d',
+                '--button-text-color': '#5B92E5',
+                '--quiz-discussion-bg-color': '#F0F7FF', '--quiz-discussion-title-color': '#5B92E5',
+                '--interactive-toc-part-hover-bg': 'rgba(91, 146, 229, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(91, 146, 229, 0.05)',
+                 '--interactive-toc-active-link-color': '#3B71CA'
+            },
+            dark_blue: { 
+                '--page-bg-color': '#1A202C', '--text-color-main': '#E0E7FF', '--text-color-light': '#E0E7FF',
+                '--heading-color-h1': '#63B3ED', '--heading-color-h2': '#BFDBFE', '--heading-color-h3': '#93C5FD',
+                '--link-color': '#90CDF4', '--link-hover-color': '#BEE3F8',
+                '--navbar-bg-color': 'rgba(45, 55, 72, 0.85)', '--navbar-link-color': '#A0AEC0', '--navbar-link-hover-color': '#E2E8F0',
+                '--content-card-bg-color': 'rgba(45, 55, 72, 0.9)', '--content-card-border-color': '#4A5568',
+                '--blockquote-border-color': '#60A5FA', '--blockquote-bg-color': '#2D3748', '--blockquote-text-color': '#A5B4FC',
+                '--footer-bg-color': '#1A202C', '--footer-text-color': '#A0AEC0',
+                '--button-text-color': '#E0E7FF',
+                '--quiz-discussion-bg-color': '#2D3748', '--quiz-discussion-title-color': '#90CDF4',
+                '--interactive-toc-part-hover-bg': 'rgba(144, 205, 244, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(144, 205, 244, 0.05)',
+                '--interactive-toc-active-link-color': '#BEE3F8'
+            },
+            apple_dark_graphite: {
+                '--page-bg-color': '#1C1C1E', '--text-color-main': '#E5E5EA', '--text-color-light': '#F5F5F7',
+                '--heading-color-h1': '#0A84FF', '--heading-color-h2': '#F5F5F7', '--heading-color-h3': '#E5E5EA',
+                '--link-color': '#0A84FF', '--link-hover-color': '#389CFF',
+                '--navbar-bg-color': 'rgba(44, 44, 46, 0.85)', '--navbar-link-color': '#E5E5EA', '--navbar-link-hover-color': '#0A84FF',
+                '--content-card-bg-color': '#2C2C2E', '--content-card-border-color': '#3A3A3C',
+                '--blockquote-border-color': '#0A84FF', '--blockquote-bg-color': '#3A3A3C', '--blockquote-text-color': '#C7C7CC',
+                '--footer-bg-color': '#1C1C1E', '--footer-text-color': '#8A8A8E',
+                '--button-text-color': '#E5E5EA',
+                '--quiz-discussion-bg-color': '#2C2C2E', '--quiz-discussion-title-color': '#0A84FF',
+                '--interactive-toc-part-hover-bg': 'rgba(10, 132, 255, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(10, 132, 255, 0.05)',
+                '--interactive-toc-active-link-color': '#389CFF'
+            },
+            fresh_mint_light: {
+                '--page-bg-color': '#FFFFFF', '--text-color-main': '#212529', '--text-color-light': '#F8F9FA',
+                '--heading-color-h1': '#20C997', '--heading-color-h2': '#212529', '--heading-color-h3': '#343A40',
+                '--link-color': '#20C997', '--link-hover-color': '#17A278',
+                '--navbar-bg-color': 'rgba(248, 249, 250, 0.9)', '--navbar-link-color': '#343A40', '--navbar-link-hover-color': '#20C997',
+                '--content-card-bg-color': '#FFFFFF', '--content-card-border-color': '#E9ECEF',
+                '--blockquote-border-color': '#20C997', '--blockquote-bg-color': '#F8F9FA', '--blockquote-text-color': '#495057',
+                '--footer-bg-color': '#F1F3F5', '--footer-text-color': '#6C757D',
+                '--button-text-color': '#20C997',
+                '--quiz-discussion-bg-color': '#E6FFFA', '--quiz-discussion-title-color': '#17A278',
+                '--interactive-toc-part-hover-bg': 'rgba(32, 201, 151, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(32, 201, 151, 0.05)',
+                '--interactive-toc-active-link-color': '#17A278'
+            },
+            parchment_neutral_text: { 
+                '--page-bg-color': '#FDF5E6', '--text-color-main': '#4A4A4A', '--text-color-light': '#F5EFE6',
+                '--heading-color-h1': '#5D4037', '--heading-color-h2': '#6D4C41', '--heading-color-h3': '#795548',
+                '--link-color': '#8D6E63', '--link-hover-color': '#5D4037',
+                '--navbar-bg-color': 'rgba(239, 235, 233, 0.85)', '--navbar-link-color': '#5D4037', '--navbar-link-hover-color': '#3E2723',
+                '--content-card-bg-color': 'rgba(255, 250, 245, 0.92)', '--content-card-border-color': '#D7CCC8',
+                '--blockquote-border-color': '#A1887F', '--blockquote-bg-color': '#F5EFE6', '--blockquote-text-color': '#5D4037',
+                '--footer-bg-color': '#EFEBE9', '--footer-text-color': '#5D4037',
+                '--button-text-color': '#5D4037',
+                '--quiz-discussion-bg-color': '#F5EADD', '--quiz-discussion-title-color': '#795548',
+                '--interactive-toc-part-hover-bg': 'rgba(141, 110, 99, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(141, 110, 99, 0.05)',
+                '--interactive-toc-active-link-color': '#5D4037'
+            },
+            grayscale: {
+                '--page-bg-color': '#F5F5F5', '--text-color-main': '#333333', '--text-color-light': '#FAFAFA',
+                '--heading-color-h1': '#111111', '--heading-color-h2': '#222222', '--heading-color-h3': '#444444',
+                '--link-color': '#007BFF', '--link-hover-color': '#0056b3',
+                '--navbar-bg-color': 'rgba(224, 224, 224, 0.85)', '--navbar-link-color': '#555555', '--navbar-link-hover-color': '#000000',
+                '--content-card-bg-color': '#FFFFFF', '--content-card-border-color': '#CCCCCC',
+                '--blockquote-border-color': '#AAAAAA', '--blockquote-bg-color': '#EEEEEE', '--blockquote-text-color': '#555555',
+                '--footer-bg-color': '#D3D3D3', '--footer-text-color': '#444444',
+                '--button-text-color': '#333333',
+                '--quiz-discussion-bg-color': '#E5E5E5', '--quiz-discussion-title-color': '#111111',
+                '--interactive-toc-part-hover-bg': 'rgba(0, 0, 0, 0.05)', '--interactive-toc-link-hover-bg': 'rgba(0, 0, 0, 0.03)',
+                '--interactive-toc-active-link-color': '#0056b3'
+            },
+            moonlight_blue: {
+                '--page-bg-color': '#0F172A', '--text-color-main': '#E2E8F0', '--text-color-light': '#F8FAFC',
+                '--heading-color-h1': '#60A5FA', '--heading-color-h2': '#93C5FD', '--heading-color-h3': '#BFDBFE',
+                '--link-color': '#60A5FA', '--link-hover-color': '#3B82F6',
+                '--navbar-bg-color': 'rgba(30, 41, 59, 0.85)', '--navbar-link-color': '#94A3B8', '--navbar-link-hover-color': '#E2E8F0',
+                '--content-card-bg-color': '#1E293B', '--content-card-border-color': '#334155',
+                '--blockquote-border-color': '#3B82F6', '--blockquote-bg-color': '#334155', '--blockquote-text-color': '#CBD5E1',
+                '--footer-bg-color': '#0F172A', '--footer-text-color': '#94A3B8',
+                '--button-text-color': '#E2E8F0',
+                '--quiz-discussion-bg-color': '#1E293B', '--quiz-discussion-title-color': '#93C5FD',
+                '--interactive-toc-part-hover-bg': 'rgba(96, 165, 250, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(96, 165, 250, 0.05)',
+                '--interactive-toc-active-link-color': '#3B82F6'
+            },
+            minimal_paper: { 
+                '--page-bg-color': '#FFFFFF', '--text-color-main': '#1A202C', '--text-color-light': '#FFFFFF',
+                '--heading-color-h1': '#1A202C', '--heading-color-h2': '#2D3748', '--heading-color-h3': '#4A5568',
+                '--link-color': '#2B6CB0', '--link-hover-color': '#1A202C',
+                '--navbar-bg-color': 'rgba(247, 250, 252, 0.85)', '--navbar-link-color': '#4A5568', '--navbar-link-hover-color': '#1A202C',
+                '--content-card-bg-color': '#FFFFFF', '--content-card-border-color': '#EDF2F7',
+                '--blockquote-border-color': '#4299E1', '--blockquote-bg-color': '#F7FAFC', '--blockquote-text-color': '#4A5568',
+                '--footer-bg-color': '#EDF2F7', '--footer-text-color': '#718096',
+                '--button-text-color': '#2D3748',
+                '--quiz-discussion-bg-color': '#F8F9FA', '--quiz-discussion-title-color': '#2B6CB0',
+                '--interactive-toc-part-hover-bg': 'rgba(43, 108, 176, 0.1)', '--interactive-toc-link-hover-bg': 'rgba(43, 108, 176, 0.05)',
+                '--interactive-toc-active-link-color': '#1A202C'
+            }
+        };
+
+        const root = document.documentElement;
+
+        function populateThemeOptions(ulElement) {
+            if (!ulElement) return;
+            ulElement.innerHTML = ''; 
+            const themeDisplayNames = {
+                "apple_light_blue": "明快果蓝 (默认)",
+                "dark_blue": "经典深蓝",
+                "apple_dark_graphite": "深空石墨",
+                "fresh_mint_light": "清新薄荷",
+                "parchment_neutral_text": "复古书卷",
+                "grayscale": "静谧灰阶",
+                "moonlight_blue": "月光蓝",
+                "minimal_paper": "简约白纸"
+            };
+            for (const themeName in themes) {
+                const listItem = document.createElement('li');
+                const button = document.createElement('button');
+                button.dataset.theme = themeName;
+                button.textContent = themeDisplayNames[themeName] || themeName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                listItem.appendChild(button);
+                ulElement.appendChild(listItem);
+            }
+        }
+        
+        function applyTheme(themeName) {
+            const selectedTheme = themes[themeName] || themes.apple_light_blue; 
+            for (const [key, value] of Object.entries(selectedTheme)) {
+                root.style.setProperty(key, value);
+            }
+            localStorage.setItem('selectedTheme', themeName);
+
+            const allThemeToggleButtons = document.querySelectorAll('.theme-toggle-button');
+            allThemeToggleButtons.forEach(btn => {
+                if (selectedTheme['--button-text-color']) {
+                    btn.style.color = selectedTheme['--button-text-color'];
+                }
+            });
+        }
+
+        function setupThemeSelector(buttonId, optionsUlId) {
+            const toggleButton = document.getElementById(buttonId);
+            const optionsUl = document.getElementById(optionsUlId);
+
+            if (!toggleButton || !optionsUl) return;
+
+            populateThemeOptions(optionsUl);
+
+            toggleButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const otherUlId = optionsUlId === 'theme-options-mobile' ? 'theme-options-desktop' : 'theme-options-mobile';
+                const otherUl = document.getElementById(otherUlId);
+                if (otherUl) otherUl.style.display = 'none';
+                optionsUl.style.display = optionsUl.style.display === 'none' ? 'block' : 'none';
+            });
+
+            optionsUl.addEventListener('click', (event) => {
+                if (event.target.tagName === 'BUTTON' && event.target.dataset.theme) {
+                    applyTheme(event.target.dataset.theme);
+                    optionsUl.style.display = 'none';
+                }
+            });
+        }
+
+        setupThemeSelector('theme-toggle-button-mobile', 'theme-options-mobile');
+        setupThemeSelector('theme-toggle-button-desktop', 'theme-options-desktop');
+        
+        document.addEventListener('click', (event) => {
+            const mobileOptions = document.getElementById('theme-options-mobile');
+            const desktopOptions = document.getElementById('theme-options-desktop');
+            const mobileToggle = document.getElementById('theme-toggle-button-mobile');
+            const desktopToggle = document.getElementById('theme-toggle-button-desktop');
+
+            if (mobileOptions && mobileOptions.style.display === 'block' && !mobileOptions.contains(event.target) && event.target !== mobileToggle) {
+                mobileOptions.style.display = 'none';
+            }
+            if (desktopOptions && desktopOptions.style.display === 'block' && !desktopOptions.contains(event.target) && event.target !== desktopToggle) {
+                desktopOptions.style.display = 'none';
+            }
+        });
+
+        const savedTheme = localStorage.getItem('selectedTheme');
+        applyTheme(savedTheme && themes[savedTheme] ? savedTheme : 'apple_light_blue');
+
+
+        // --- ACCORDION AND CHAPTER NAVIGATION SCRIPT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const partTitles = document.querySelectorAll('.interactive-toc-part-title');
+            const chapterLinksToc = document.querySelectorAll('.interactive-toc-chapter-link');
+            const mainChapterContents = document.querySelectorAll('.main-chapter-content');
+            const topNavLinks = document.querySelectorAll('#nav-menu a.main-nav-item');
+            const interactiveTocSection = document.getElementById('interactive-toc-section');
+
+            function hideAllChapterContents() {
+                mainChapterContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                chapterLinksToc.forEach(link => {
+                    link.classList.remove('active-chapter-link');
+                });
+            }
+
+            function showChapterContent(targetId, scrollBehavior = 'smooth') {
+                hideAllChapterContents();
+                const targetChapterContent = document.getElementById(targetId);
+
+                if (targetChapterContent) {
+                    targetChapterContent.classList.add('active');
+                    
+                    // Highlight active link in ToC
+                    chapterLinksToc.forEach(link => {
+                        if (link.dataset.target === targetId) {
+                            link.classList.add('active-chapter-link');
+                            // Expand parent part if not already expanded
+                            const parentSublist = link.closest('.interactive-toc-chapters-list');
+                            if (parentSublist && !parentSublist.classList.contains('expanded')) {
+                                parentSublist.classList.add('expanded');
+                                const parentPartTitle = parentSublist.previousElementSibling;
+                                if (parentPartTitle && parentPartTitle.classList.contains('interactive-toc-part-title')) {
+                                    parentPartTitle.classList.add('expanded');
+                                }
+                            }
+                        }
+                    });
+
+                    // Scroll logic:
+                    // If ToC is above the viewport, scroll to ToC. Otherwise, scroll to chapter.
+                    // Give a slight delay for content to render before scrolling, especially on initial load.
+                    setTimeout(() => {
+                        const tocRect = interactiveTocSection.getBoundingClientRect();
+                        const chapterRect = targetChapterContent.getBoundingClientRect();
+                        
+                        // Check if ToC is visible or if the chapter itself is the ToC (e.g. intro-moral could be the first item)
+                        if (tocRect.top < 0 || tocRect.bottom > window.innerHeight || targetId === "intro-moral") {
+                           // If ToC is not fully visible or it's the first chapter, scroll so the chapter top is visible
+                           // Taking navbar height into account for scrolling.
+                           const navbarHeight = document.getElementById('navbar').offsetHeight || 70;
+                           const elementTop = targetChapterContent.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 10; // 10px buffer
+                           window.scrollTo({ top: elementTop, behavior: scrollBehavior });
+                        } else {
+                            // If ToC is visible, and we clicked a chapter within it, the chapter content appears below.
+                            // Scroll so the chapter top is visible.
+                           const navbarHeight = document.getElementById('navbar').offsetHeight || 70;
+                           const elementTop = targetChapterContent.getBoundingClientRect().top + window.pageYOffset - navbarHeight -10;
+                           window.scrollTo({ top: elementTop, behavior: scrollBehavior });
+                        }
+                    }, 50);
+
+
+                } else {
+                    console.warn('Target content not found for ID:', targetId);
+                }
+            }
+
+            partTitles.forEach(title => {
+                const indicator = title.querySelector('.expansion-indicator');
+                title.addEventListener('click', () => {
+                    title.classList.toggle('expanded');
+                    if(indicator) indicator.textContent = title.classList.contains('expanded') ? '▼' : '▶';
+                    const sublist = title.nextElementSibling;
+                    if (sublist && sublist.classList.contains('interactive-toc-chapters-list')) {
+                        sublist.classList.toggle('expanded');
+                    }
+                });
+                // Set initial indicator state
+                if(indicator) indicator.textContent = title.classList.contains('expanded') ? '▼' : '▶';
+            });
+
+            chapterLinksToc.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = link.dataset.target;
+                    showChapterContent(targetId);
+                    if (history.pushState) {
+                        history.pushState(null, null, '#' + targetId);
+                    } else {
+                        window.location.hash = targetId;
+                    }
+                });
+            });
+
+            topNavLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#') && href.length > 1) {
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement && (targetElement.classList.contains('main-chapter-content') || targetId === 'interactive-toc-section')) {
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault();
+                            if (targetId === 'interactive-toc-section') {
+                                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                // Ensure no chapter is active if navigating to ToC itself
+                                hideAllChapterContents(); 
+                            } else if (targetElement.classList.contains('main-chapter-content')) {
+                                showChapterContent(targetId);
+                            }
+                            if (navMenu.classList.contains('open')) {
+                                navMenu.classList.remove('open');
+                            }
+                            if (history.pushState) {
+                                history.pushState(null, null, '#' + targetId);
+                            } else {
+                                window.location.hash = targetId;
+                            }
+                        });
+                    } else if (targetElement) { // For #home, #quiz, #about
+                        link.addEventListener('click', (event) => {
+                             // We want default scroll, but ensure chapters are hidden
+                            hideAllChapterContents();
+                            if (navMenu.classList.contains('open')) {
+                                navMenu.classList.remove('open');
+                            }
+                            // Allow default behavior to scroll to #home, #quiz, etc.
+                            // But if already on the page, smooth scroll
+                            if(window.location.pathname === link.pathname && window.location.hash !== href) {
+                                event.preventDefault();
+                                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                if (history.pushState) {
+                                    history.pushState(null, null, href);
+                                } else {
+                                    window.location.hash = href;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Handle initial load based on URL hash
+            if (window.location.hash) {
+                const initialTargetId = window.location.hash.substring(1);
+                const targetElement = document.getElementById(initialTargetId);
+                if (targetElement && targetElement.classList.contains('main-chapter-content')) {
+                    setTimeout(() => { // Delay to ensure all styles are applied
+                        showChapterContent(initialTargetId, 'auto'); // 'auto' for initial load scroll
+                    }, 100);
+                } else if (targetElement) { // For non-chapter sections like quiz, about
+                     setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    }, 100);
+                }
+            } else {
+                 // Optionally, show the first chapter of the first part by default or a specific one
+                // For now, no chapter is shown by default unless specified by hash.
+            }
+        });
+    </script>
+</body>
+</html>
