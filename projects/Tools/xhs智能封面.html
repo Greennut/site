@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级感心理学封面生成器 (终极版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans SC', sans-serif; background-color: #f3f4f6; }
+        .cover-aspect { width: 100%; max-width: 400px; aspect-ratio: 3 / 4; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15); transition: all 0.3s ease-in-out; }
+        .control-panel-container { max-width: 400px; }
+        .control-radio:checked + .control-label { background-color: #4A5568; color: white; }
+        .color-swatch { width: 2rem; height: 2rem; border-radius: 9999px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s ease-in-out; }
+        .color-swatch.active { border-color: #3b82f6; transform: scale(1.1); }
+        .form-input { width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem 0.75rem; transition: border-color 0.2s; }
+        .form-input:focus { border-color: #3b82f6; outline: none; }
+        .ai-assistant-box { border: 2px dashed #cbd5e1; }
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+
+    <div class="w-full max-w-lg text-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">高级感心理学封面生成器</h1>
+        <p class="text-gray-500 mt-2">选择模板，自由定制，或让AI助你一臂之力</p>
+    </div>
+    
+    <!-- API Key & Global Settings -->
+    <div class="w-full max-w-lg mb-6">
+        <details class="bg-white/50 rounded-lg text-sm">
+            <summary class="cursor-pointer p-2 text-gray-500 font-medium flex items-center justify-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                展开全局设置
+            </summary>
+            <div class="p-4 border-t border-gray-200 space-y-4">
+                 <div>
+                    <label for="api-key" class="block text-sm font-medium text-gray-700 mb-1">Google AI API Key</label>
+                    <input type="password" id="api-key" class="form-input" placeholder="在此填入您的API Key">
+                    <p class="text-xs text-gray-500 mt-1">您的Key将仅在浏览器中使用，不会被储存。</p>
+                 </div>
+                 <div class="flex items-center">
+                    <input type="checkbox" id="corner-toggle" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    <label for="corner-toggle" class="ml-2 block text-sm text-gray-900">使用直角边框</label>
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- AI 文案助手 -->
+    <div id="ai-assistant" class="w-full max-w-lg bg-white p-6 rounded-2xl shadow-sm mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <svg class="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+            AI 文案助手
+        </h2>
+        <div class="ai-assistant-box rounded-lg p-6 text-center">
+            <input type="file" id="image-upload" class="hidden" accept="image/*" multiple>
+            <label for="image-upload" class="cursor-pointer">
+                <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                <p class="mt-2 text-sm text-gray-600">点击上传笔记截图 (可多选)</p>
+                <div id="file-list" class="text-xs text-gray-500 mt-1 space-y-1"></div>
+            </label>
+        </div>
+        <button id="generate-btn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg mt-4 hover:bg-blue-600 transition-colors flex items-center justify-center disabled:bg-gray-400">
+            <span id="btn-text">✨ 为所有模板生成AI文案</span>
+            <div id="spinner" class="spinner hidden ml-3"></div>
+        </button>
+        <p id="ai-error" class="text-red-500 text-xs text-center mt-2"></p>
+    </div>
+
+    <!-- 主模板选择器 -->
+    <div class="w-full max-w-lg bg-white/80 backdrop-blur-lg p-3 rounded-2xl shadow-sm mb-8">
+        <div class="flex flex-wrap justify-center gap-2" id="main-template-selector"></div>
+    </div>
+
+    <!-- 封面预览区域 -->
+    <div id="preview-area" class="w-full max-w-md flex items-center justify-center mb-8"></div>
+
+    <!-- 个性化控制面板区域 -->
+    <div id="control-panel-area" class="w-full control-panel-container"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DATA ---
+        const colorPalettes = {
+            p1: { name: '尘静蓝', from: '#A5BECE', to: '#F8F6F6', text1: '#FFFFFF', text2: '#FFFFFF99', blockBg: '#FFFFFF99', blockText1: '#132843', blockText2: '#3966A2', tagBg: '#3966A2', tagText: '#FFFFFF' },
+            p2: { name: '柔光杏', from: '#E6DCD3', to: '#FFFFFF', text1: '#6D5B57', text2: '#B4958F', brand: '#A5BECE', tagBg: '#B4958F', tagText: '#FFFFFF' },
+            p3: { name: '罗勒绿', from: '#A4BF97', to: '#F0F2EF', text1: '#FFFFFF', text2: '#FFFFFFCC', blockBg: '#FFFFFFB3', blockText1: '#4A5745', tagBg: '#4A5745', tagText: '#FFFFFF' },
+            p4: { name: '烟晶紫', from: '#6E87B0', to: '#EDEBE5', text1: '#FFFFFF', text2: '#FFFFFFCC', line: '#FFFFFF80', tagBg: '#6E87B0', tagText: '#FFFFFF' },
+            p5: { name: '雾岩灰', from: '#A1B1B1', to: '#FCFCFC', text1: '#333333', text2: '#6B7280', line: '#D1D5DB', tagBg: '#A1B1B1', tagText: '#FFFFFF' },
+            p6: { name: '深海蓝', from: '#132843', to: '#6191D3', text1: '#FFFFFF', text2: '#FFFFFFB3', tagBg: '#6191D3', tagText: '#FFFFFF' },
+            p7: { name: '椰子奶油', from: '#D7AD9B', to: '#F6F2E7', text1: '#6D5B57', text2: '#BEA594', line: '#D7AD9B', tagBg: '#BEA594', tagText: '#FFFFFF' },
+            p8: { name: '玫瑰豆沙', from: '#DBBACB', to: '#F5F1F2', text1: '#B7799E', text2: '#C1ADAD', blockBg: '#FFFFFFB3', blockText1: '#8C5E74', tagBg: '#B7799E', tagText: '#FFFFFF' },
+            p9: { name: '油画粉紫', from: '#A2A3D1', to: '#E6D7D7', text1: '#FFFFFF', text2: '#5D6AB4', line: '#FFFFFF80', tagBg: '#5D6AB4', tagText: '#FFFFFF' },
+            p10: { name: '赤陶棕', from: '#BB9C7E', to: '#F0E3C5', text1: '#FFFFFF', text2: '#DE6A70', blockBg: '#FFFFFFB3', blockText1: '#8A6D55', tagBg: '#DE6A70', tagText: '#FFFFFF' }
+        };
+
+        const templatesData = [
+            { id: 'template1', name: 'A. 尘静蓝', fields: [ { id: 't1_h1', label: '主标题', value: 'BPD的“谎言”，\n是无意识的求救。' }, { id: 't1_p1', label: '副标题', value: '当内在秩序崩溃，扭曲便成了TA唯一的真实。' }, { id: 't1_src', label: '来源标签', value: 'Quora' }, { id: 't1_h2', label: '议题标题', value: '核心议题：' }, { id: 't1_p2', label: '议题内容', value: '看见谎言下的痛苦，而非评判行为本身。' } ] },
+            { id: 'template2', name: 'B. 柔光杏', fields: [ { id: 't2_brand', label: '您的署名', value: 'NPD离我远点' }, { id: 't2_p1', label: '引言', value: '一个关于BPD的迷思' }, { id: 't2_h1', label: '主标题', value: '为什么TA们\n宁愿扭曲事实，\n也不愿承认脆弱？' }, { id: 't2_src', label: '来源标签', value: '书籍' } ] },
+            { id: 'template3', name: 'C. 罗勒绿', fields: [ { id: 't3_p1', label: '情景预设', value: '如果你总在无意识撒谎' }, { id: 't3_h1', label: '主标题', value: '这不是你的错，\n而是认知模式\n需要重建。' }, { id: 't3_src', label: '来源标签', value: '原创' }, { id: 't3_li1', label: '清单1', value: '✓ 理解谎言背后的恐惧' }, { id: 't3_li2', label: '清单2', value: '✓ 学习新的情绪表达方式' } ] },
+            { id: 'template4', name: 'D. 烟晶紫', fields: [ { id: 't4_p1', label: '引言', value: '“我这辈子都是个骗子”' }, { id: 't4_h1', label: '主标题', value: '这句话背后，\n是怎样的痛苦在支撑？' }, { id: 't4_src', label: '来源标签', value: '访谈' } ] },
+            { id: 'template5', name: 'E. 雾岩灰', fields: [ { id: 't5_tag', label: '分类标签', value: '深度辨析' }, { id: 't5_h1', label: '主标题', value: 'BPD的“谎言” vs NPD的“操控”' }, { id: 't5_p1', label: '副标题', value: '动机与目的截然不同，\n看见差异，是理解的第一步。' }, { id: 't5_src', label: '来源标签', value: '文献' } ] },
+            { id: 'template6', name: 'F. 深海蓝', fields: [ { id: 't6_h1', label: '主标题', value: '如果真实\n只会带来痛苦，\n我们为何还要选择真实？' }, { id: 't6_p1', label: '副标题', value: '—— 一个BPD的核心困境' }, { id: 't6_src', label: '来源标签', value: '思考' } ] }
+        ];
+
+        // --- DOM Elements ---
+        const apiKeyInput = document.getElementById('api-key');
+        const previewArea = document.getElementById('preview-area');
+        const controlPanelArea = document.getElementById('control-panel-area');
+        const mainTemplateSelector = document.getElementById('main-template-selector');
+        const imageUpload = document.getElementById('image-upload');
+        const fileListEl = document.getElementById('file-list');
+        const generateBtn = document.getElementById('generate-btn');
+        const btnText = document.getElementById('btn-text');
+        const spinner = document.getElementById('spinner');
+        const aiErrorEl = document.getElementById('ai-error');
+        const cornerToggle = document.getElementById('corner-toggle');
+        let uploadedFiles = [];
+
+        // --- FUNCTIONS ---
+        function initializeUI() {
+            let selectorHTML = '', previewHTML = '', controlHTML = '';
+            templatesData.forEach((t, i) => {
+                const isActive = i === 0;
+                selectorHTML += `<label class="flex-shrink-0 relative"><input type="radio" name="template" value="${t.id}" class="control-radio opacity-0 absolute" ${isActive ? 'checked' : ''}><span class="control-label block cursor-pointer px-4 py-2 rounded-lg text-gray-600 bg-gray-200 hover:bg-gray-300">${t.name}</span></label>`;
+                previewHTML += `<div id="${t.id}" class="cover-container cover-aspect rounded-2xl flex-col ${isActive ? 'flex' : 'hidden'}" data-palette="p1">${getTemplateHTML(t.id, t.fields)}</div>`;
+                controlHTML += `<div id="${t.id}-controls" class="control-panel bg-white p-6 rounded-2xl shadow-md ${isActive ? '' : 'hidden'}"><h3 class="text-lg font-bold mb-4 text-gray-700">自定义“${t.name}”模板</h3><div class="space-y-4 mb-6">${t.fields.map(f => `<div><label class="text-sm font-medium text-gray-600">${f.label}</label><textarea id="input-${f.id}" data-target="${f.id}" class="form-input mt-1 text-sm" rows="${f.value.includes('\n') ? 3 : 1}">${f.value}</textarea></div>`).join('')}</div><h3 class="text-lg font-bold mb-4 text-gray-700">选择配色方案</h3><div class="flex flex-wrap gap-3" data-color-selector-for="${t.id}">${Object.entries(colorPalettes).map(([k, v], ci) => `<div class="color-swatch ${ci === 0 ? 'active' : ''}" data-palette-key="${k}" style="background-color: ${v.from};" title="${v.name}"></div>`).join('')}</div><button class="download-btn w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg mt-6 hover:bg-green-600 transition-colors">下载当前封面</button></div>`;
+            });
+            mainTemplateSelector.innerHTML = selectorHTML;
+            previewArea.innerHTML = previewHTML;
+            controlPanelArea.innerHTML = controlHTML;
+            updateColors('template1', 'p1');
+        }
+
+        function getTemplateHTML(id, fields) {
+            const getValue = (fieldId) => fields.find(f => f.id === fieldId).value;
+            const srcTagHTML = (fieldId, classes = '') => `<span id="${fieldId}" class="text-xs opacity-50 ${classes}" data-color-target="text2">${getValue(fieldId)}</span>`;
+            
+            switch(id) {
+                case 'template1': return `<div class="flex-grow p-8 flex flex-col justify-center" data-color-target="bg-gradient"><h1 id="t1_h1" class="text-3xl font-bold leading-relaxed tracking-wide" data-color-target="text1" style="white-space: pre-wrap;">${getValue('t1_h1')}</h1><p id="t1_p1" class="mt-4 text-sm font-light" data-color-target="text2" style="white-space: pre-wrap;">${getValue('t1_p1')}</p>${srcTagHTML('t1_src', 'mt-4')}</div><div class="bg-white/60 backdrop-blur-sm p-6 rounded-t-2xl" data-color-target="blockBg"><p id="t1_h2" class="text-sm font-bold" data-color-target="blockText1">${getValue('t1_h2')}</p><p id="t1_p2" class="text-xs mt-2" data-color-target="blockText2">${getValue('t1_p2')}</p></div>`;
+                case 'template2': return `<div class="w-full h-full p-8 flex flex-col justify-between" data-color-target="bg-gradient"><div class="flex items-center space-x-2"><svg id="t2_brand_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke-width="2.5" data-color-target="brand-stroke"></circle><circle cx="14" cy="14" r="7" data-color-target="brand-fill" fill-opacity="0.5"></circle></svg><span id="t2_brand" class="text-xs font-medium text-gray-500" data-color-target="text2">${getValue('t2_brand')}</span></div><div class="text-left"><p id="t2_p1" class="text-sm font-light" data-color-target="text2">${getValue('t2_p1')}</p><h1 id="t2_h1" class="text-3xl font-bold mt-2 leading-snug" data-color-target="text1" style="white-space: pre-wrap;">${getValue('t2_h1')}</h1></div><div class="relative w-full h-6">${srcTagHTML('t2_src', 'absolute left-0 bottom-0')}</div></div>`;
+                case 'template3': return `<div class="w-full h-full p-8 flex flex-col justify-between" data-color-target="bg-gradient"><div class="text-left"><p id="t3_p1" class="text-sm font-light" data-color-target="text2">${getValue('t3_p1')}</p><h1 id="t3_h1" class="text-3xl font-bold mt-2 leading-snug" data-color-target="text1" style="white-space: pre-wrap;">${getValue('t3_h1')}</h1>${srcTagHTML('t3_src', 'block mt-4')}</div><div class="space-y-2"><div class="bg-white/70 backdrop-blur-sm p-3 rounded-lg text-sm font-medium" data-color-target="blockBg"><p id="t3_li1" data-color-target="blockText1">${getValue('t3_li1')}</p></div><div class="bg-white/70 backdrop-blur-sm p-3 rounded-lg text-sm font-medium" data-color-target="blockBg"><p id="t3_li2" data-color-target="blockText1">${getValue('t3_li2')}</p></div></div></div>`;
+                case 'template4': return `<div class="w-full h-full p-8 flex flex-col justify-center items-center text-center relative" data-color-target="bg-gradient"><div class="w-full"><p id="t4_p1" class="text-lg font-light tracking-widest" data-color-target="text2">${getValue('t4_p1')}</p><div class="w-20 h-px mx-auto my-6" data-color-target="line"></div><p id="t4_h1" class="text-2xl font-bold leading-relaxed" data-color-target="text1" style="white-space: pre-wrap;">${getValue('t4_h1')}</p>${srcTagHTML('t4_src', 'block text-center mt-6 w-full')}</div></div>`;
+                case 'template5': return `<div class="w-full h-full p-8 flex flex-col justify-between" data-color-target="bg-gradient"><div class="flex items-center space-x-2"><span id="t5_tag" class="text-sm font-medium px-3 py-1 rounded" data-color-target="tagBg">${getValue('t5_tag')}</span></div><div class="text-left"><h1 id="t5_h1" class="text-2xl font-bold leading-relaxed" data-color-target="text1" style="white-space: pre-wrap;">${getValue('t5_h1')}</h1><p id="t5_p1" class="text-sm mt-3 border-l-2 pl-3" data-color-target="line-border text2" style="white-space: pre-wrap;">${getValue('t5_p1')}</p></div><div class="flex items-center space-x-2 self-end"><svg id="t5_brand_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke-width="2.5" data-color-target="brand-stroke"></circle><circle cx="14" cy="14" r="7" data-color-target="brand-fill" fill-opacity="0.5"></circle></svg>${srcTagHTML('t5_src', 'ml-1')}</div></div>`;
+                case 'template6': return `<div class="w-full h-full p-8 flex flex-col justify-between text-left" data-color-target="bg-gradient"><div><h1 id="t6_h1" class="text-2xl font-bold leading-snug tracking-wide" data-color-target="text1" style="white-space: pre-wrap;">${getValue('t6_h1')}</h1><p id="t6_p1" class="text-sm font-light mt-4" data-color-target="text2">${getValue('t6_p1')}</p></div><div class="w-full">${srcTagHTML('t6_src', '')}</div></div>`;
+            }
+            return '';
+        }
+
+        function updateColors(templateId, paletteKey) {
+            const palette = colorPalettes[paletteKey];
+            const container = document.getElementById(templateId);
+            if (!container) return;
+            container.dataset.palette = paletteKey;
+            const targets = container.querySelectorAll('[data-color-target]');
+            targets.forEach(el => {
+                const types = el.dataset.colorTarget.split(' ');
+                types.forEach(type => {
+                    switch(type) {
+                        case 'bg-gradient': el.style.background = `linear-gradient(to bottom, ${palette.from}, ${palette.to})`; break;
+                        case 'text1': el.style.color = palette.text1; break;
+                        case 'text2': el.style.color = palette.text2; break;
+                        case 'blockBg': el.style.backgroundColor = palette.blockBg; break;
+                        case 'blockText1': el.style.color = palette.blockText1; break;
+                        case 'blockText2': el.style.color = palette.blockText2; break;
+                        case 'line': el.style.backgroundColor = palette.line; break;
+                        case 'line-border': el.style.borderColor = palette.line || palette.text2; break;
+                        case 'brand-stroke': el.style.stroke = palette.brand || palette.text2; break;
+                        case 'brand-fill': el.style.fill = palette.brand || palette.text2; break;
+                        case 'tagBg': el.style.backgroundColor = palette.tagBg; el.style.color = palette.tagText; break;
+                    }
+                });
+            });
+        }
+        
+        async function generateCopy() {
+            if (uploadedFiles.length === 0) {
+                aiErrorEl.textContent = '请先上传至少一张图片。';
+                return;
+            }
+            aiErrorEl.textContent = '';
+            spinner.classList.remove('hidden');
+            btnText.textContent = '正在分析并生成...';
+            generateBtn.disabled = true;
+
+            const imageParts = await Promise.all(uploadedFiles.map(file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve({ inlineData: { mimeType: file.type, data: reader.result.split(',')[1] } });
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }));
+
+            const allSchemas = {};
+            templatesData.forEach(template => {
+                const properties = {};
+                template.fields.forEach(field => {
+                    properties[field.id] = { type: "STRING", description: field.label };
+                });
+                allSchemas[template.id] = { type: "OBJECT", properties: properties };
+            });
+
+            const prompt = `你是一位顶尖的心理学内容策略师，为小红书平台创作封面文案。你的风格融合了专业、温暖与犀利。请分析用户上传的图片中的文字内容，提取核心议题。然后，为全部六个封面模板（template1到template6）生成最适合它们各自风格的文案。请严格按照指定的JSON格式返回，确保每个模板的数据都完整。`;
+            
+            const payload = {
+              contents: [{ role: "user", parts: [{ text: prompt }, ...imageParts] }],
+              generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: { type: "OBJECT", properties: allSchemas }
+              }
+            };
+
+            try {
+                const apiKey = apiKeyInput.value.trim() || "";
+                 if (!apiKey) {
+                    throw new Error("请在AI设置中填入您的API Key。");
+                }
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API请求失败，状态码: ${response.status}`);
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0].text) {
+                    const generatedJson = JSON.parse(result.candidates[0].content.parts[0].text);
+                    for (const templateId in generatedJson) {
+                        for (const fieldId in generatedJson[templateId]) {
+                            const inputEl = document.getElementById(`input-${fieldId}`);
+                            if (inputEl) {
+                                inputEl.value = generatedJson[templateId][fieldId];
+                                inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error("AI未能生成有效内容，请检查图片或稍后重试。");
+                }
+            } catch (error) {
+                console.error('AI Generation Error:', error);
+                aiErrorEl.textContent = `生成失败: ${error.message}`;
+            } finally {
+                spinner.classList.add('hidden');
+                btnText.textContent = '✨ 为所有模板生成AI文案';
+                generateBtn.disabled = false;
+            }
+        }
+
+        function downloadCover() {
+            const activeTemplateId = document.querySelector('input[name="template"]:checked').value;
+            const elementToCapture = document.getElementById(activeTemplateId);
+
+            html2canvas(elementToCapture, {
+                scale: 3, // Increase resolution for better quality
+                useCORS: true,
+                backgroundColor: null // Use element's background
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `cover-${activeTemplateId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+        mainTemplateSelector.addEventListener('change', (e) => {
+            if (e.target.name === 'template') {
+                const selectedId = e.target.value;
+                document.querySelectorAll('.cover-container, .control-panel').forEach(el => el.classList.add('hidden'));
+                document.getElementById(selectedId).classList.remove('hidden');
+                document.getElementById(selectedId).classList.add('flex');
+                document.getElementById(`${selectedId}-controls`).classList.remove('hidden');
+            }
+        });
+
+        controlPanelArea.addEventListener('input', (e) => {
+            if (e.target.matches('textarea')) {
+                const targetId = e.target.dataset.target;
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) { targetElement.innerText = e.target.value; }
+            }
+        });
+
+        controlPanelArea.addEventListener('click', (e) => {
+            if (e.target.matches('.color-swatch')) {
+                const paletteKey = e.target.dataset.paletteKey;
+                const selectorContainer = e.target.parentElement;
+                const templateId = selectorContainer.dataset.colorSelectorFor;
+                selectorContainer.querySelectorAll('.color-swatch').forEach(sw => sw.classList.remove('active'));
+                e.target.classList.add('active');
+                updateColors(templateId, paletteKey);
+            }
+            if (e.target.matches('.download-btn')) {
+                downloadCover();
+            }
+        });
+
+        imageUpload.addEventListener('change', (e) => {
+            uploadedFiles = Array.from(e.target.files);
+            fileListEl.innerHTML = uploadedFiles.map(f => `<div>${f.name}</div>`).join('');
+            if (uploadedFiles.length > 0) aiErrorEl.textContent = '';
+        });
+
+        generateBtn.addEventListener('click', generateCopy);
+        
+        cornerToggle.addEventListener('change', (e) => {
+            const covers = document.querySelectorAll('.cover-container');
+            if (e.target.checked) {
+                covers.forEach(cover => {
+                    cover.classList.remove('rounded-2xl');
+                    cover.classList.add('rounded-none');
+                });
+            } else {
+                 covers.forEach(cover => {
+                    cover.classList.add('rounded-2xl');
+                    cover.classList.remove('rounded-none');
+                });
+            }
+        });
+
+        // --- INITIALIZATION ---
+        initializeUI();
+    });
+    </script>
+</body>
+</html>
