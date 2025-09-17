@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>回避型依恋与自恋者测试</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .question-block {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        .options label {
+            display: block;
+            margin: 12px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        #result {
+            padding: 25px;
+            background: #fff;
+            border-radius: 8px;
+            margin-top: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .correct-answer {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .result-good { color: #27ae60; }
+        .result-medium { color: #f39c12; }
+        .result-low { color: #e67e22; }
+        .result-poor { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <h1>回避型依恋与自恋者测试</h1>
+
+    <form id="quizForm">
+        <!-- 问题 1 -->
+        <div class="question-block">
+            <h3>1. 他们如何处理情感亲密？</h3>
+            <div class="options">
+                <label><input type="radio" name="q1" value="A"> A) 当关系变得太亲密时，他们会疏远，但不会主动伤害我。</label>
+                <label><input type="radio" name="q1" value="B"> B) 他们表现得深情，但后来会贬低我或变得残忍。</label>
+                <label><input type="radio" name="q1" value="C"> C) 他们通常一致且回应迅速。</label>
+            </div>
+        </div>
+
+        <!-- 问题 2 -->
+        <div class="question-block">
+            <h3>2. 当你表达深层情感或脆弱时，他们如何反应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q2" value="A"> A) 他们似乎不舒服，转移话题或避免回应。</label>
+                <label><input type="radio" name="q2" value="B"> B) 他们忽视、贬低或嘲笑我太情绪化。</label>
+                <label><input type="radio" name="q2" value="C"> C) 他们倾听并试图支持我。</label>
+            </div>
+        </div>
+
+        <!-- 问题 3 -->
+        <div class="question-block">
+            <h3>3. 当讨论未来计划时，他们如何回应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q3" value="A"> A) 他们避免讨论或感到焦虑。</label>
+                <label><input type="radio" name="q3" value="B"> B) 他们做出大承诺，但从不兑现。</label>
+                <label><input type="radio" name="q3" value="C"> C) 他们公开沟通他们的意图。</label>
+            </div>
+        </div>
+
+        <!-- 问题 4 -->
+        <div class="question-block">
+            <h3>4. 如果你在关系中寻求安慰，会发生什么？</h3>
+            <div class="options">
+                <label><input type="radio" name="q4" value="A"> A) 他们显得疏远或困惑，不明白我为什么需要安慰。</label>
+                <label><input type="radio" name="q4" value="B"> B) 他们称我为需要安慰的人，或操纵我让我感到内疚。</label>
+                <label><input type="radio" name="q4" value="C"> C) 他们提供安慰和支持。</label>
+            </div>
+        </div>
+
+        <!-- 问题 5 -->
+        <div class="question-block">
+            <h3>5. 当你设定边界时，他们如何反应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q5" value="A"> A) 他们接受边界，但可能显得冷淡或疏远。</label>
+                <label><input type="radio" name="q5" value="B"> B) 他们生气、反击或在情感上惩罚我。</label>
+                <label><input type="radio" name="q5" value="C"> C) 他们尊重我的边界并沟通。</label>
+            </div>
+        </div>
+
+        <!-- 问题 6 -->
+        <div class="question-block">
+            <h3>6. 当他们伤害你时，他们多久道歉一次？</h3>
+            <div class="options">
+                <label><input type="radio" name="q6" value="A"> A) 很少，但他们可能会间接表达遗憾（例如，做点好事而不是道歉）。</label>
+                <label><input type="radio" name="q6" value="B"> B) 几乎从不，或者他们会为自己的行为责备我。</label>
+                <label><input type="radio" name="q6" value="C"> C) 他们道歉并承担责任。</label>
+            </div>
+        </div>
+
+        <!-- 问题 7 -->
+        <div class="question-block">
+            <h3>7. 他们是否曾扣留情感或关注？</h3>
+            <div class="options">
+                <label><input type="radio" name="q7" value="A"> A) 是的，他们在压力下会情感疏远。</label>
+                <label><input type="radio" name="q7" value="B"> B) 是的，他们这样做是为了惩罚或控制我。</label>
+                <label><input type="radio" name="q7" value="C"> C) 没有，即使在冲突中他们也公开沟通。</label>
+            </div>
+        </div>
+
+        <!-- 问题 8 -->
+        <div class="question-block">
+            <h3>8. 当你表达需求时，他们如何回应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q8" value="A"> A) 他们难以满足需求，但不会批评我有需求。</label>
+                <label><input type="radio" name="q8" value="B"> B) 他们嘲笑、忽视或贬低我的需求。</label>
+                <label><input type="radio" name="q8" value="C"> C) 他们试图理解并满足我的需求。</label>
+            </div>
+        </div>
+
+        <!-- 问题 9 -->
+        <div class="question-block">
+            <h3>9. 争吵后他们如何表现？</h3>
+            <div class="options">
+                <label><input type="radio" name="q9" value="A"> A) 他们需要空间，但最终会回来。</label>
+                <label><input type="radio" name="q9" value="B"> B) 他们拒绝承认任何错误并转移责任。</label>
+                <label><input type="radio" name="q9" value="C"> C) 他们与我讨论问题。</label>
+            </div>
+        </div>
+
+        <!-- 问题 10 -->
+        <div class="question-block">
+            <h3>10. 他们是否有不稳定关系的历史？</h3>
+            <div class="options">
+                <label><input type="radio" name="q10" value="A"> A) 是的，但主要是因为他们难以处理亲密关系。</label>
+                <label><input type="radio" name="q10" value="B"> B) 是的，他们将所有前任描述为“疯狂”或不如他们。</label>
+                <label><input type="radio" name="q10" value="C"> C) 没有，他们的过去关系似乎稳定且尊重。</label>
+            </div>
+        </div>
+
+        <!-- 问题 11 -->
+        <div class="question-block">
+            <h3>11. 他们如何回应你的成就？</h3>
+            <div class="options">
+                <label><input type="radio" name="q11" value="A"> A) 他们似乎不感兴趣或难以表达热情。</label>
+                <label><input type="radio" name="q11" value="B"> B) 他们感到威胁或将成就归功于自己。</label>
+                <label><input type="radio" name="q11" value="C"> C) 他们与我一起庆祝并鼓励我的成功。</label>
+            </div>
+        </div>
+
+        <!-- 问题 12 -->
+        <div class="question-block">
+            <h3>12. 当你提起他们过去的错误时，他们如何反应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q12" value="A"> A) 他们变得防御并可能疏远。</label>
+                <label><input type="radio" name="q12" value="B"> B) 他们煤气灯操纵我或扭曲事实以让自己看起来更好。</label>
+                <label><input type="radio" name="q12" value="C"> C) 他们倾听并承认自己的行为。</label>
+            </div>
+        </div>
+
+        <!-- 问题 13 -->
+        <div class="question-block">
+            <h3>13. 他们是否曾破坏关系？</h3>
+            <div class="options">
+                <label><input type="radio" name="q13" value="A"> A) 是的，当事情进展顺利时，他们会疏远。</label>
+                <label><input type="radio" name="q13" value="B"> B) 是的，他们制造不必要的戏剧或测试我的忠诚。</label>
+                <label><input type="radio" name="q13" value="C"> C) 没有，他们努力让关系顺利进行。</label>
+            </div>
+        </div>
+
+        <!-- 问题 14 -->
+        <div class="question-block">
+            <h3>14. 他们在他人面前如何表现？</h3>
+            <div class="options">
+                <label><input type="radio" name="q14" value="A"> A) 他们保守且私密。</label>
+                <label><input type="radio" name="q14" value="B"> B) 他们在公共场合表现迷人，但在私下残忍。</label>
+                <label><input type="radio" name="q14" value="C"> C) 他们始终如一地友善和尊重。</label>
+            </div>
+        </div>
+
+        <!-- 问题 15 -->
+        <div class="question-block">
+            <h3>15. 当他们做错事时，他们如何反应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q15" value="A"> A) 他们难以承认错误，但不会责备我。</label>
+                <label><input type="radio" name="q15" value="B"> B) 他们完全否认并将责任推给我。</label>
+                <label><input type="radio" name="q15" value="C"> C) 他们承担责任。</label>
+            </div>
+        </div>
+
+        <!-- 问题 16 -->
+        <div class="question-block">
+            <h3>16. 当你哭泣时，他们如何反应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q16" value="A"> A) 他们似乎不舒服，不知道该怎么办。</label>
+                <label><input type="radio" name="q16" value="B"> B) 他们生气、忽视我或离开现场。</label>
+                <label><input type="radio" name="q16" value="C"> C) 他们安慰我并试图帮助我。</label>
+            </div>
+        </div>
+
+        <!-- 问题 17 -->
+        <div class="question-block">
+            <h3>17. 他们是否让你感到情感安全？</h3>
+            <div class="options">
+                <label><input type="radio" name="q17" value="A"> A) 有时，但我经常感到如履薄冰。</label>
+                <label><input type="radio" name="q17" value="B"> B) 不，我感到持续焦虑、不确定或被贬低。</label>
+                <label><input type="radio" name="q17" value="C"> C) 是的，我感到安全并被理解。</label>
+            </div>
+        </div>
+
+        <!-- 问题 18 -->
+        <div class="question-block">
+            <h3>18. 他们是否重视你的独立性？</h3>
+            <div class="options">
+                <label><input type="radio" name="q18" value="A"> A) 是的，但有时他们显得太疏远。</label>
+                <label><input type="radio" name="q18" value="B"> B) 不，他们想控制我或表现得占有欲强。</label>
+                <label><input type="radio" name="q18" value="C"> C) 是的，他们鼓励我的成长。</label>
+            </div>
+        </div>
+
+        <!-- 问题 19 -->
+        <div class="question-block">
+            <h3>19. 当你需要帮助时，他们如何回应？</h3>
+            <div class="options">
+                <label><input type="radio" name="q19" value="A"> A) 他们可能会帮助，但他们更喜欢保持情感距离。</label>
+                <label><input type="radio" name="q19" value="B"> B) 他们拒绝或让我因请求帮助而感到内疚。</label>
+                <label><input type="radio" name="q19" value="C"> C) 他们在力所能及时提供帮助并支持我。</label>
+            </div>
+        </div>
+
+        <!-- 问题 20 -->
+        <div class="question-block">
+            <h3>20. 他们是否试图控制或操纵你？</h3>
+            <div class="options">
+                <label><input type="radio" name="q20" value="A"> A) 不，但他们情感疏远。</label>
+                <label><input type="radio" name="q20" value="B"> B) 是的，他们让我内疚、煤气灯操纵或玩心理游戏。</label>
+                <label><input type="radio" name="q20" value="C"> C) 不，他们公开且诚实地沟通。</label>
+            </div>
+        </div>
+    </form>
+
+    <button onclick="calculateScore()">提交答案</button>
+
+    <div id="result"></div>
+
+    <script>
+        const correctAnswers = ['A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A','A'];
+        const explanations = [
+            "回避型依恋者会在关系变得太亲密时疏远，但不会主动伤害你。",
+            "回避型依恋者对深层情感感到不舒服，可能会转移话题或避免回应。",
+            "回避型依恋者避免讨论未来计划，因为他们对亲密关系感到焦虑。",
+            "回避型依恋者难以提供情感安慰，但不会批评你有需求。",
+            "回避型依恋者接受边界，但可能显得冷淡或疏远。",
+            "回避型依恋者很少直接道歉，但可能会间接表达遗憾。",
+            "回避型依恋者在压力下会情感疏远，但不会故意控制你。",
+            "回避型依恋者难以满足需求，但不会贬低你的需求。",
+            "回避型依恋者需要空间，但最终会回来。",
+            "回避型依恋者因难以处理亲密关系而有不稳定关系的历史。",
+            "回避型依恋者对成就缺乏兴趣，但不会感到威胁。",
+            "回避型依恋者对过去的错误感到防御，但不会扭曲事实。",
+            "回避型依恋者在关系顺利时会疏远，但不会制造戏剧。",
+            "回避型依恋者在公共场合保守且私密。",
+            "回避型依恋者难以承认错误，但不会责备你。",
+            "回避型依恋者对哭泣感到不舒服，但不会生气或离开。",
+            "回避型依恋者有时让你感到情感安全，但经常让你如履薄冰。",
+            "回避型依恋者重视你的独立性，但可能显得太疏远。",
+            "回避型依恋者可能会帮助，但更喜欢保持情感距离。",
+            "回避型依恋者不会控制或操纵你，但他们情感疏远。"
+        ];
+
+        function calculateScore() {
+            let scoreA = 0, scoreB = 0, scoreC = 0;
+            let resultsHtml = `<h2>测试结果分析</h2>`;
+            const answerDetails = [];
+
+            // 计算得分
+            for(let i = 1; i <= 20; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = selected ? selected.value : '未回答';
+                
+                if(userAnswer === 'A') scoreA++;
+                else if(userAnswer === 'B') scoreB++;
+                else if(userAnswer === 'C') scoreC++;
+                
+                answerDetails.push(`
+                    <div class="answer-detail">
+                        <p><strong>问题 ${i}:</strong> 
+                        你的选择：${userAnswer.toUpperCase()} | 
+                        正确答案：<span class="correct-answer">${correctAnswers[i-1]}</span><br>
+                        ${explanations[i-1]}</p>
+                    </div>
+                `);
+            }
+
+            // 评估结果
+            let evaluation = "";
+            if(scoreA > scoreB && scoreA > scoreC) {
+                evaluation = `<p class="result-good">✅ 回避型依恋（得分：A=${scoreA}, B=${scoreB}, C=${scoreC}）</p>
+                <p>你的伴侣可能具有回避型依恋风格。他们难以处理亲密关系，但不会故意伤害你。</p>`;
+            } else if(scoreB > scoreA && scoreB > scoreC) {
+                evaluation = `<p class="result-poor">⛔ 自恋型人格特质（得分：A=${scoreA}, B=${scoreB}, C=${scoreC}）</p>
+                <p>你的伴侣可能具有自恋型人格特质。他们缺乏同理心，可能会操纵或伤害你。</p>`;
+            } else if(scoreC > scoreA && scoreC > scoreB) {
+                evaluation = `<p class="result-medium">⚠️ 健康伴侣（得分：A=${scoreA}, B=${scoreB}, C=${scoreC}）</p>
+                <p>你的伴侣可能是一个健康伴侣。他们尊重边界并支持情感亲密。</p>`;
+            } else {
+                evaluation = `<p class="result-low">❗ 不确定（得分：A=${scoreA}, B=${scoreB}, C=${scoreC}）</p>
+                <p>结果不明确，可能需要进一步观察。</p>`;
+            }
+
+            // 构建结果显示
+            resultsHtml += `
+                ${evaluation}
+                <h3>详细解析：</h3>
+                ${answerDetails.join('')}
+            `;
+
+            document.getElementById('result').innerHTML = resultsHtml;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>
