@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCL-90-R 症状自评量表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+            color: #475569; /* Slate 600 */
+        }
+        .radio-label {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .radio-input:checked + .radio-content {
+            background-color: #ecfeff; /* Cyan 50 */
+            border-color: #06b6d4; /* Cyan 500 */
+            color: #0e7490; /* Cyan 700 */
+        }
+        .btn-primary {
+            background-color: #06b6d4; /* Cyan 500 */
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #0891b2; /* Cyan 600 */
+        }
+        .factor-bar-bg {
+            background-color: #e2e8f0; /* Slate 200 */
+            border-radius: 9999px;
+            height: 0.5rem;
+            overflow: hidden;
+        }
+        .factor-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 text-sm">
+
+    <!-- Header -->
+    <header class="max-w-3xl w-full mb-8 text-center">
+        <h1 class="text-2xl font-light text-slate-800 tracking-wide mb-2">SCL-90-R 症状自评量表</h1>
+        <p class="text-xs text-slate-400 uppercase tracking-widest">Symptom Checklist-90-Revised</p>
+    </header>
+
+    <!-- Intro Card -->
+    <div id="intro-card" class="max-w-3xl w-full bg-white rounded-xl shadow-sm border border-slate-100 p-8 mb-6 transition-all duration-500">
+        <h2 class="text-lg font-medium text-slate-700 mb-4">测试说明</h2>
+        <p class="mb-4 leading-relaxed text-slate-500">
+            本量表列出了有些人可能会有的问题或主诉。请仔细阅读每一条，并根据<span class="font-medium text-cyan-600">过去一周（包括今天）</span>您被该问题困扰的程度进行选择。
+        </p>
+        <p class="mb-8 leading-relaxed text-slate-500">
+            请不要在任何一道题上通过多思考，凭您的第一直觉回答。这也并非确诊工具，结果仅供参考。
+        </p>
+        <button onclick="startTest()" class="btn-primary w-full py-3 rounded-lg font-medium tracking-wide shadow-sm hover:shadow-md">
+            开始测试
+        </button>
+    </div>
+
+    <!-- Questions Container -->
+    <div id="quiz-container" class="max-w-3xl w-full hidden">
+        <div id="question-list" class="space-y-6">
+            <!-- Questions will be injected here -->
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center bg-white sticky bottom-0 p-4 shadow-lg rounded-xl z-10">
+            <div class="text-xs text-slate-400">
+                进度: <span id="progress-text">0</span> / 90
+            </div>
+            <button id="submit-btn" onclick="calculateResults()" class="btn-primary px-8 py-2.5 rounded-lg font-medium opacity-50 cursor-not-allowed" disabled>
+                查看结果
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="result-container" class="max-w-3xl w-full hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+            <h2 class="text-xl font-light text-slate-800 mb-6 text-center">测试结果分析</h2>
+            
+            <!-- Global Scores -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="p-4 bg-slate-50 rounded-lg text-center">
+                    <div class="text-xs text-slate-400 mb-1">总分</div>
+                    <div id="score-total" class="text-2xl font-light text-cyan-600">0</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-lg text-center">
+                    <div class="text-xs text-slate-400 mb-1">总均分 (GSI)</div>
+                    <div id="score-gsi" class="text-2xl font-light text-cyan-600">0.00</div>
+                    <div class="text-[10px] text-slate-400 mt-1">范围 0-4</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-lg text-center">
+                    <div class="text-xs text-slate-400 mb-1">阳性项目数</div>
+                    <div id="score-pst" class="text-2xl font-light text-cyan-600">0</div>
+                </div>
+            </div>
+
+            <!-- Factors Chart -->
+            <div id="factors-list" class="space-y-5">
+                <!-- Factors will be injected here -->
+            </div>
+
+            <!-- Interpretation Text -->
+            <div class="mt-10 pt-8 border-t border-slate-100">
+                <h3 class="text-sm font-medium text-slate-700 mb-3">结果解读</h3>
+                <div id="interpretation-text" class="text-xs leading-relaxed text-slate-500 space-y-2 bg-cyan-50/50 p-4 rounded-lg">
+                    <!-- Interpretation will be injected here -->
+                </div>
+                <p class="mt-4 text-[10px] text-slate-300 text-center">
+                    *注：本测试结果仅供参考，不能替代专业医疗诊断。如果您感到严重不适，请及时寻求专业心理咨询或医疗帮助。
+                </p>
+            </div>
+            
+            <button onclick="location.reload()" class="mt-8 w-full py-3 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50 transition-colors">
+                重新测试
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 90 Items based on SCL-90-R Standard
+        // Scale 0-4 (Not at all to Extremely) based on user file
+        const questions = [
+            "头痛",
+            "神经过敏，心中不踏实",
+            "头脑中有不必要的想法或字句盘旋",
+            "头晕或昏倒",
+            "对异性的兴趣减退",
+            "对旁人责备求全",
+            "感到别人能控制您的思想",
+            "责怪别人制造麻烦",
+            "忘性大",
+            "担心自己的衣饰整洁及仪态的端正", // 10
+            "容易烦恼和激动",
+            "胸痛",
+            "害怕空旷的场所或街道",
+            "感到精力下降，活动减慢",
+            "想结束自己的生命",
+            "听到旁人听不到的声音",
+            "身体发抖",
+            "感到大多数人都不可信任",
+            "胃口不好",
+            "容易哭泣", // 20
+            "同异性相处时感到害羞不自在",
+            "感到受骗，中了圈套或有人想抓住您",
+            "无缘无故地突然感到害怕",
+            "自己不能控制地大发脾气",
+            "怕单独出门",
+            "经常责怪自己",
+            "腰痛",
+            "感到难以完成任务",
+            "感到孤独",
+            "感到苦闷", // 30
+            "过分担忧",
+            "对事物不感兴趣",
+            "感到害怕",
+            "您的感情容易受到伤害",
+            "旁人能知道您的私下想法",
+            "感到别人不理解您、不同情您",
+            "感到人们对您不友好，不喜欢您",
+            "做事必须做得很慢以保证做得正确",
+            "心跳得很厉害",
+            "恶心或胃部不舒服", // 40
+            "感到比不上别人",
+            "肌肉酸痛",
+            "感到有人在监视您、谈论您",
+            "难以入睡",
+            "做事必须反复检查",
+            "难以作出决定",
+            "怕乘电车、公共汽车、地铁或火车",
+            "呼吸有困难",
+            "一阵阵发冷或发热",
+            "因为感到害怕而避开某些东西、场合或活动", // 50
+            "脑子变空了",
+            "身体的某些部位发麻或刺痛",
+            "喉咙有梗塞感",
+            "感到对前途没有希望",
+            "不能集中注意力",
+            "身体的某些部分软弱无力",
+            "感到紧张或容易紧张",
+            "感到手或脚发重",
+            "想到死亡的事",
+            "吃得太多", // 60
+            "当别人看着您或谈论您时感到不自在",
+            "有一些不属于您自己的想法",
+            "有想打人或伤害他人的冲动",
+            "醒得太早",
+            "必须重复做一些动作（如触摸、计数、洗手）",
+            "睡眠不稳，睡得不踏实",
+            "有想摔坏或砸碎东西的冲动",
+            "有一些别人没有的想法或念头",
+            "在别人面前感到很不自在",
+            "在人多的场合（如商店、电影院）感到不自在", // 70
+            "感到任何事情都很困难",
+            "一阵阵恐惧或惊恐",
+            "在公共场合吃东西感到很不舒服",
+            "经常与人争论",
+            "单独一人时神经很紧张",
+            "别人对您的成绩没有作出恰当的评价",
+            "即使和别人在一起也感到孤单",
+            "感到坐立不安，心神不定",
+            "感到自己没有什么价值",
+            "感到熟悉的东西变成陌生或不真实", // 80
+            "大叫或摔东西",
+            "害怕会在公共场合昏倒",
+            "感到别人会利用您（如果您听之任之）",
+            "为一些有关性的念头而很苦恼",
+            "认为自己应该因为过错而受到惩罚",
+            "感到要赶快把事情做完",
+            "感到自己的身体有严重的问题",
+            "从未感到和其他人很亲近",
+            "感到内疚",
+            "感到自己的脑子有毛病" // 90
+        ];
+
+        // Factors mapping (1-based index from file) -> Adjusted to 0-based for JS
+        // Scale Items:
+        // SOM: 1, 4, 12, 27, 40, 42, 48, 49, 52, 53, 56, 58
+        // O-C: 3, 9, 10, 28, 38, 45, 46, 51, 55, 65
+        // I-S: 6, 21, 34, 36, 37, 41, 61, 69, 73
+        // DEP: 5, 14, 15, 20, 22, 26, 29, 30, 31, 32, 54, 71, 79
+        // ANX: 2, 17, 23, 33, 39, 57, 72, 78, 80, 86
+        // HOS: 11, 24, 63, 67, 74, 81
+        // PHOB: 13, 25, 47, 50, 70, 75, 82
+        // PAR: 8, 18, 43, 68, 76, 83
+        // PSY: 7, 16, 35, 62, 77, 84, 85, 87, 88, 90
+        // ADD: 19, 44, 59, 60, 64, 66, 89
+        
+        const factors = {
+            "躯体化 (Somatization)": [1, 4, 12, 27, 40, 42, 48, 49, 52, 53, 56, 58],
+            "强迫症状 (Obsessive-Compulsive)": [3, 9, 10, 28, 38, 45, 46, 51, 55, 65],
+            "人际关系敏感 (Interpersonal Sensitivity)": [6, 21, 34, 36, 37, 41, 61, 69, 73],
+            "抑郁 (Depression)": [5, 14, 15, 20, 22, 26, 29, 30, 31, 32, 54, 71, 79],
+            "焦虑 (Anxiety)": [2, 17, 23, 33, 39, 57, 72, 78, 80, 86],
+            "敌对 (Hostility)": [11, 24, 63, 67, 74, 81],
+            "恐怖 (Phobic Anxiety)": [13, 25, 47, 50, 70, 75, 82],
+            "偏执 (Paranoid Ideation)": [8, 18, 43, 68, 76, 83],
+            "精神病性 (Psychoticism)": [7, 16, 35, 62, 77, 84, 85, 87, 88, 90],
+            "其他 (Additional)": [19, 44, 59, 60, 64, 66, 89]
+        };
+
+        const options = [
+            { label: "没有", val: 0 },
+            { label: "很轻", val: 1 },
+            { label: "中度", val: 2 },
+            { label: "偏重", val: 3 },
+            { label: "严重", val: 4 }
+        ];
+
+        let answers = new Array(90).fill(null);
+
+        function startTest() {
+            document.getElementById('intro-card').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('question-list');
+            container.innerHTML = questions.map((q, idx) => `
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-md" id="q-block-${idx}">
+                    <div class="flex items-start mb-4">
+                        <span class="text-xs font-semibold text-cyan-600 bg-cyan-50 px-2 py-1 rounded mr-3">${idx + 1}</span>
+                        <p class="text-slate-700 font-medium">${q}</p>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2">
+                        ${options.map(opt => `
+                            <label class="radio-label group">
+                                <input type="radio" name="q${idx}" value="${opt.val}" class="radio-input hidden" onchange="handleAnswer(${idx}, ${opt.val})">
+                                <div class="radio-content flex flex-col items-center justify-center py-2 px-1 rounded-lg border border-slate-100 bg-slate-50 group-hover:bg-slate-100 transition-all text-xs text-center h-full">
+                                    <span class="mb-1 block w-3 h-3 rounded-full border border-slate-300 bg-white group-hover:border-cyan-400"></span>
+                                    ${opt.label}
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleAnswer(index, value) {
+            answers[index] = value;
+            
+            // UI Feedback
+            const block = document.getElementById(`q-block-${index}`);
+            block.classList.remove('border-slate-100');
+            block.classList.add('border-cyan-100', 'bg-cyan-50/10');
+            
+            // Progress
+            const completed = answers.filter(a => a !== null).length;
+            document.getElementById('progress-text').innerText = completed;
+
+            // Enable submit if all done
+            const btn = document.getElementById('submit-btn');
+            if (completed === 90) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('hover:bg-cyan-600', 'shadow-lg');
+            }
+        }
+
+        function calculateResults() {
+            if (answers.includes(null)) {
+                alert("请回答所有问题");
+                return;
+            }
+
+            const totalScore = answers.reduce((a, b) => a + b, 0);
+            const gsi = (totalScore / 90).toFixed(2);
+            const pst = answers.filter(x => x > 0).length; // Positive Symptom Total
+
+            // Calculate Factor Scores
+            // Factor Score = Sum of items / Count of items
+            // Note: Factors map uses 1-based index, need to adjust by -1
+            
+            const results = [];
+            for (const [name, indices] of Object.entries(factors)) {
+                let sum = 0;
+                indices.forEach(idx => sum += answers[idx - 1]);
+                const avg = (sum / indices.length).toFixed(2);
+                results.push({ name, avg, sum });
+            }
+
+            // Display Logic
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('result-container').classList.remove('hidden');
+            window.scrollTo(0,0);
+
+            document.getElementById('score-total').innerText = totalScore;
+            document.getElementById('score-gsi').innerText = gsi;
+            document.getElementById('score-pst').innerText = pst;
+
+            const factorsContainer = document.getElementById('factors-list');
+            factorsContainer.innerHTML = results.map(res => {
+                // Interpretation for specific factor
+                let colorClass = "bg-slate-200";
+                let textClass = "text-slate-400";
+                let width = (res.avg / 4) * 100; // 0-4 scale mapping to width
+                
+                if (res.avg >= 3) { colorClass = "bg-red-400"; textClass = "text-red-500 font-bold"; }
+                else if (res.avg >= 2) { colorClass = "bg-orange-300"; textClass = "text-orange-500 font-medium"; }
+                else if (res.avg >= 1) { colorClass = "bg-yellow-300"; textClass = "text-yellow-600"; }
+                else { colorClass = "bg-cyan-300"; textClass = "text-cyan-600"; }
+
+                return `
+                    <div class="flex flex-col">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-xs font-medium text-slate-600">${res.name}</span>
+                            <span class="text-sm ${textClass}">${res.avg}</span>
+                        </div>
+                        <div class="factor-bar-bg w-full">
+                            <div class="factor-bar-fill ${colorClass}" style="width: ${width}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Detailed Interpretation Text
+            let interpretationHTML = "";
+            
+            // General Status
+            if (gsi < 1) interpretationHTML += "<p>您的总体症状水平较低，心理状态良好。</p>";
+            else if (gsi < 2) interpretationHTML += "<p>您的总体症状水平属于轻度范围，可能存在一些日常的烦恼。</p>";
+            else if (gsi < 3) interpretationHTML += "<p><strong class='text-orange-500'>中度症状水平：</strong> 您近期可能感到较为明显的心理压力或不适，建议关注自己的心理健康。</p>";
+            else interpretationHTML += "<p><strong class='text-red-500'>重度症状水平：</strong> 您的心理困扰可能比较严重，强烈建议寻求专业心理医生的帮助。</p>";
+
+            // Factor Specifics
+            const highFactors = results.filter(r => r.avg >= 2);
+            if (highFactors.length > 0) {
+                interpretationHTML += "<div class='mt-4 pt-2 border-t border-cyan-100'><p class='mb-2 font-medium text-cyan-700'>需关注的领域：</p><ul class='list-disc list-inside space-y-1'>";
+                highFactors.forEach(f => {
+                    interpretationHTML += `<li>${f.name.split(' ')[0]} (得分: ${f.avg})</li>`;
+                });
+                interpretationHTML += "</ul></div>";
+            }
+
+            document.getElementById('interpretation-text').innerHTML = interpretationHTML;
+        }
+    </script>
+</body>
+</html>
