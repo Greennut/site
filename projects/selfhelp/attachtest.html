@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>依恋形式诊断测验</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        /* 选中后的颜色为浅灰 */
+        .option-btn.active {
+            background-color: #e5e7eb; 
+            color: #1f2937;
+            border-color: #9ca3af;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .highlight-row {
+            background-color: #fef3c7;
+            font-weight: bold;
+        }
+        .section-header {
+            border-left: 4px solid #4b5563;
+            padding-left: 1rem;
+            margin: 2.5rem 0 1.5rem 0;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+<div id="app" class="max-w-2xl mx-auto px-4 py-8">
+    <!-- 头部 -->
+    <header class="text-center mb-10">
+        <h1 class="text-3xl font-bold mb-2 text-gray-900">依恋形式诊断测验</h1>
+        <!-- 添加测试出处 -->
+        <p class="text-xs text-slate-400 mb-4 font-medium italic">出处：[日] 冈田尊司《依恋障碍》</p>
+        <p class="text-sm text-gray-600 leading-relaxed max-w-lg mx-auto">
+            请回想过去几年来自己最常出现的倾向，选择最符合状况的选项。<br>
+            注意：出现太多“两者皆非”可能会影响测验结果的准确性。
+        </p>
+    </header>
+
+    <!-- 进度条 -->
+    <div id="progress-container" class="sticky top-4 z-10 bg-white p-2 rounded-full shadow-md mb-8">
+        <div class="bg-gray-200 h-2 rounded-full overflow-hidden">
+            <div id="progress-bar" class="progress-bar bg-slate-600 h-full w-0"></div>
+        </div>
+    </div>
+
+    <!-- 题目容器 -->
+    <div id="quiz-container">
+        <!-- 题目将由 JS 渲染 -->
+    </div>
+
+    <!-- 提交按钮 -->
+    <div id="submit-container" class="mt-12 text-center hidden">
+        <button onclick="calculateResults()" class="bg-slate-800 text-white px-10 py-4 rounded-lg shadow-lg hover:bg-slate-700 transition font-bold text-lg">
+            查看分析结果
+        </button>
+    </div>
+
+    <!-- 结果面板 -->
+    <div id="result-panel" class="hidden mt-8 space-y-6">
+        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+            <h2 class="text-2xl font-bold text-center mb-8">测试结果</h2>
+            
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="text-center">
+                    <div class="text-sm text-gray-500 mb-1">安全型分数</div>
+                    <div id="score-a" class="text-3xl font-bold text-blue-600">0</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-sm text-gray-500 mb-1">焦虑型分数</div>
+                    <div id="score-b" class="text-3xl font-bold text-red-600">0</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-sm text-gray-500 mb-1">逃避型分数</div>
+                    <div id="score-c" class="text-3xl font-bold text-amber-600">0</div>
+                </div>
+            </div>
+
+            <div class="border-t pt-6 text-center mb-6">
+                <div class="text-gray-500 text-sm mb-2">判定类型</div>
+                <div id="result-type" class="text-2xl font-bold text-slate-800 mb-4">-</div>
+                <div id="result-desc" class="text-gray-600 text-sm leading-relaxed text-left bg-gray-50 p-4 rounded-xl">
+                    -
+                </div>
+            </div>
+
+            <!-- 判断基准对照表 -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-bold mb-4">判断基准对照表</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-2 border">依恋形式</th>
+                                <th class="p-2 border">判断基准</th>
+                                <th class="p-2 border">特征</th>
+                            </tr>
+                        </thead>
+                        <tbody id="criteria-table">
+                            <!-- 动态生成的行 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <button onclick="location.reload()" class="text-slate-500 hover:text-slate-800 text-sm underline">重新测试</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sections = [
+        { id: 'I', title: 'Ⅰ：基础安全感与人际信任', range: [1, 13], desc: '考察个体的基本安全感、对他人的信任程度以及与养育者的早期关联。' },
+        { id: 'II', title: 'Ⅱ：自我价值与情绪敏感', range: [14, 25], desc: '考察个体在关系中的自我评价、情绪波动以及对拒绝的敏感度。' },
+        { id: 'III', title: 'Ⅲ：独立性与亲密距离', range: [26, 45], desc: '考察个体对亲密关系的依赖程度、隐私边界以及对他人的情感诉求。' }
+    ];
+
+    const questions = [
+        { id: 1, text: "你是积极尝试新事物，勇于前往没去过的地方，认识新朋友的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 2, text: "你无论和谁都能马上熟悉，放松心情相处吗？", options: ["是", "否", "两者皆非"] },
+        { id: 3, text: "遇上麻烦时，你会乐观地认为“总有办法解决”吗？", options: ["是", "否", "两者皆非"] },
+        { id: 4, text: "你打从心底信任亲近的朋友或熟人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 5, text: "你在个性上有容易指责别人、攻击性强的倾向吗？", options: ["是", "否", "两者皆非"] },
+        { id: 6, text: "初次尝试新事物时，你容易感到不安吗？", options: ["是", "否", "两者皆非"] },
+        { id: 7, text: "你的父母（养育者）有时会对你冷淡吗？", options: ["是", "否", "两者皆非"] },
+        { id: 8, text: "你认为人会在紧急时刻背叛或不可靠吗？", options: ["是", "否", "两者皆非"] },
+        { id: 9, text: "你的父母（养育者）批评你的时候比嘉许你的时候多？", options: ["是", "否", "两者皆非"] },
+        { id: 10, text: "回忆童年时代，开心的记忆比较多吗？", options: ["是", "否", "两者皆非"] },
+        { id: 11, text: "你非常感谢你的父母（养育者）吗？", options: ["是", "否", "两者皆非"] },
+        { id: 12, text: "难过的时候，只要想起父母或家人，心情就能平静下来吗？", options: ["是", "否", "两者皆非"] },
+        { id: 13, text: "即使对方不在身边，你也能长久惦记着一个人吗？还是马上就会寻求别人的陪伴？", options: ["能长久惦记一个人", "马上寻求别人陪伴", "两者皆非"] },
+        { id: 14, text: "你是爱憎分明的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 15, text: "有过曾经认为某个人是非常好的人，最后却产生幻灭的心情或开始讨厌对方吗？", options: ["经常如此", "不常如此", "两者皆非"] },
+        { id: 16, text: "你是经常感觉烦躁或沮丧的人吗？", options: ["经常如此", "不常如此", "两者皆非"] },
+        { id: 17, text: "你认为自己没有什么值得一提的优点？", options: ["经常如此", "不常如此", "两者皆非"] },
+        { id: 18, text: "你曾因怀疑自己被拒绝而陷入焦虑吗？", options: ["经常如此", "不常如此", "两者皆非"] },
+        { id: 19, text: "比起优点，你总是忍不住在意缺点吗？", options: ["是", "否", "两者皆非"] },
+        { id: 20, text: "你是有自信的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 21, text: "你是能不依赖别人，自己做出决定或采取行动的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 22, text: "你认为自己是没什么人爱的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 23, text: "遇到讨厌的事情时，会放在心上很久吗？", options: ["是", "否", "两者皆非"] },
+        { id: 24, text: "你的父母（养育者）经常做出伤害你的事吗？", options: ["是", "否", "两者皆非"] },
+        { id: 25, text: "你曾经对父母（养育者）怀有愤怒或怨恨的心情吗？", options: ["是", "否", "两者皆非"] },
+        { id: 26, text: "难过的时候，你会希望身边的人上前关心吗？或者你不希望？", options: ["需要关心", "不需要关心", "两者皆非"] },
+        { id: 27, text: "亲密的人际关系，对你而言是重要的吗？", options: ["非常重要", "不怎么重要", "两者皆非"] },
+        { id: 28, text: "你总是冷漠无情吗？", options: ["是", "否", "两者皆非"] },
+        { id: 29, text: "你是否不喜欢太亲昵的交友关系？", options: ["是", "否", "两者皆非"] },
+        { id: 30, text: "和曾经有交情的人分开后，你马上就会忘记对方吗？", options: ["是", "否", "两者皆非"] },
+        { id: 31, text: "比起与人交往，你认为自己的世界更重要吗？", options: ["是", "否", "两者皆非"] },
+        { id: 32, text: "你认为只有自己的力量才可靠吗？", options: ["是", "否", "两者皆非"] },
+        { id: 33, text: "你不怎么怀念过去吗？", options: ["是", "否", "两者皆非"] },
+        { id: 34, text: "你是感情不轻易表现在脸上的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 35, text: "你认为即使是恋人或配偶也不能侵犯你的隐私权？", options: ["是", "否", "两者皆非"] },
+        { id: 36, text: "你喜欢和亲密的人肌肤相亲，喜欢拥抱或肢体接触吗？", options: ["喜欢", "不怎么喜欢", "两者皆非"] },
+        { id: 37, text: "幼年时的事你记得很清楚吗？", options: ["记得很清楚", "大部分不记得", "两者皆非"] },
+        { id: 38, text: "你即使和关系亲近的人在一起，还是会客套吗？", options: ["是", "否", "两者皆非"] },
+        { id: 39, text: "你认为遇到困难的时候，别人会好心帮助自己吗？", options: ["是", "否", "两者皆非"] },
+        { id: 40, text: "你是轻易就会接受别人好意的人吗？", options: ["是", "否", "两者皆非"] },
+        { id: 41, text: "你曾因为害怕失败而逃避挑战吗？", options: ["是", "否", "两者皆非"] },
+        { id: 42, text: "与人分离时，你会感觉非常悲伤、内心激动吗？", options: ["是", "否", "两者皆非"] },
+        { id: 43, text: "你不喜欢别人烦你，最好一个人自由自在地生活？", options: ["是", "否", "两者皆非"] },
+        { id: 44, text: "对你而言，“工作及学业”和“恋爱及人际关系”，哪一个更重要？", options: ["工作及学业", "恋爱人际", "两者皆非"] },
+        { id: 45, text: "你受伤或沮丧的时候，别人的安慰或倾听有多重要？", options: ["非常重要", "不怎么重要", "两者皆非"] }
+    ];
+
+    const scoringMap = {
+        1: { 1: 'A' }, 2: { 1: 'A' }, 3: { 1: 'A', 2: 'C' }, 4: { 1: 'A' },
+        5: { 2: 'A' }, 6: { 2: 'A' }, 7: { 2: 'A' }, 8: { 2: 'A' }, 9: { 2: 'A' },
+        10: { 1: 'A', 2: 'B' }, 11: { 1: 'A', 2: 'B' }, 12: { 1: 'A', 2: 'B' }, 13: { 1: 'A', 2: 'B' },
+        14: { 1: 'B' }, 15: { 1: 'B' }, 16: { 1: 'B' }, 17: { 1: 'B' }, 18: { 1: 'B' }, 19: { 1: 'B' },
+        20: { 2: 'B' }, 21: { 2: 'B' },
+        22: { 2: 'A', 1: 'B' }, 23: { 2: 'A', 1: 'B' }, 24: { 2: 'A', 1: 'B' }, 25: { 2: 'A', 1: 'B' },
+        26: { 2: 'C' }, 27: { 2: 'C' },
+        28: { 1: 'C' }, 29: { 1: 'C' }, 30: { 1: 'C' }, 31: { 1: 'C' }, 32: { 1: 'C' }, 33: { 1: 'C' }, 34: { 1: 'C' }, 35: { 1: 'C' },
+        36: { 2: 'C' }, 37: { 2: 'C' },
+        38: { 2: 'A', 1: 'B' },
+        39: { 1: 'A', 2: 'C' }, 40: { 1: 'A', 2: 'C' },
+        41: { 1: 'C' },
+        42: { 1: 'B', 2: 'C' },
+        43: { 2: 'B', 1: 'C' }, 44: { 2: 'B', 1: 'C' },
+        45: { 2: 'C' }
+    };
+
+    const userAnswers = {};
+
+    function initQuiz() {
+        const container = document.getElementById('quiz-container');
+        
+        sections.forEach(sec => {
+            // 添加类别标题
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.innerHTML = `
+                <h2 class="text-xl font-bold text-gray-800">${sec.title}</h2>
+                <p class="text-xs text-gray-500 mt-1">${sec.desc}</p>
+            `;
+            container.appendChild(header);
+
+            // 渲染该范围内的题目
+            questions.filter(q => q.id >= sec.range[0] && q.id <= sec.range[1]).forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'question-card bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6';
+                card.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <span class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded font-bold">${q.id}</span>
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-medium mb-4 leading-relaxed">${q.text}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                ${q.options.map((opt, i) => `
+                                    <button onclick="selectOption(${q.id}, ${i+1}, this)" 
+                                        class="option-btn border border-gray-200 py-3 px-4 rounded-lg text-sm text-gray-600 hover:border-slate-400 transition text-left">
+                                        ${opt}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+    }
+
+    function selectOption(qId, val, el) {
+        const btns = el.parentElement.querySelectorAll('.option-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+
+        userAnswers[qId] = val;
+
+        const answeredCount = Object.keys(userAnswers).length;
+        const progress = (answeredCount / questions.length) * 100;
+        document.getElementById('progress-bar').style.width = progress + '%';
+
+        if(answeredCount === questions.length) {
+            document.getElementById('submit-container').classList.remove('hidden');
+        }
+    }
+
+    function calculateResults() {
+        let scoreA = 0;
+        let scoreB = 0;
+        let scoreC = 0;
+
+        for (let id in userAnswers) {
+            const answer = userAnswers[id];
+            const scoring = scoringMap[id];
+            if (scoring && scoring[answer]) {
+                const targetColumn = scoring[answer];
+                if (targetColumn === 'A') scoreA += answer;
+                if (targetColumn === 'B') scoreB += answer;
+                if (targetColumn === 'C') scoreC += answer;
+            }
+        }
+
+        displayResult(scoreA, scoreB, scoreC);
+    }
+
+    function displayResult(A, B, C) {
+        document.getElementById('quiz-container').classList.add('hidden');
+        document.getElementById('submit-container').classList.add('hidden');
+        document.getElementById('progress-container').classList.add('hidden');
+        document.getElementById('result-panel').classList.remove('hidden');
+
+        document.getElementById('score-a').innerText = A;
+        document.getElementById('score-b').innerText = B;
+        document.getElementById('score-c').innerText = C;
+
+        let type = "";
+        let desc = "";
+        let typeKey = ""; 
+
+        const diffAB = A - B;
+        const diffAC = A - C;
+        const diffBA = B - A;
+        const diffBC = B - C;
+        const diffCA = C - A;
+        const diffCB = C - B;
+
+        // 判定逻辑（含安全-复合型）
+        if (diffAB > 5 && diffAC > 5) {
+            typeKey = "secure";
+            type = "安全型 (Secure)";
+            desc = "这是最稳定的形式，依恋焦虑和依恋逃避分数都偏低。你对自己和他人都有较高的信任感。";
+        } 
+        else if (diffBA > 5 && diffCA > 5) {
+            typeKey = "fearful";
+            type = "恐惧-逃避型 (Fearful-avoidant)";
+            desc = "依恋焦虑和依恋逃避的倾向都很强，敏感、容易受伤，疑心病较重的类型。";
+        }
+        else if (A > B && B >= 5 && A > C && C >= 5) {
+            typeKey = "secure-complex";
+            type = "安全-复合型 (Secure-Complex)";
+            desc = "具备安全型主导特征，同时在焦虑和逃避两个维度上都有不可忽视的影响。";
+        }
+        else if (A > B && B >= 5 && A >= C) {
+            typeKey = "secure-anxious";
+            type = "安全-焦虑型 (Secure-Anxious)";
+            desc = "整体而言仍属稳定，但看得出依恋焦虑的倾向。";
+        }
+        else if (A > C && C >= 5 && A >= B) {
+            typeKey = "secure-avoidant";
+            type = "安全-逃避型 (Secure-Avoidant)";
+            desc = "整体而言仍属稳定，但看得出依恋逃避的倾向。";
+        }
+        else if (diffBA > 5 && diffBC > 5) {
+            typeKey = "anxious";
+            type = "焦虑型 (Anxious)";
+            desc = "强烈的依恋焦虑，对人际关系敏感。";
+        }
+        else if (B >= A && A >= 5 && B >= C) {
+            typeKey = "anxious-secure";
+            type = "焦虑-安全型 (Anxious-Secure)";
+            desc = "强烈的依恋焦虑，同时具备一定适应力的类型。";
+        }
+        else if (diffCA > 5 && diffCB > 5) {
+            typeKey = "avoidant";
+            type = "逃避型 (Avoidant)";
+            desc = "强烈的依恋逃避，不容易与人建立亲密关系的类型。";
+        }
+        else if (C >= A && A >= 5 && C >= B) {
+            typeKey = "avoidant-secure";
+            type = "逃避-安全型 (Avoidant-Secure)";
+            desc = "强烈的依恋逃避，同时具备一定适应力的类型。";
+        }
+        else {
+            const max = Math.max(A, B, C);
+            if (max === A) { type = "安全型倾向"; desc = "你的分数较为均衡，但安全型分数相对领先。"; }
+            else if (max === B) { type = "焦虑型倾向"; desc = "你的分数较为均衡，但焦虑型分数相对领先。"; }
+            else { type = "逃避型倾向"; desc = "你的分数较为均衡，但逃避型分数相对领先。"; }
+        }
+
+        document.getElementById('result-type').innerText = type;
+        document.getElementById('result-desc').innerText = desc;
+
+        renderCriteriaTable(typeKey);
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderCriteriaTable(activeKey) {
+        const tableBody = document.getElementById('criteria-table');
+        const data = [
+            { key: "secure", name: "安全型 (Secure)", rule: "安全型分数 >> 焦虑型、逃避型", feat: "依恋焦虑、逃避分数都偏低，最稳定" },
+            { key: "secure-anxious", name: "安全-焦虑型 (Secure-Anxious)", rule: "安全型分数 > 焦虑型分数 ≥ 5", feat: "看得出焦虑倾向，但整体稳定" },
+            { key: "secure-avoidant", name: "安全-逃避型 (Secure-Avoidant)", rule: "安全型分数 > 逃避型分数 ≥ 5", feat: "看得出逃避倾向，但整体稳定" },
+            { key: "secure-complex", name: "安全-复合型 (Secure-Complex)", rule: "A > B ≥ 5 同时 A > C ≥ 5", feat: "具备安全型主导，同时兼具焦虑与逃避倾向" },
+            { key: "anxious", name: "焦虑型 (Anxious)", rule: "焦虑型分数 >> 安全型、逃避型", feat: "强烈依恋焦虑，对关系敏感" },
+            { key: "anxious-secure", name: "焦虑-安全型 (Anxious-Secure)", rule: "焦虑型分数 ≥ 安全型分数 ≥ 5", feat: "强烈焦虑，但具备一定适应力" },
+            { key: "avoidant", name: "逃避型 (Avoidant)", rule: "逃避型分数 >> 安全型、焦虑型", feat: "强烈依恋逃避，不易建立亲密关系" },
+            { key: "avoidant-secure", name: "逃避-安全型 (Avoidant-Secure)", rule: "逃避型分数 ≥ 安全型分数 ≥ 5", feat: "强烈逃避，但具备一定适应力" },
+            { key: "fearful", name: "恐惧-逃避型 (Fearful-avoidant)", rule: "焦虑型、逃避型分数 >> 安全型分数", feat: "焦虑与逃避倾向都很强，敏感易受伤" }
+        ];
+
+        tableBody.innerHTML = data.map(item => `
+            <tr class="${item.key === activeKey ? 'highlight-row' : ''}">
+                <td class="p-2 border">${item.name}</td>
+                <td class="p-2 border font-mono">${item.rule}</td>
+                <td class="p-2 border text-gray-500">${item.feat}</td>
+            </tr>
+        `).join('');
+    }
+
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>
+
