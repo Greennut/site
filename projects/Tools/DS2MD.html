@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON 转 Obsidian Markdown 转换器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        main {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-section, .preview-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f0f2ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: #e6e9ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area.drag-over {
+            background: #dce0ff;
+            border-color: #5a67d8;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .status {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #48bb78;
+        }
+
+        .status.error {
+            border-left-color: #f56565;
+        }
+
+        .preview-container {
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .conversation-list {
+            margin-top: 25px;
+        }
+
+        .conversation-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .conversation-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .conversation-item.active {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .conversation-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conversation-date {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .conversation-meta {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 8px;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8f9fa;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .statistics {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗂️ JSON 转 Obsidian Markdown</h1>
+            <p class="subtitle">将对话 JSON 文件转换为 Obsidian 兼容的 Markdown 格式</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <div class="upload-area" id="dropArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>拖放 JSON 文件到此处</h3>
+                    <p>或点击选择文件</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".json">
+                    <p class="file-name" id="fileName">未选择文件</p>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="convertBtn" disabled>
+                        <span id="convertText">开始转换</span>
+                        <span id="convertLoading" class="loading" style="display: none;"></span>
+                    </button>
+                    <button class="btn btn-secondary" id="downloadAllBtn" disabled>
+                        📥 下载全部 (ZIP)
+                    </button>
+                    <button class="btn btn-secondary" id="downloadSingleBtn" disabled>
+                        📄 下载单个
+                    </button>
+                </div>
+
+                <div class="toggle-group">
+                    <button class="toggle-btn active" data-option="includeThink">包含思考过程</button>
+                    <button class="toggle-btn active" data-option="includeMetadata">包含元数据</button>
+                    <button class="toggle-btn active" data-option="formatDates">格式化日期</button>
+                </div>
+
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+
+                <div class="status" id="status">
+                    <strong>就绪</strong><br>
+                    请选择 JSON 文件开始转换
+                </div>
+
+                <div class="statistics" id="statistics" style="display: none;">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statConversations">0</div>
+                        <div class="stat-label">对话数量</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statMessages">0</div>
+                        <div class="stat-label">消息总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statSize">0 KB</div>
+                        <div class="stat-label">文件大小</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>对话列表</h3>
+                <div class="conversation-list" id="conversationList">
+                    <!-- 对话列表将在这里动态生成 -->
+                </div>
+
+                <h3 style="margin-top: 30px;">预览</h3>
+                <div class="preview-container" id="preview">
+                    <!-- Markdown 预览将在这里显示 -->
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>将 AI 对话记录转换为 Obsidian 笔记 • 完全在浏览器中运行，无需上传到服务器</p>
+            <p style="margin-top: 5px; font-size: 12px;">
+                支持 DeepSeek、ChatGPT 等对话格式 • 使用 JSZip 和 FileSaver.js 库
+            </p>
+        </footer>
+    </div>
+
+    <!-- 引入必要的库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script>
+        // 应用状态
+        const appState = {
+            jsonData: null,
+            convertedFiles: [],
+            currentPreviewIndex: 0,
+            options: {
+                includeThink: true,
+                includeMetadata: true,
+                formatDates: true
+            }
+        };
+
+        // DOM 元素
+        const fileInput = document.getElementById('fileInput');
+        const dropArea = document.getElementById('dropArea');
+        const fileName = document.getElementById('fileName');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const downloadSingleBtn = document.getElementById('downloadSingleBtn');
+        const status = document.getElementById('status');
+        const preview = document.getElementById('preview');
+        const conversationList = document.getElementById('conversationList');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+        const statistics = document.getElementById('statistics');
+
+        // 更新状态显示
+        function updateStatus(message, isError = false) {
+            status.textContent = message;
+            status.className = 'status' + (isError ? ' error' : '');
+            status.style.display = 'block';
+        }
+
+        // 更新进度条
+        function updateProgress(current, total) {
+            const percent = (current / total) * 100;
+            progress.style.width = `${percent}%`;
+        }
+
+        // 更新统计数据
+        function updateStatistics(data) {
+            if (!data) return;
+            
+            statistics.style.display = 'grid';
+            const totalMessages = data.reduce((acc, conv) => {
+                const messages = Object.values(conv.mapping).filter(node => node.message);
+                return acc + messages.length;
+            }, 0);
+            
+            const totalSize = JSON.stringify(data).length / 1024;
+            
+            document.getElementById('statConversations').textContent = data.length;
+            document.getElementById('statMessages').textContent = totalMessages;
+            document.getElementById('statSize').textContent = `${totalSize.toFixed(1)} KB`;
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!appState.options.formatDates) return dateString;
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        // 生成安全的文件名
+        function safeFileName(title) {
+            return title
+                .replace(/[<>:"/\\|?*]/g, '') // 移除非法字符
+                .replace(/\s+/g, '_') // 空格替换为下划线
+                .substring(0, 100); // 限制长度
+        }
+
+        // 遍历对话树并提取消息
+        function extractMessages(mapping) {
+            const messages = [];
+            const visited = new Set();
+            
+            // 找到根节点的子节点
+            const rootNode = mapping.root;
+            if (!rootNode || !rootNode.children) return messages;
+            
+            // 递归遍历函数
+            function traverse(nodeId) {
+                if (visited.has(nodeId) || !mapping[nodeId]) return;
+                
+                visited.add(nodeId);
+                const node = mapping[nodeId];
+                
+                // 如果节点有消息，添加到列表
+                if (node.message && node.message.fragments) {
+                    node.message.fragments.forEach(fragment => {
+                        messages.push({
+                            type: fragment.type,
+                            content: fragment.content,
+                            timestamp: node.message.inserted_at
+                        });
+                    });
+                }
+                
+                // 遍历子节点
+                if (node.children) {
+                    node.children.forEach(childId => traverse(childId));
+                }
+            }
+            
+            // 从每个根节点的子节点开始遍历
+            rootNode.children.forEach(childId => traverse(childId));
+            
+            return messages;
+        }
+
+        // 转换单个对话为 Markdown
+        function convertConversationToMarkdown(conversation) {
+            const { id, title, inserted_at, updated_at, mapping } = conversation;
+            
+            let markdown = '';
+            
+            // 添加 YAML frontmatter
+            if (appState.options.includeMetadata) {
+                markdown += `---
+id: "${id}"
+title: "${title.replace(/"/g, '\\"')}"
+created: "${inserted_at}"
+updated: "${updated_at}"
+---
+
+`;
+            }
+            
+            // 添加标题
+            markdown += `# ${title}\n\n`;
+            markdown += `**创建时间：** ${formatDate(inserted_at)}  \n`;
+            markdown += `**最后更新：** ${formatDate(updated_at)}\n\n`;
+            markdown += `---\n\n`;
+            
+            // 提取并添加对话内容
+            const messages = extractMessages(mapping);
+            
+            messages.forEach(msg => {
+                switch (msg.type) {
+                    case 'REQUEST':
+                        markdown += `### 💬 用户\n\n${msg.content}\n\n`;
+                        break;
+                    case 'RESPONSE':
+                        markdown += `### 🤖 助手\n\n${msg.content}\n\n`;
+                        break;
+                    case 'THINK':
+                        if (appState.options.includeThink) {
+                            markdown += `<details>
+<summary>🧠 助手的思考过程</summary>
+
+${msg.content}
+
+</details>\n\n`;
+                        }
+                        break;
+                    default:
+                        markdown += `### ${msg.type}\n\n${msg.content}\n\n`;
+                }
+            });
+            
+            return {
+                filename: `${safeFileName(title)}.md`,
+                content: markdown,
+                conversation
+            };
+        }
+
+        // 转换所有对话
+        function convertAllConversations() {
+            if (!appState.jsonData) return [];
+            
+            updateStatus('正在转换对话...');
+            progressBar.style.display = 'block';
+            
+            const total = appState.jsonData.length;
+            const convertedFiles = [];
+            
+            appState.jsonData.forEach((conv, index) => {
+                updateProgress(index + 1, total);
+                convertedFiles.push(convertConversationToMarkdown(conv));
+            });
+            
+            progressBar.style.display = 'none';
+            updateStatus(`转换完成！共 ${total} 个对话`);
+            appState.convertedFiles = convertedFiles;
+            
+            return convertedFiles;
+        }
+
+        // 生成对话列表
+        function generateConversationList(files) {
+            conversationList.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const { conversation } = file;
+                const item = document.createElement('div');
+                item.className = 'conversation-item';
+                if (index === appState.currentPreviewIndex) {
+                    item.classList.add('active');
+                }
+                
+                item.innerHTML = `
+                    <div class="conversation-title">
+                        <span>${conversation.title}</span>
+                        <span class="conversation-date">${formatDate(conversation.inserted_at).split(' ')[0]}</span>
+                    </div>
+                    <div class="conversation-meta">
+                        模型: ${conversation.mapping[conversation.mapping.root.children[0]]?.message?.model || '未知'} 
+                        | 消息数: ${Object.values(conversation.mapping).filter(n => n.message).length}
+                    </div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    appState.currentPreviewIndex = index;
+                    previewConversation(index);
+                    // 更新激活状态
+                    document.querySelectorAll('.conversation-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                });
+                
+                conversationList.appendChild(item);
+            });
+        }
+
+        // 预览对话
+        function previewConversation(index) {
+            if (!appState.convertedFiles[index]) return;
+            
+            const file = appState.convertedFiles[index];
+            preview.textContent = file.content;
+            
+            // 语法高亮（简化版）
+            preview.innerHTML = file.content
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/---/g, '<hr>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // 下载单个文件
+        function downloadSingleFile() {
+            const file = appState.convertedFiles[appState.currentPreviewIndex];
+            if (!file) return;
+            
+            const blob = new Blob([file.content], { type: 'text/markdown;charset=utf-8' });
+            saveAs(blob, file.filename);
+            updateStatus(`已下载: ${file.filename}`);
+        }
+
+        // 下载所有文件为 ZIP
+        async function downloadAllAsZip() {
+            if (appState.convertedFiles.length === 0) return;
+            
+            updateStatus('正在创建 ZIP 文件...');
+            convertBtn.disabled = true;
+            downloadAllBtn.disabled = true;
+            
+            try {
+                const zip = new JSZip();
+                
+                // 添加每个文件到 ZIP
+                appState.convertedFiles.forEach(file => {
+                    zip.file(file.filename, file.content);
+                });
+                
+                // 添加一个说明文件
+                zip.file('README.md', `# Obsidian 对话导入包
+
+此 ZIP 包包含 ${appState.convertedFiles.length} 个对话文件，转换为 Obsidian 兼容的 Markdown 格式。
+
+## 如何导入
+1. 解压此 ZIP 文件
+2. 将所有 .md 文件复制到 Obsidian 仓库的文件夹中
+3. 在 Obsidian 中刷新即可看到所有笔记
+
+## 转换设置
+- 包含思考过程: ${appState.options.includeThink}
+- 包含元数据: ${appState.options.includeMetadata}
+- 格式化日期: ${appState.options.formatDates}
+
+转换时间: ${new Date().toLocaleString()}
+`);
+                
+                // 生成 ZIP 文件
+                const content = await zip.generateAsync({ type: 'blob' });
+                saveAs(content, `obsidian_notes_${Date.now()}.zip`);
+                
+                updateStatus(`ZIP 文件已创建！包含 ${appState.convertedFiles.length} 个文件`);
+            } catch (error) {
+                updateStatus(`创建 ZIP 文件时出错: ${error.message}`, true);
+            } finally {
+                convertBtn.disabled = false;
+                downloadAllBtn.disabled = false;
+            }
+        }
+
+        // 处理文件选择
+        function handleFileSelect(file) {
+            fileName.textContent = file.name;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    appState.jsonData = data;
+                    
+                    // 验证数据格式
+                    if (!Array.isArray(data)) {
+                        throw new Error('JSON 文件应该包含一个对话数组');
+                    }
+                    
+                    updateStatus(`已加载 ${data.length} 个对话`);
+                    updateStatistics(data);
+                    convertBtn.disabled = false;
+                    downloadAllBtn.disabled = false;
+                    downloadSingleBtn.disabled = false;
+                    
+                    // 自动转换并预览第一个对话
+                    convertAllConversations();
+                    if (appState.convertedFiles.length > 0) {
+                        generateConversationList(appState.convertedFiles);
+                        previewConversation(0);
+                    }
+                    
+                } catch (error) {
+                    updateStatus(`解析 JSON 文件时出错: ${error.message}`, true);
+                    appState.jsonData = null;
+                    convertBtn.disabled = true;
+                    downloadAllBtn.disabled = true;
+                    downloadSingleBtn.disabled = true;
+                }
+            };
+            
+            reader.onerror = function() {
+                updateStatus('读取文件时出错', true);
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // 事件监听器
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('drag-over');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('drag-over');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-over');
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        convertBtn.addEventListener('click', () => {
+            if (!appState.jsonData) return;
+            
+            convertAllConversations();
+            if (appState.convertedFiles.length > 0) {
+                generateConversationList(appState.convertedFiles);
+                previewConversation(0);
+                downloadAllBtn.disabled = false;
+                downloadSingleBtn.disabled = false;
+            }
+        });
+
+        downloadAllBtn.addEventListener('click', downloadAllAsZip);
+        downloadSingleBtn.addEventListener('click', downloadSingleFile);
+
+        // 选项切换
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const option = this.dataset.option;
+                this.classList.toggle('active');
+                appState.options[option] = this.classList.contains('active');
+                
+                // 重新转换并更新预览
+                if (appState.jsonData) {
+                    convertAllConversations();
+                    if (appState.convertedFiles.length > 0) {
+                        previewConversation(appState.currentPreviewIndex);
+                    }
+                }
+            });
+        });
+
+        // 拖放提示
+        updateStatus('就绪 - 请拖放 JSON 文件或点击上方区域选择文件');
+    </script>
+</body>
+</html>
