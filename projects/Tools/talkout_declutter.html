@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini 聊天记录智能拆分工具</title>
+    <!-- Tailwind CSS for UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- JSZip for creating zip files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Turndown for HTML to Markdown conversion -->
+    <script src="https://unpkg.com/turndown/lib/turndown.browser.umd.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f3f4f6; color: #1f2937; }
+        .log-container { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="min-h-screen p-6 font-sans">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">
+            <i class="fa-solid fa-layer-group text-blue-500 mr-2"></i> Gemini 聊天记录智能拆分工具
+        </h1>
+
+        <div class="space-y-6">
+            <!-- 配置区域 -->
+            <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold mb-4 text-gray-700">1. 参数配置</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key (用于语义判断与总结)</label>
+                    <input type="password" id="api-key" placeholder="AIzaSy..." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow">
+                    <p class="text-xs text-gray-500 mt-1">你的密钥仅在本地浏览器中使用，不会上传至任何第三方服务器。</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">导入 HTML 文件 (Google Takeout 导出的 MyActivity.html)</label>
+                    <input type="file" id="html-file" accept=".html" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors">
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="flex items-center gap-4">
+                <button id="process-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md shadow-sm transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i> 开始解析与拆分
+                </button>
+                <button id="download-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-md shadow-sm transition-colors flex items-center gap-2 hidden">
+                    <i class="fa-solid fa-download"></i> 下载 ZIP 包
+                </button>
+            </div>
+
+            <!-- 日志控制台 -->
+            <div class="bg-gray-900 rounded-lg p-4 mt-6 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-300 text-sm font-semibold">运行日志</span>
+                    <span id="status-badge" class="px-2 py-1 text-xs font-medium rounded bg-gray-600 text-gray-200">待命</span>
+                </div>
+                <div id="log-window" class="log-container h-64 overflow-y-auto text-sm text-green-400 font-mono space-y-1">
+                    <div>> 等待导入文件...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Markdown 转换器
+        const turndownService = new TurndownService({
+            headingStyle: 'atx',
+            codeBlockStyle: 'fenced'
+        });
+
+        // 基础参数设定
+        const TIME_GAP_MS = 2 * 60 * 60 * 1000; // 2 小时阈值
+        let finalZipData = null;
+
+        // UI 元素绑定
+        const uiLog = document.getElementById('log-window');
+        const btnProcess = document.getElementById('process-btn');
+        const btnDownload = document.getElementById('download-btn');
+        const inputKey = document.getElementById('api-key');
+        const inputFile = document.getElementById('html-file');
+        const statusBadge = document.getElementById('status-badge');
+
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            const time = new Date().toLocaleTimeString();
+            div.innerHTML = `<span class="text-gray-500">[${time}]</span> ${msg}`;
+            if (type === 'error') div.className = 'text-red-400';
+            if (type === 'warn') div.className = 'text-yellow-400';
+            uiLog.appendChild(div);
+            uiLog.scrollTop = uiLog.scrollHeight;
+        }
+
+        function setStatus(text, colorClass) {
+            statusBadge.textContent = text;
+            statusBadge.className = `px-2 py-1 text-xs font-medium rounded ${colorClass}`;
+        }
+
+        // --- 核心网络请求 (带重试机制的指数退避) ---
+        async function fetchWithRetry(apiKey, payload, maxRetries = 5) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            let delay = 1000;
+            
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return data.candidates[0].content.parts[0].text;
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2; // 指数退避
+                }
+            }
+        }
+
+        // --- 语义判断逻辑 ---
+        async function semanticSplit(prompts, apiKey) {
+            if (prompts.length <= 1) return [1];
+
+            const promptList = prompts.map((p, idx) => `${idx + 1}. ${p}`).join('\n');
+            const payload = {
+                contents: [{ parts: [{ text: `你是一个语义分析器。判断以下由同一个用户在相近时间内提出的多个问题是否属于同一个连续的对话上下文。\n\n规则：根据话题的连贯性，为每一个问题分配一个组ID（整数，从1开始递增）。例如前两句是查天气，第三句突然变成了写代码，则输出 [1, 1, 2]。\n\n用户提问列表：\n${promptList}` }] }],
+                systemInstruction: { parts: [{ text: "仅输出合法的JSON整数数组，不要有任何其他解释字符或 Markdown 标记。例如：[1, 1, 2, 2, 3]" }]},
+                generationConfig: { responseMimeType: "application/json" }
+            };
+
+            try {
+                const result = await fetchWithRetry(apiKey, payload);
+                const arr = JSON.parse(result);
+                if (Array.isArray(arr) && arr.length === prompts.length) {
+                    return arr;
+                }
+                throw new Error("格式不符");
+            } catch (e) {
+                log(`语义分割 API 失败，降级为同一组。原因: ${e.message}`, 'warn');
+                return prompts.map(() => 1); // 失败则默认不切分
+            }
+        }
+
+        // --- 文件命名摘要逻辑 ---
+        async function generateFilenameSummary(promptText, apiKey) {
+            const payload = {
+                contents: [{ parts: [{ text: `根据用户的这个提问，提取一个核心摘要用于文件命名：\n"${promptText}"` }] }],
+                systemInstruction: { parts: [{ text: "提取5-15个中文字符的摘要。禁止出现空格、标点符号、特殊字符。不要包含类似'提问'、'回答'的字眼。只输出纯文本内容。" }]}
+            };
+
+            try {
+                const result = await fetchWithRetry(apiKey, payload);
+                let text = result.replace(/[\s\r\n\t\\\/\:\*\?\"\<\>\|]/g, '').substring(0, 20); // 移除系统保留字符
+                return text || "未知对话";
+            } catch (e) {
+                return "未知对话_解析失败";
+            }
+        }
+
+        // --- HTML 节点清洗与时间解析 ---
+        function parseGeminiDate(dateStr) {
+            // Takeout格式示例: "Mar 16, 2026, 8:49:41 AM PDT" 或包含特殊的不换行空格
+            let cleanStr = dateStr.replace(/\u202f/g, ' '); 
+            // 尝试移除时区字符串 (如 PDT, PST, UTC)
+            cleanStr = cleanStr.replace(/\s+[A-Z]{3,4}$/, '');
+            let d = new Date(cleanStr);
+            return isNaN(d.getTime()) ? new Date() : d;
+        }
+
+        function extractEntriesFromHtml(htmlString) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+            const cells = doc.querySelectorAll('.content-cell');
+            
+            let records = [];
+            cells.forEach(cell => {
+                if (!cell.textContent.includes('Prompted')) return;
+                
+                const nodes = Array.from(cell.childNodes);
+                let promptIndex = nodes.findIndex(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim().startsWith('Prompted'));
+                if (promptIndex === -1) return;
+
+                let promptText = nodes[promptIndex].textContent.replace(/^Prompted\s*/i, '').trim();
+                
+                let dateIndex = promptIndex + 2;
+                let dateText = nodes[dateIndex] ? nodes[dateIndex].textContent.trim() : "";
+                let dateObj = parseGeminiDate(dateText);
+
+                let responseHtml = "";
+                for (let i = dateIndex + 2; i < nodes.length; i++) {
+                    if (nodes[i].nodeType === Node.ELEMENT_NODE) {
+                        responseHtml += nodes[i].outerHTML;
+                    } else if (nodes[i].nodeType === Node.TEXT_NODE) {
+                        responseHtml += nodes[i].textContent;
+                    }
+                }
+                
+                records.push({ time: dateObj, prompt: promptText, html: responseHtml });
+            });
+            
+            // 按时间正序排列
+            records.sort((a, b) => a.time - b.time);
+            return records;
+        }
+
+        // --- 核心调度流程 ---
+        btnProcess.addEventListener('click', async () => {
+            const apiKey = inputKey.value.trim();
+            const file = inputFile.files[0];
+
+            if (!apiKey) {
+                alert("请先提供 Gemini API Key。");
+                return;
+            }
+            if (!file) {
+                alert("请先选择 HTML 文件。");
+                return;
+            }
+
+            btnProcess.disabled = true;
+            btnProcess.classList.add('opacity-50', 'cursor-not-allowed');
+            setStatus("读取文件", "bg-blue-600 text-white");
+            log(`开始读取文件: ${file.name}...`);
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        await processData(e.target.result, apiKey);
+                    } catch (error) {
+                        log(`处理过程崩溃: ${error.message}`, 'error');
+                        setStatus("发生错误", "bg-red-600 text-white");
+                    }
+                };
+                reader.readAsText(file);
+            } catch (err) {
+                log(`文件读取失败: ${err.message}`, 'error');
+            }
+        });
+
+        async function processData(htmlData, apiKey) {
+            log("文件加载完成，开始解析 DOM 结构...");
+            setStatus("解析DOM", "bg-yellow-600 text-white");
+            const entries = extractEntriesFromHtml(htmlData);
+            log(`解析完毕，共提取到 ${entries.length} 条对话记录。`);
+
+            if (entries.length === 0) {
+                log("未检测到有效对话，请确认该文件是正规导出的 Takeout HTML 文件。", 'error');
+                resetBtn();
+                return;
+            }
+
+            // 阶段 1：物理时间切分
+            setStatus("时间组块", "bg-purple-600 text-white");
+            log("启动阶段 1：根据 2 小时物理阈值进行基础组块...");
+            let timeGroups = [];
+            let currentGroup = [];
+            
+            for (let i = 0; i < entries.length; i++) {
+                currentGroup.push(entries[i]);
+                const isLast = (i === entries.length - 1);
+                
+                if (!isLast) {
+                    const diffMs = entries[i+1].time - entries[i].time;
+                    if (diffMs > TIME_GAP_MS) {
+                        timeGroups.push(currentGroup);
+                        currentGroup = [];
+                    }
+                } else {
+                    timeGroups.push(currentGroup);
+                }
+            }
+            log(`物理组块完成，划分出 ${timeGroups.length} 个时间区块。`);
+
+            // 阶段 2：语义二次切分
+            setStatus("语义分析", "bg-indigo-600 text-white");
+            log("启动阶段 2：调取 Gemini API 对聚集区块进行语义切分...");
+            let finalSessions = [];
+            
+            for (let i = 0; i < timeGroups.length; i++) {
+                const tGroup = timeGroups[i];
+                if (tGroup.length === 1) {
+                    finalSessions.push(tGroup);
+                    continue;
+                }
+
+                log(`  > 正在分析第 ${i+1}/${timeGroups.length} 块 (包含 ${tGroup.length} 条记录)...`);
+                const prompts = tGroup.map(item => item.prompt);
+                const semanticIndices = await semanticSplit(prompts, apiKey);
+                
+                let sessionDict = {};
+                for (let j = 0; j < tGroup.length; j++) {
+                    const sId = semanticIndices[j] || 1; 
+                    if (!sessionDict[sId]) sessionDict[sId] = [];
+                    sessionDict[sId].push(tGroup[j]);
+                }
+                
+                Object.values(sessionDict).forEach(session => {
+                    finalSessions.push(session);
+                });
+            }
+            log(`语义切分完成，最终划分出 ${finalSessions.length} 个独立会话。`);
+
+            // 阶段 3：格式转换与压缩
+            setStatus("生成文档", "bg-pink-600 text-white");
+            log("启动阶段 3：排版重构，转换为 Markdown 格式并生成总结标题...");
+            
+            const zip = new JSZip();
+            
+            for (let i = 0; i < finalSessions.length; i++) {
+                const session = finalSessions[i];
+                const startTime = session[0].time;
+                const datePrefix = `${startTime.getFullYear()}-${String(startTime.getMonth()+1).padStart(2,'0')}-${String(startTime.getDate()).padStart(2,'0')}`;
+                
+                // 调取 API 生成文件名
+                log(`  > 正在生成第 ${i+1}/${finalSessions.length} 个文件的标题摘要...`);
+                const summary = await generateFilenameSummary(session[0].prompt, apiKey);
+                const filename = `${datePrefix}_${summary}.md`;
+
+                // 组装 Markdown 内容
+                let mdContent = `---\n`;
+                mdContent += `aliases: ["${summary}"]\n`;
+                mdContent += `tags: [gemini-declutter, ai-chat]\n`;
+                mdContent += `created: ${startTime.toISOString()}\n`;
+                mdContent += `---\n\n`;
+
+                for (let item of session) {
+                    // HTML UI 包裹提问：淡蓝色背景、1.1em字体尺寸
+                    const safePrompt = item.prompt.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+                    mdContent += `<div style="background-color: #e0f2fe; padding: 16px; border-radius: 8px; font-size: 1.1em; color: #0f172a; margin-bottom: 16px; border-left: 4px solid #3b82f6;">\n`;
+                    mdContent += `<strong>👤 提问 (${item.time.toLocaleTimeString()}):</strong><br>\n${safePrompt}\n`;
+                    mdContent += `</div>\n\n`;
+
+                    mdContent += `### 🤖 Gemini\n\n`;
+                    // 将 HTML 转码为 MD
+                    let responseMd = turndownService.turndown(item.html);
+                    mdContent += responseMd + `\n\n---\n\n`;
+                }
+
+                zip.file(filename, mdContent);
+            }
+
+            setStatus("打包就绪", "bg-green-600 text-white");
+            log(`全部生成完毕。共准备压缩 ${finalSessions.length} 个文件。`);
+            
+            finalZipData = await zip.generateAsync({ type: "blob" });
+            
+            btnDownload.classList.remove('hidden');
+            resetBtn();
+            log("处理流程彻底结束。请点击下载 ZIP 包。");
+        }
+
+        function resetBtn() {
+            btnProcess.disabled = false;
+            btnProcess.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnProcess.innerHTML = `<i class="fa-solid fa-play"></i> 重新解析`;
+        }
+
+        // 下载触发
+        btnDownload.addEventListener('click', () => {
+            if (!finalZipData) return;
+            const url = URL.createObjectURL(finalZipData);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Gemini_Decluttered_${new Date().getTime()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log("ZIP 文件下载已触发。");
+        });
+    </script>
+</body>
+</html>
+
