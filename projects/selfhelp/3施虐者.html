@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>约会安全 · 风险评估</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #F8F9FA;
+            color: #1E2A3A;
+            padding: 16px 12px 48px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 20px 16px 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        /* ===== 头部 ===== */
+        .header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #DADCE0;
+        }
+
+        .header h1 {
+            font-size: clamp(20px, 5vw, 26px);
+            font-weight: 700;
+            color: #1E2A3A;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 绿色点缀 —— 标题装饰点 */
+        .header h1 .dot-green {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #7CB342;
+            flex-shrink: 0;
+        }
+
+        .header .desc {
+            font-size: clamp(13px, 3.4vw, 15px);
+            color: #5F6368;
+            background: #F8F9FA;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-top: 14px;
+            line-height: 1.7;
+            border-left: 3px solid #7CB342;
+        }
+
+        /* ===== 章节 ===== */
+        .section {
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: clamp(14px, 3.6vw, 16px);
+            font-weight: 600;
+            color: #1E2A3A;
+            padding: 6px 0 6px;
+            border-bottom: 2px solid #DADCE0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 绿色点缀 —— 章节标题装饰线 */
+        .section-title .accent-green {
+            display: inline-block;
+            width: 3px;
+            height: 16px;
+            border-radius: 2px;
+            background: #7CB342;
+            flex-shrink: 0;
+        }
+
+        .section-desc {
+            font-size: clamp(12px, 3vw, 14px);
+            color: #5F6368;
+            margin-top: 4px;
+        }
+
+        /* ===== 卡片 ===== */
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #DADCE0;
+            border-radius: 10px;
+            padding: 14px 14px 16px;
+            margin-bottom: 8px;
+            transition: border-color 0.15s;
+        }
+
+        .card:active {
+            border-color: #7CB342;
+        }
+
+        .card.blue-line {
+            border-left: 4px solid #1A73E8;
+            background: #F8F9FA;
+        }
+
+        .card-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-q {
+            font-size: clamp(14px, 3.5vw, 16px);
+            font-weight: 500;
+            color: #1E2A3A;
+            line-height: 1.5;
+        }
+
+        /* 彩色标签 —— 绿色、蓝色、灰色 */
+        .card-q .badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 1px 10px;
+            border-radius: 30px;
+            margin-left: 4px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .badge-green {
+            background: #F0F7EC;
+            color: #7CB342;
+        }
+
+        .badge-blue {
+            background: #E8F0FE;
+            color: #1A73E8;
+        }
+
+        .badge-gray {
+            background: #F1F3F4;
+            color: #5F6368;
+        }
+
+        .card-q .blue-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1A73E8;
+            background: #E8F0FE;
+            padding: 1px 10px;
+            border-radius: 30px;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+
+        /* ===== 单选 ===== */
+        .radio-group {
+            display: flex;
+            gap: 18px;
+            padding-top: 2px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: clamp(14px, 3.5vw, 16px);
+            color: #3D4A5C;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .radio-group input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1A73E8;
+            margin: 0;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        /* ===== 示例框 —— 绿色边框 ===== */
+        .examples {
+            background: #F8F9FA;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            transition: opacity 0.2s;
+            border-left: 3px solid #7CB342;
+        }
+
+        .examples.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            border-left-color: #DADCE0;
+        }
+
+        .examples .ex-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: #5F6368;
+            margin-bottom: 8px;
+        }
+
+        .examples .ex-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: clamp(13px, 3.2vw, 14px);
+            color: #3D4A5C;
+            padding: 3px 0;
+        }
+
+        .examples .ex-item input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #1A73E8;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        /* 迷你彩色标签 */
+        .examples .ex-item .mini-tag {
+            font-size: 11px;
+            padding: 0 8px;
+            border-radius: 20px;
+            margin-left: 4px;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .mini-tag-green {
+            background: #F0F7EC;
+            color: #7CB342;
+        }
+
+        .mini-tag-blue {
+            background: #E8F0FE;
+            color: #1A73E8;
+        }
+
+        .mini-tag-gray {
+            background: #F1F3F4;
+            color: #5F6368;
+        }
+
+        /* ===== 提交按钮 ===== */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1A73E8;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(16px, 4vw, 18px);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 32px;
+            transition: background 0.15s, transform 0.1s;
+            touch-action: manipulation;
+        }
+
+        .submit-btn:active {
+            background: #1557B0;
+            transform: scale(0.98);
+        }
+
+        /* ===== 结果 ===== */
+        .result {
+            display: none;
+            margin-top: 28px;
+            padding: 18px 18px 20px;
+            border-radius: 10px;
+            border: 1px solid;
+        }
+
+        .result.danger {
+            background: #F8F9FA;
+            border-color: #1A73E8;
+        }
+
+        .result.safe {
+            background: #F0F7EC;
+            border-color: #7CB342;
+        }
+
+        .result .r-head {
+            font-size: clamp(17px, 4.2vw, 20px);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result .r-body {
+            font-size: clamp(14px, 3.5vw, 15px);
+            line-height: 1.7;
+            color: #1E2A3A;
+        }
+
+        .result .r-body strong {
+            font-weight: 700;
+        }
+
+        /* ===== 桌面适配 ===== */
+        @media (min-width: 640px) {
+            body { padding: 32px 24px 60px; }
+            .container { padding: 32px 36px 40px; }
+            .card { padding: 18px 20px; }
+            .card-row { flex-direction: row; align-items: center; justify-content: space-between; }
+            .card-q { flex: 1; }
+            .radio-group { flex-shrink: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="dot-green"></span>
+            初次约会 · 风险识别
+        </h1>
+        <div class="desc">
+            “你能做些什么来避免虐待者和自恋者？是否有任何警告信号、任何识别标记、经验法则可以保护你免受虐待关系带来的痛苦和创伤？<br>
+            想象一下第一次或第二次约会。你已经可以判断他是否是一个潜在的施虐者。方法如下：”
+        </div>
+    </div>
+
+    <form id="assessmentForm">
+
+        <!-- 一 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="accent-green"></span>
+                一、异质防御机制 · 归因与情绪
+            </div>
+            <div class="section-desc">“也许第一个迹象就是施虐者的异质防御机制——他倾向于将自己的每一个错误、每一个失败或不幸归咎于他人或整个世界。”</div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">1. 归因模式：他是否倾向于将自己的困境归咎于外界，而不承担个人责任？ <span class="badge badge-green">习惯性</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m1" value="yes" onchange="toggleExamples(1, true)" required> 是</label>
+                    <label><input type="radio" name="m1" value="no" onchange="toggleExamples(1, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-1">
+                <div class="ex-title">典型场景（需选“是”后勾选）</div>
+                <div class="ex-item"><input type="checkbox" name="m1_ex" value="1" disabled> 总是归咎于你、出租车司机、服务员、天气、政府或命运</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">2. 情绪稳定性：他是否情绪过度敏感，并存在攻击性表现？ <span class="badge badge-blue">频繁</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m2" value="yes" onchange="toggleExamples(2, true)" required> 是</label>
+                    <label><input type="radio" name="m2" value="no" onchange="toggleExamples(2, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-2">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m2_ex" value="1" disabled> 喜欢挑起争端，经常感到被轻视、伤害和侮辱</div>
+                <div class="ex-item"><input type="checkbox" name="m2_ex" value="2" disabled> 不停地咆哮</div>
+                <div class="ex-item"><input type="checkbox" name="m2_ex" value="3" disabled> 语言恶毒，充满咒骂、威胁和敌意</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">3. 同理心缺失：他是否对弱者或无法反抗的对象表现出残忍或消极攻击情绪？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m3" value="yes" onchange="toggleExamples(3, true)" required> 是</label>
+                    <label><input type="radio" name="m3" value="no" onchange="toggleExamples(3, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-3">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m3_ex" value="1" disabled> 对动物和儿童不耐烦或残忍</div>
+                <div class="ex-item"><input type="checkbox" name="m3_ex" value="2" disabled> 对弱者、穷人、有需要的人、多愁善感的人和残疾人表现出攻击性</div>
+            </div>
+        </div>
+
+        <div class="card blue-line">
+            <div class="card-row">
+                <div class="card-q">4. <span class="blue-badge">⛔ 红线</span> 暴力史：他是否承认自己有过殴打或暴力犯罪/暴力行为？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m4" value="yes" required> 是</label>
+                    <label><input type="radio" name="m4" value="no"> 否</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 二 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="accent-green"></span>
+                二、爱情轰炸 · 强制亲密
+            </div>
+            <div class="section-desc">“接下来：（爱情轰炸是需要谨慎的主要原因，即使不是完全恐慌。）”</div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">5. 节奏推进：他是否过于急切，在极早期发动爱情轰炸？ <span class="badge badge-green">强迫性</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m5" value="yes" onchange="toggleExamples(5, true)" required> 是</label>
+                    <label><input type="radio" name="m5" value="no" onchange="toggleExamples(5, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-5">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m5_ex" value="1" disabled> 约会两次后就逼迫你嫁给他</div>
+                <div class="ex-item"><input type="checkbox" name="m5_ex" value="2" disabled> 第一次约会就计划要孩子</div>
+                <div class="ex-item"><input type="checkbox" name="m5_ex" value="3" disabled> 立刻把你当成一生挚爱</div>
+            </div>
+        </div>
+
+        <div class="card blue-line">
+            <div class="card-row">
+                <div class="card-q">6. <span class="blue-badge">⛔ 红线</span> 身体与关系强迫：他是否强迫你建立专一亲密关系，甚至实施严重侵犯？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m6" value="yes" onchange="toggleExamples(6, true)" required> 是</label>
+                    <label><input type="radio" name="m6" value="no" onchange="toggleExamples(6, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-6">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m6_ex" value="1" disabled> 强迫你专一、立即亲密，甚至差点强奸你</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">7. 嫉妒与自主权剥夺：他是否强烈排他，并试图剥夺你的个人自主权？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m7" value="yes" onchange="toggleExamples(7, true)" required> 是</label>
+                    <label><input type="radio" name="m7" value="no" onchange="toggleExamples(7, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-7">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m7_ex" value="1" disabled> 当你瞥一眼其他男性时就会表现出嫉妒 <span class="mini-tag mini-tag-green">每次都</span></div>
+                <div class="ex-item"><input type="checkbox" name="m7_ex" value="2" disabled> 告诉你一旦结婚就应该放弃学业或辞去工作</div>
+            </div>
+        </div>
+
+        <!-- 三 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="accent-green"></span>
+                三、界限侵犯 · 隐私与行程管控
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">8. 界限尊重：他是否不尊重你的界限与隐私，将你工具化？ <span class="badge badge-blue">习惯性</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m8" value="yes" onchange="toggleExamples(8, true)" required> 是</label>
+                    <label><input type="radio" name="m8" value="no" onchange="toggleExamples(8, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-8">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m8_ex" value="1" disabled> 无视你的意愿（擅自选菜单或电影）</div>
+                <div class="ex-item"><input type="checkbox" name="m8_ex" value="2" disabled> 突兀出现在你家门口或约会前频繁打爆电话</div>
+                <div class="ex-item"><input type="checkbox" name="m8_ex" value="3" disabled> 在你未准备好时擅自翻看你的个人物品</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">9. 行程追踪与控制：他是否强迫性地监控你的行程与全局？ <span class="badge badge-green">强迫性</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m9" value="yes" onchange="toggleExamples(9, true)" required> 是</label>
+                    <label><input type="radio" name="m9" value="no" onchange="toggleExamples(9, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-9">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m9_ex" value="1" disabled> 不停发短信/打电话，坚持要知道你在哪或去过哪</div>
+                <div class="ex-item"><input type="checkbox" name="m9_ex" value="2" disabled> 坚持要坐他的车，并保管车钥匙、钱、门票甚至你的包</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">10. 离开视线盘问：他是否无法承受你离开其视线，并进行盘问打压？ <span class="badge badge-blue">每次都</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m10" value="yes" onchange="toggleExamples(10, true)" required> 是</label>
+                    <label><input type="radio" name="m10" value="no" onchange="toggleExamples(10, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-10">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m10_ex" value="1" disabled> 离开太久（如去化妆间）就不高兴</div>
+                <div class="ex-item"><input type="checkbox" name="m10_ex" value="2" disabled> 当你回来时盘问你（“有没有看到有趣的人”）或讲下流笑话</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">11. 许可制与管控：他是否暗示将来你需要得到他的许可才能活动？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m11" value="yes" onchange="toggleExamples(11, true)" required> 是</label>
+                    <label><input type="radio" name="m11" value="no" onchange="toggleExamples(11, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-11">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m11_ex" value="1" disabled> 见朋友或拜访家人需要其许可</div>
+                <div class="ex-item"><input type="checkbox" name="m11_ex" value="2" disabled> 强加“着装要求”</div>
+            </div>
+        </div>
+
+        <!-- 四 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="accent-green"></span>
+                四、贬低打压 · 显性伤害
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">12. 居高临下与打压：他是否经常贬低你或进行情绪打压？ <span class="badge badge-blue">习惯性</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m12" value="yes" onchange="toggleExamples(12, true)" required> 是</label>
+                    <label><input type="radio" name="m12" value="no" onchange="toggleExamples(12, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-12">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m12_ex" value="1" disabled> 居高临下批评、骂你、骚扰你或嘲笑你</div>
+                <div class="ex-item"><input type="checkbox" name="m12_ex" value="2" disabled> 强调你最细微的缺点（贬低），或过度夸大特质（理想化）</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">13. 极不切实际：他是否对关系和生活抱有极端不切实际的期望？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m13" value="yes" required> 是</label>
+                    <label><input type="radio" name="m13" value="no"> 否</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">14. 情绪倒打一耙：他是否使用“看看你让我做了什么”式口头禅？ <span class="badge badge-green">频繁</span></div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m14" value="yes" onchange="toggleExamples(14, true)" required> 是</label>
+                    <label><input type="radio" name="m14" value="no" onchange="toggleExamples(14, false)"> 否</label>
+                </div>
+            </div>
+            <div class="examples disabled" id="ex-box-14">
+                <div class="ex-title">典型场景</div>
+                <div class="ex-item"><input type="checkbox" name="m14_ex" value="1" disabled> 先说你让他感觉很好，随后说你让他感觉不好/激怒了他</div>
+            </div>
+        </div>
+
+        <div class="card blue-line">
+            <div class="card-row">
+                <div class="card-q">15. <span class="blue-badge">⛔ 红线</span> 病理虐待幻想：他是否表达过强奸、恋童或从虐待中获取兴奋？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m15" value="yes" required> 是</label>
+                    <label><input type="radio" name="m15" value="no"> 否</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card blue-line">
+            <div class="card-row">
+                <div class="card-q">16. <span class="blue-badge">⛔ 红线</span> 性施虐行为：在性交过程中他是否对你过于强硬或喜欢伤害你？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m16" value="yes" required> 是</label>
+                    <label><input type="radio" name="m16" value="no"> 否</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card blue-line">
+            <div class="card-row">
+                <div class="card-q">17. <span class="blue-badge">⛔ 红线</span> 言语与肢体虐待：他是否辱骂、殴打或扇你耳光？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m17" value="yes" required> 是</label>
+                    <label><input type="radio" name="m17" value="no"> 否</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-row">
+                <div class="card-q">18. 周期性虐待循环：他是否在虐待/暴怒后转而甜言蜜语道歉买礼物？</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="m18" value="yes" required> 是</label>
+                    <label><input type="radio" name="m18" value="no"> 否</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="submit-btn" onclick="evaluateAssessment()">提交评估</button>
+    </form>
+
+    <div class="result" id="resultBox">
+        <div class="r-head" id="resultHeader"></div>
+        <div class="r-body" id="resultDetail"></div>
+    </div>
+</div>
+
+<script>
+    function toggleExamples(idx, enable) {
+        const box = document.getElementById('ex-box-' + idx);
+        if (!box) return;
+        const cbs = box.querySelectorAll('input[type="checkbox"]');
+        if (enable) {
+            box.classList.remove('disabled');
+            cbs.forEach(cb => cb.disabled = false);
+        } else {
+            box.classList.add('disabled');
+            cbs.forEach(cb => { cb.disabled = true; cb.checked = false; });
+        }
+    }
+
+    function evaluateAssessment() {
+        const form = document.getElementById('assessmentForm');
+        const data = new FormData(form);
+
+        let answered = 0;
+        for (let i = 1; i <= 18; i++) {
+            if (data.has('m' + i)) answered++;
+        }
+        if (answered < 18) {
+            alert('请回答完所有 18 个问题');
+            return;
+        }
+
+        let count = 0, hasRed = false;
+        const reds = [4, 6, 15, 16, 17];
+        for (let i = 1; i <= 18; i++) {
+            if (data.get('m' + i) === 'yes') {
+                count++;
+                if (reds.includes(i)) hasRed = true;
+            }
+        }
+
+        const box = document.getElementById('resultBox');
+        const head = document.getElementById('resultHeader');
+        const body = document.getElementById('resultDetail');
+        box.style.display = 'block';
+
+        if (count > 0) {
+            box.className = 'result danger';
+            head.textContent = '⚠️ 判定：远离他，他是一个施虐者';
+            let msg = '在 18 个维度中，触发了 ' + count + ' 个高风险模块。';
+            if (hasRed) msg += ' 其中包含绝对红线项。';
+            msg += ' 原文标准：只要任何一个主干问题答「是」，即构成风险。';
+            body.innerHTML = '<strong>' + msg + '</strong>';
+        } else {
+            box.className = 'result safe';
+            head.textContent = '✅ 未见显性风险';
+            body.textContent = '所有维度均未触发，请继续保持健康的界限意识。';
+        }
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+</script>
+
+</body>
+</html>
