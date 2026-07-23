@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>掠夺型人格清单 · 危险人格识别术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #eef1f5;
+            color: #1e2a3a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+            margin: 0;
+        }
+
+        .card {
+            max-width: 880px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 44px;
+            padding: 42px 38px 48px;
+            box-shadow: 0 24px 56px -20px rgba(28, 48, 72, 0.14), 0 6px 20px -6px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .header {
+            border-bottom: 2px solid #e4e8ee;
+            padding-bottom: 20px;
+            margin-bottom: 28px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .color-blocks {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+            align-items: center;
+        }
+
+        .color-blocks span {
+            width: 26px;
+            height: 26px;
+            border-radius: 5px;
+            display: block;
+        }
+
+        .color-blocks .c1 {
+            background: #5a7f9c;
+        }
+        .color-blocks .c2 {
+            background: #7a9a8a;
+        }
+        .color-blocks .c3 {
+            background: #8a8aaa;
+        }
+        .color-blocks .c4 {
+            background: #6a9ab0;
+        }
+        .color-blocks .c5 {
+            background: #9a8a7a;
+        }
+
+        .header h1 {
+            font-size: 29px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            color: #0a1a2e;
+            flex: 1;
+        }
+
+        .header .source {
+            margin-top: 12px;
+            font-size: 15px;
+            color: #3a4e5e;
+            background: #f0f3f8;
+            padding: 12px 22px;
+            border-radius: 20px;
+            border-left: 6px solid #5a7f9c;
+            line-height: 1.7;
+        }
+
+        .header .source strong {
+            color: #0a2a44;
+            font-weight: 600;
+        }
+
+        .notice-box {
+            background: #f2f4f8;
+            border-radius: 16px;
+            padding: 14px 20px;
+            margin-top: 14px;
+            border: 1px solid #dce2ea;
+            font-size: 14px;
+            color: #3a4e5e;
+            line-height: 1.6;
+        }
+
+        .notice-box strong {
+            color: #2a4a6a;
+        }
+
+        .instructions {
+            background: #f2f5f9;
+            border-radius: 20px;
+            padding: 20px 26px;
+            margin-bottom: 28px;
+            border: 1px solid #e0e4ec;
+            font-size: 15px;
+            color: #1a2a3a;
+            line-height: 1.8;
+        }
+
+        .instructions p {
+            margin-bottom: 6px;
+        }
+
+        .instructions .highlight {
+            background: #dce2ea;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #1a3a5a;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .instructions .rule-list {
+            padding-left: 22px;
+            margin: 6px 0 10px;
+        }
+
+        .instructions .rule-list li {
+            margin-bottom: 4px;
+        }
+
+        .instructions .important-note {
+            background: #e6ecf2;
+            padding: 12px 18px;
+            border-radius: 16px;
+            margin-top: 10px;
+            border-left: 4px solid #7a9a8a;
+            font-size: 14.5px;
+        }
+
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 74px;
+            height: 74px;
+            flex-shrink: 0;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+            width: 74px;
+            height: 74px;
+        }
+
+        .progress-ring .bg {
+            fill: none;
+            stroke: #dce2ea;
+            stroke-width: 6;
+        }
+
+        .progress-ring .fg {
+            fill: none;
+            stroke: #5a7f9c;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 200.96;
+            stroke-dashoffset: 200.96;
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        .progress-ring .center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 17px;
+            font-weight: 700;
+            color: #0a2a44;
+            letter-spacing: 0.3px;
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .progress-stats .stat-item {
+            font-size: 15px;
+            color: #3a5a6a;
+            background: #f0f3f8;
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid #dce2ea;
+        }
+
+        .progress-stats .stat-item strong {
+            color: #0a2a44;
+            font-weight: 600;
+        }
+
+        .question-area {
+            background: #f6f8fb;
+            border-radius: 30px;
+            padding: 34px 30px 26px;
+            margin-bottom: 26px;
+            border: 1px solid #e0e4ec;
+            min-height: 170px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a6a8a;
+            letter-spacing: 0.4px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .question-number .divider {
+            flex: 1;
+            height: 1px;
+            background: #dce2ea;
+        }
+
+        .question-number .dim-tag {
+            padding: 2px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.8;
+            color: #0a1a2e;
+            padding: 2px 0 6px;
+            flex: 1;
+        }
+
+        .checkbox-wrapper {
+            margin-top: 26px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            background: #ffffff;
+            border-radius: 22px;
+            border: 2px solid #dce2ea;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-wrapper:hover {
+            border-color: #8aaac8;
+            background: #f2f6fc;
+        }
+
+        .checkbox-wrapper.checked {
+            border-color: #5a7f9c;
+            background: #eaf0f6;
+            box-shadow: 0 6px 18px -6px rgba(90, 127, 156, 0.16);
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 26px;
+            height: 26px;
+            flex-shrink: 0;
+            accent-color: #5a7f9c;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .checkbox-wrapper .check-status {
+            font-size: 15px;
+            color: #6a8a9a;
+            font-weight: 400;
+            transition: color 0.2s;
+            margin-left: auto;
+        }
+
+        .checkbox-wrapper.checked .check-status {
+            color: #5a7f9c;
+            font-weight: 500;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+            margin-bottom: 28px;
+        }
+
+        .nav-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 34px;
+            border: none;
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: #eef2f6;
+            color: #2a4a5a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.3px;
+            border: 1px solid transparent;
+            min-width: 110px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: #5a7f9c;
+            color: #fff;
+            box-shadow: 0 8px 24px -10px rgba(90, 127, 156, 0.32);
+            border-color: #5a7f9c;
+        }
+
+        .btn-primary:hover {
+            background: #4a6e8a;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -12px rgba(90, 127, 156, 0.42);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border-color: #c8d4e0;
+            color: #2a4a5a;
+        }
+
+        .btn-secondary:hover {
+            background: #f2f6fc;
+            border-color: #8aaac8;
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: #6a8a9a;
+            border: 1px solid #dce2ea;
+            padding: 13px 22px;
+            font-weight: 500;
+            min-width: auto;
+        }
+
+        .btn-reset:hover {
+            background: #f0f3f8;
+            border-color: #9ab0c0;
+            color: #1a3a5a;
+        }
+
+        .btn-submit {
+            background: #5a7f9c;
+            color: #fff;
+            border-color: #5a7f9c;
+            box-shadow: 0 8px 24px -10px rgba(90, 127, 156, 0.32);
+            padding: 13px 42px;
+        }
+
+        .btn-submit:hover {
+            background: #4a6e8a;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -12px rgba(90, 127, 156, 0.42);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .result-area {
+            margin-top: 14px;
+            border-top: 2px solid #e4e8ee;
+            padding-top: 32px;
+            display: none;
+        }
+
+        .result-area.visible {
+            display: block;
+            animation: fadeSlide 0.6s ease;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: #f4f7fb;
+            border-radius: 30px;
+            padding: 34px 36px;
+            border: 1px solid #e0e4ec;
+            box-shadow: 0 8px 28px -12px rgba(20, 40, 60, 0.06);
+        }
+
+        .result-score {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .result-score .number {
+            font-size: 54px;
+            font-weight: 800;
+            color: #0a1a2e;
+            line-height: 1;
+            letter-spacing: -1.5px;
+        }
+
+        .result-score .label {
+            font-size: 20px;
+            font-weight: 500;
+            color: #4a6a7a;
+        }
+
+        .result-level {
+            font-size: 23px;
+            font-weight: 700;
+            padding: 10px 30px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-bottom: 20px;
+            letter-spacing: 0.4px;
+        }
+
+        .result-level.level-none {
+            background: #e8edf2;
+            color: #1a3a5a;
+        }
+        .result-level.level-low {
+            background: #e2ece8;
+            color: #1a5a4a;
+        }
+        .result-level.level-mid {
+            background: #f0eee0;
+            color: #6a5a3a;
+        }
+        .result-level.level-high {
+            background: #f0e6e6;
+            color: #9a4a4a;
+        }
+
+        .result-desc {
+            font-size: 16px;
+            color: #1a2a3a;
+            line-height: 1.9;
+        }
+
+        .result-desc p {
+            margin-bottom: 14px;
+        }
+
+        .result-desc strong {
+            color: #0a1a2e;
+        }
+
+        .result-desc .note {
+            background: #e6ecf2;
+            padding: 16px 22px;
+            border-radius: 18px;
+            font-size: 15px;
+            color: #2a4a5a;
+            margin-top: 16px;
+            border-left: 6px solid #5a7f9c;
+        }
+
+        .criteria-box {
+            background: #e8eef4;
+            border-radius: 18px;
+            padding: 20px 24px;
+            margin-top: 20px;
+            border: 1px solid #dce2ea;
+        }
+
+        .criteria-box h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a2a44;
+            margin-bottom: 12px;
+        }
+
+        .criteria-box .criterion {
+            padding: 5px 0;
+            border-bottom: 1px dashed #dce2ea;
+            font-size: 15px;
+            color: #1a3a5a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .criteria-box .criterion:last-child {
+            border-bottom: none;
+        }
+
+        .criteria-box .criterion .range {
+            font-weight: 700;
+            color: #5a7f9c;
+            min-width: 80px;
+        }
+
+        .criteria-box .criterion .desc {
+            flex: 1;
+            margin-left: 16px;
+        }
+
+        .summary-section {
+            margin-top: 26px;
+            border-top: 2px solid #e4e8ee;
+            padding-top: 22px;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0a1a2e;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .summary-title span {
+            background: #dce2ea;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a3a5a;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            margin-bottom: 16px;
+        }
+
+        .dimension-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #dce2ea;
+            font-size: 15px;
+            align-items: center;
+        }
+
+        .dimension-item .dim-label {
+            color: #3a5a6a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dimension-item .dim-label .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .dimension-item .dim-count {
+            font-weight: 600;
+            color: #5a7f9c;
+        }
+
+        .type-guess {
+            background: #e8eef4;
+            border-radius: 18px;
+            padding: 16px 22px;
+            margin-top: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a3a5a;
+            border-left: 6px solid #8a8aaa;
+        }
+
+        .type-guess small {
+            font-weight: 400;
+            color: #4a6a7a;
+            font-size: 15px;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tag-cloud .tag {
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .tag-cloud .tag.high {
+            opacity: 1;
+        }
+        .tag-cloud .tag.mid {
+            opacity: 0.7;
+        }
+        .tag-cloud .tag.low {
+            opacity: 0.4;
+        }
+
+        .items-list-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .items-list-box {
+            background: #f4f7fb;
+            border-radius: 16px;
+            padding: 14px 18px;
+            border: 1px solid #dce2ea;
+            max-height: 320px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .items-list-box.unchecked-box {
+            background: #f8fafc;
+            border-color: #e8ecf0;
+        }
+
+        .items-list-box .list-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+            color: #3a5a6a;
+            position: sticky;
+            top: 0;
+            background: inherit;
+            padding-bottom: 4px;
+            z-index: 1;
+        }
+
+        .items-list-box .list-label .count {
+            background: #dce2ea;
+            padding: 0 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a3a5a;
+            margin-left: 6px;
+        }
+
+        .item-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin: 2px 4px 2px 0;
+            font-size: 12.5px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .item-tag:hover {
+            transform: scale(1.04);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+
+        .item-tag.checked {
+            color: #fff;
+        }
+
+        .item-tag.unchecked {
+            color: #5a7a8a;
+            background: #e8ecf0;
+        }
+
+        .item-tag .dim-short {
+            font-weight: 400;
+            opacity: 0.8;
+            font-size: 11px;
+        }
+
+        .tooltip-popup {
+            position: fixed;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 24px;
+            max-width: 520px;
+            min-width: 280px;
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.3), 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dce2ea;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(6px);
+        }
+
+        .tooltip-popup.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .tooltip-popup .tip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a2a44;
+        }
+
+        .tooltip-popup .tip-header .tip-close {
+            cursor: pointer;
+            font-size: 18px;
+            color: #8a9aaa;
+            background: none;
+            border: none;
+            padding: 0 4px;
+            pointer-events: auto;
+        }
+
+        .tooltip-popup .tip-header .tip-close:hover {
+            color: #3a5a6a;
+        }
+
+        .tooltip-popup .tip-dim {
+            font-size: 13px;
+            color: #4a6a7a;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-popup .tip-dim .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .tooltip-popup .tip-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #1a2a3a;
+        }
+
+        .tooltip-popup .tip-status {
+            font-size: 13px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e8ecf0;
+            color: #6a8a9a;
+        }
+
+        .tooltip-popup .tip-status .checked-badge {
+            color: #5a7f9c;
+            font-weight: 600;
+        }
+
+        .tooltip-popup .tip-status .unchecked-badge {
+            color: #8a9aaa;
+        }
+
+        .jump-hint {
+            font-size: 13px;
+            color: #6a8a9a;
+            margin-top: 6px;
+            text-align: center;
+            opacity: 0.7;
+            border-top: 1px dashed #dce2ea;
+            padding-top: 8px;
+        }
+
+        @media (max-width: 680px) {
+            .card {
+                padding: 26px 16px 34px;
+                border-radius: 30px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .question-area {
+                padding: 22px 14px 18px;
+                min-height: 130px;
+            }
+            .question-text {
+                font-size: 17px;
+            }
+            .checkbox-wrapper {
+                padding: 12px 14px;
+                gap: 10px;
+            }
+            .checkbox-wrapper input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+            }
+            .navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-group {
+                justify-content: center;
+            }
+            .btn {
+                padding: 11px 20px;
+                font-size: 14px;
+                min-width: 90px;
+            }
+            .result-card {
+                padding: 22px 16px;
+            }
+            .result-score .number {
+                font-size: 42px;
+            }
+            .result-level {
+                font-size: 19px;
+                padding: 8px 20px;
+            }
+            .progress-stats .stat-item {
+                font-size: 13px;
+                padding: 4px 14px;
+            }
+            .instructions {
+                font-size: 14px;
+                padding: 16px 16px;
+            }
+            .dimension-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            .items-list-wrap {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .color-blocks span {
+                width: 20px;
+                height: 20px;
+            }
+            .criteria-box .criterion {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .criteria-box .criterion .desc {
+                margin-left: 0;
+                width: 100%;
+            }
+            .items-list-box {
+                max-height: 220px;
+            }
+            .tooltip-popup {
+                max-width: 92vw;
+                min-width: unset;
+                left: 4% !important;
+                right: 4% !important;
+                transform: translateY(0) !important;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .question-text {
+                font-size: 15px;
+            }
+            .btn {
+                font-size: 13px;
+                padding: 9px 14px;
+                min-width: 70px;
+            }
+            .result-score .number {
+                font-size: 34px;
+            }
+            .tooltip-popup {
+                padding: 12px 14px;
+            }
+            .tooltip-popup .tip-text {
+                font-size: 14px;
+            }
+        }
+
+        .text-muted {
+            color: #6a8a9a;
+        }
+        .footer-copy {
+            text-align: center;
+            font-size: 13px;
+            color: #8a9aaa;
+            margin-top: 18px;
+            border-top: 1px solid #e4e8ee;
+            padding-top: 16px;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+
+        <header class="header">
+            <div class="header-top">
+                <div class="color-blocks">
+                    <span class="c1"></span>
+                    <span class="c2"></span>
+                    <span class="c3"></span>
+                    <span class="c4"></span>
+                    <span class="c5"></span>
+                </div>
+                <h1>掠夺型人格清单 · 危险人格识别术</h1>
+            </div>
+            <div class="source">
+                <strong>测试来源</strong> 纳瓦罗《危险人格识别术：掠夺型人格》<br />
+                <span style="font-size:14px; color:#4a5a6a;">本清单用于日常识别掠夺型人格倾向，非心理诊断工具。</span>
+            </div>
+            <div class="notice-box">
+                <strong>📌 说明：</strong> 本测试包含 <strong>150</strong> 道题目，完整涵盖掠夺型人格的典型征兆。<br />
+                请根据对 <strong>被评估对象</strong> 的实际观察，逐题判断。<br />
+                <span style="font-size:13px;color:#5a6a7a;">💡 结果页面中的条目色块 <strong>点击</strong> 可查看完整题目内容。</span>
+            </div>
+        </header>
+
+        <div class="instructions">
+            <p><strong>填写说明</strong></p>
+            <p>共 <strong>150</strong> 道题目。逐题阅读，根据对 <strong>被评估对象</strong> 的观察，判断特征是否符合。</p>
+            <ul class="rule-list">
+                <li><strong>勾选</strong>：只有明确且持续地符合该特征时，才勾选。</li>
+                <li><strong>不猜测</strong>：以实际观察到的事实为依据。</li>
+                <li><strong>全部完成</strong>：需浏览所有题目，系统记录进度。全部访问后方可提交。</li>
+                <li><strong>可修改</strong>：通过按钮或键盘左右箭头切换，随时更改勾选。</li>
+            </ul>
+            <div class="important-note">
+                <strong>重要</strong> 本测试仅供参看，不能替代专业心理评估。高风险结果建议寻求专业咨询。
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-ring">
+                <svg viewBox="0 0 76 76">
+                    <circle class="bg" cx="38" cy="38" r="32" />
+                    <circle class="fg" id="progressCircle" cx="38" cy="38" r="32" />
+                </svg>
+                <span class="center-text" id="progressPct">0%</span>
+            </div>
+            <div class="progress-stats">
+                <span class="stat-item" id="progressNum">第 <strong>1</strong> / 150 题</span>
+                <span class="stat-item" id="progressChecked">已勾选 <strong>0</strong> 项</span>
+                <span class="stat-item" id="progressVisited">已浏览 <strong>1</strong> / 150</span>
+            </div>
+        </div>
+
+        <div class="question-area" id="questionArea">
+            <div class="question-number" id="questionNumber">
+                <span id="qNumDisplay">第 1 题</span>
+                <span class="divider"></span>
+                <span style="font-weight:400; color:#6a8a9a;" id="qCountDisplay">1 / 150</span>
+            </div>
+            <div class="question-text" id="questionText">加载题目中...</div>
+            <div class="checkbox-wrapper" id="checkboxWrapper">
+                <input type="checkbox" id="itemCheckbox" />
+                <span class="check-status" id="checkStatus">未勾选</span>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <div class="nav-group">
+                <button class="btn btn-secondary" id="prevBtn" disabled>← 上一题</button>
+                <button class="btn btn-secondary" id="nextBtn">下一题 →</button>
+            </div>
+            <div class="nav-group">
+                <button class="btn btn-reset" id="resetBtn">重置</button>
+                <button class="btn btn-submit" id="submitBtn" disabled>查看结果</button>
+            </div>
+        </div>
+
+        <div class="result-area" id="resultArea">
+            <div class="result-card" id="resultCard"></div>
+        </div>
+
+        <div class="footer-copy">© 本网页版权所有 · 仅供个人参考使用</div>
+    </div>
+
+    <!-- ===== 浮窗 ===== -->
+    <div class="tooltip-popup" id="tooltipPopup">
+        <div class="tip-header">
+            <span id="tipTitle">第 1 题</span>
+            <button class="tip-close" id="tipClose">✕</button>
+        </div>
+        <div class="tip-dim" id="tipDim"><span class="dot" style="background:#5a7f9c;"></span> 维度：冷酷无情</div>
+        <div class="tip-text" id="tipText">题目内容</div>
+        <div class="tip-status" id="tipStatus">状态：<span class="checked-badge">已勾选</span></div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  数据：150 个掠夺型人格条目
+        // ================================================================
+        const ITEMS = [
+            "虐待、利用别人，不尊重别人的权利。",
+            "喜欢支使、操纵别人为他们做事。",
+            "小时候就曾被逮捕并受法庭审判，或有删掉的未成年犯罪记录。",
+            "自我为中心，觉得享有特权，可以爱干什么就干什么，即使伤害别人也毫不在意。",
+            "对违法乱纪的经历扬扬自得，吹嘘自己犯罪或骗人的“光辉成就”。",
+            "谎话连篇，说谎上瘾，在毫无必要的情况下撒谎。",
+            "认为规章、制度、法律等都是给别人制定的，跟自己无关。",
+            "屡次触犯法律，或违背习俗、情理。",
+            "能够敏锐地发现别人的弱点并加以利用。",
+            "小时候及成年时都有过在商店“顺手牵羊”的经历。",
+            "缺乏愧疚感，对别人的痛苦无动于衷。",
+            "在饭店吃饭时想方设法不付钱，或曾吹嘘自己“白吃饭”的经历。",
+            "把自己的行为归咎于生活、周围环境、父母、其他人，甚至受害者。",
+            "“控制”和“主宰”在其生活中占了很大比例，常常试图统治别人。",
+            "大家都说这个人“无情”、“恶毒”、“讨厌”、“没有道德”、“没有良心”、“不正派”。",
+            "曾多次开具假支票，或账户余额不足导致支票无法兑现。",
+            "在欺骗中获得快乐。",
+            "喜欢通过身体碰撞、盯着看，或言语挑衅来激怒别人。",
+            "自信心过盛，但往往不顾虑后果，或其信心没有实用价值。",
+            "无法忍受批评，常常报以生气、暴怒或威胁要报复对方。",
+            "过去在学校上学时，或现在上班时都是一个爱欺负人的坏蛋。",
+            "善于赚取别人的信任，然后为自己谋利。",
+            "利用家人、朋友、同事、亲人获得钱财，或让他们为自己撒谎，或让他们为自己作伪证。",
+            "曾经纵火，置人、动物或财产于危险中。",
+            "给他人带来经济、身体的危害或犯罪危险，却毫不在意。",
+            "认为生活就是适者生存。",
+            "犯罪如同家常便饭，犯罪记录多如牛毛。",
+            "有时候冷酷无情，其他时间则魅力非凡。",
+            "谎称自己是个医生、教授或其他专业人士。",
+            "曾骗取他人金钱、财产或有价值的物品。",
+            "蓄意破坏自行车、汽车等交通工具，导致（或意图使）他人受伤。",
+            "精心策划如何利用别人。",
+            "小时候或成年后虐待动物。",
+            "常常挖苦或侮辱别人。",
+            "自以为是，固执己见，常给人傲慢的印象，外界对其评价是“自以为了不起”。",
+            "被人评价为自命不凡、固执己见。",
+            "不守约、不可靠、不负责任，总有借口或理由逃脱责任。",
+            "玩弄心术压制别人，让别人感觉自卑、苦恼。",
+            "认为受人尊敬和拥有权力非常重要，并对你灌输这种观点。",
+            "曾用武力或恐吓的手段获取性爱。",
+            "刚刚还非常看重你，转眼之间就鄙弃你；冷血无情，不念旧恩。",
+            "对自己自视过高，轻视他人。",
+            "身为领导，把手下人看作仆从或玩物，而不是平等对待他们。",
+            "以偷盗或其他犯罪行为为业，天天如此。",
+            "怂恿别人去做危险的事或可能触犯法律的事。",
+            "为了个人目的而算计你的时间、空间、身体、精神，或其他你所珍视的东西。",
+            "曾经为了取乐或报复而毁坏他人财物。",
+            "走到哪里哪里就有麻烦，常被人称作“害群之马”。",
+            "对别人或单位（组织、机构等）的财物缺少爱护和尊重。",
+            "曾为达到自己的目的而恐吓别人。",
+            "常常抱怨说觉得无聊或缺乏激情。",
+            "小时候常常离家出走。",
+            "记恨他人，并以低劣的方式寻求报复。",
+            "表达愧疚的时候没有诚意，或做作不自然。",
+            "小时候曾因打架多次被学校停学。",
+            "忠诚和关怀大都留给自己，极少施之于人。",
+            "不能为自己的行为承担责任，总是归咎于别人。",
+            "被人认为是“优雅”、“聪明”、“讨人喜欢”或“优秀得令人不敢相信”。",
+            "小时候常常不服父母管教、很晚不回家、违反规章制度。",
+            "像寄生虫一样，从别人那里“攫取”住宿、食物、金钱或性爱。",
+            "声称曾取得超出人力范围、不合逻辑或令人无法相信的成就。",
+            "其父亲或母亲是个虐待狂、性情冷淡残暴或是一个凶恶的罪犯。",
+            "以一种极不负责的态度和方式生活，如：从未认真踏实地干一份工作、每一份感情都不能长久、不偿还债务等。",
+            "有来历不明的财产。",
+            "认为自己有特权，可以凌驾于别人之上，为所欲为。",
+            "表达情感时，做作、虚伪、不真诚。",
+            "看不起别人，尤其看不起有权的人。",
+            "态度傲慢，居高临下，其优越感令人反感。",
+            "人们都不愿跟这种人共事，或不愿在其手下工作，或曾因与其共事而受过身体或心理的伤害。",
+            "像爬行动物那样直勾勾、冷冰冰地盯着你，却不说话。",
+            "长时间盯着别人的眼睛，逼得对方不敢对视，或达到威胁、压制别人的目的。（此举令你及其他人心里很不舒服）",
+            "魅力肤浅，很快就露出本来面目。",
+            "给自己的偷盗、伤害、虐待行为加上冠冕堂皇的正当理由，如“他们自找的”。",
+            "年少时或成年后都有犯罪史。",
+            "故意要求下属或别人去扭曲规则、漠视法律、篡改或毁掉重要记录或证据、掩盖真相。",
+            "不害怕犯罪。",
+            "使用化名，更改身份，或故意隐藏某段经历。",
+            "冲动任性，一有机会就立刻去做违法犯罪的事，将其当成乐趣。",
+            "不懂得考虑未来或为将来做计划，比如把应交房租的钱或伙食费都花光，给自己买了礼物，却没有家人的份儿。",
+            "在受到责难、训斥或拒绝时会变得冲动、好斗。",
+            "试图（或已经这样做了）杜绝你（或别人）跟朋友、家人、亲人的来往或联系。",
+            "喜欢欺负人，或喜欢跟人打架。",
+            "针对弱者、老年人、孩子、女性等易上当的人目标施加虐待，满足兽欲或骗取他们的钱财。",
+            "玩命或轻视他人生命，如飙车、醉驾等。",
+            "曾经（或现在）恐吓或虐待（身体上或心理上）家人、父母、同事、朋友。",
+            "压榨父母，偷、骗他们的财物，或未经同意就把他们的财物卖掉或当掉。",
+            "声称自己在CIA、海豹突击队或其他秘密或精英部门工作，却拿不出可信的证据。",
+            "曾因不能通过心理测试而在参军或应聘工作中被拒。",
+            "在跟这种人打交道或在其左右时，人们的身体会有如下反应：起鸡皮疙瘩、毛发竖立、胃痛或反胃。",
+            "恶毒地对待别人，压制别人，贬低别人。",
+            "有犯罪史（包括敲诈勒索等），并且曾经侥幸逃脱惩罚。",
+            "对痛苦、虐待、折磨以及如何高效杀人怀有较强的好奇心。",
+            "曾在拘留所、看守所、教习所等地方待过。",
+            "曾有强奸、抢劫、用致命武器攻击他人的行为。",
+            "曾经盗窃、财产犯罪，或多次偷盗汽车。",
+            "用嘲笑的语气谈论女人，把她们看作“婊子”。",
+            "曾性骚扰儿童（如抚摸或露出下体等），或考虑过与儿童发生性关系。",
+            "对自己的行为缺乏自控能力。",
+            "其母亲曾做过妓女或曾从事性交易。",
+            "有恋童癖。",
+            "私生活糜烂，做爱时不采取保护措施，可能会传染给别人性病或艾滋病。",
+            "有多个私生子，却不对其负责任（情感责任、监护人责任、经济责任等）。",
+            "为自己的恶行或罪行辩解，说受害人是“自找的”。",
+            "保释后逃之夭夭，令家人或朋友损失大笔保释金。",
+            "经常一下子消失好几天甚至好几周时间，回来时却一句解释都没有。",
+            "人们曾说在此人身边会“感觉不舒服”或“不相信他”。",
+            "总是希望别人能给他们提供不在场证明、藏身之所或免受法律制裁的庇护。",
+            "曾擅自闯入别人的汽车、公司、家中，或曾跟踪过别人。",
+            "借朋友或同事的钱很少会还，或从来不还。",
+            "经常虐待配偶或孩子。",
+            "孩子或配偶都躲着他们，或害怕跟他们在一起。",
+            "曾说过（或写过）自己有犯罪或强奸的想法。",
+            "屡次欠钱不还，或信用卡不能按时还款，或不能如期支付孩子的抚养金。",
+            "曾经（或宣称）杀过人，对此事不以为意或四处吹嘘炫耀。",
+            "曾未经同意就用别人的信用卡。",
+            "想通过违法或不道德的方式获得权力、性或金钱。",
+            "快要付款时，总是说忘带钱包，或说自己的钱都在“周转”，拿不出来。",
+            "工作中刻薄或蛮横，经常当众训斥下属。",
+            "作为父母，对孩子不负责任、疏忽怠慢、置身事外、无情麻木、粗心大意。如不照看孩子、不喂孩子、不给孩子洗澡、不送孩子上学、不带孩子看病等。",
+            "疏远他人，从不真正与人接近。",
+            "为避免被人告发、避开警察或逃避经济责任而出国或移民。",
+            "针对老年人或高龄群体施虐或骗取钱财。",
+            "曾参与制作儿童色情作品。",
+            "少年时行为不端。",
+            "据说是个性虐待狂。",
+            "曾很不光彩地被部队开除。",
+            "不懂什么是爱情；搞不清“爱情”和“性”的区别。",
+            "为虐待儿童的行为寻找正当理由，如“孩子总是哭个不停”或“这么做是为了让孩子变得坚强”等。",
+            "生活在社会的阴暗面，有“坏朋友”或结交不三不四的人（如黑帮成员、毒贩、妓女、皮条客、流氓等）。",
+            "持有违禁品、儿童色情产品或武器等用于犯罪勾当中。",
+            "是黑帮的打手或头目。",
+            "是犯罪集团或组织（毒贩、黑帮、犯罪家族等）的成员，或从事贩卖人口，或是个皮条客。",
+            "屡次因为表现不佳、不服从命令、吵架、旷工等原因被开除或解雇（哪怕是极其简单的工作）。",
+            "身上有表示拥护种族仇恨、犯罪或厌恶女人等意义的文身或符号标记。",
+            "不能容忍无礼和取笑，一旦遇上这种情况就会变得愤怒而刻薄。",
+            "不懂得从错误和经历中吸取经验教训。",
+            "常常不问一声就拿别人的贵重物品，或总是从商店里偷东西（顺手牵羊）。",
+            "极少说“对不起”，或只有在逼迫下才会道歉。",
+            "拒绝接受别人的道歉，记恨于心，并猛烈报复。",
+            "曾经（或正在）在某个非法、恐怖主义组织工作或从事犯罪行业，如地下彩票、赌场、贩毒、偷车等。",
+            "在其履历中有明显的因入狱导致的职业空白期。",
+            "曾虐待（缺衣少食）、监禁、强奸在其看管下的儿童。",
+            "曾使用绳子、手铐、加固的房间，或其他囚禁工具对待违抗自己意志的人。",
+            "从别人的痛苦和苦难中得到快乐。",
+            "喜欢让人在心理上感到不舒服或害怕。",
+            "总是满腔怒火、充满敌意、怨恨整个世界。",
+            "曾对别人说自己有“阴暗、脾气坏、邪恶”的一面，但都被当成玩笑话未加留意。",
+            "脑筋死板、顽固，不管什么事都必须按他们说的那样去做，否则就会大发雷霆。",
+            "他生命中的女人或者是变得厌恶、憎恨他，或者是不再相信他，或者是神秘失踪。",
+            "跟这种人相处时，你会感到焦虑、不安全，受到伤害和折磨，被欺骗或背叛。"
+        ];
+
+        // ================================================================
+        //  维度定义（5个维度）
+        // ================================================================
+        const DIM_NAMES = ['冷酷无情', '操纵利用', '反社会/违法', '自大特权', '暴力攻击'];
+        const DIM_COLORS = ['#5a7f9c', '#7a9a8a', '#8a8aaa', '#6a9ab0', '#9a8a7a'];
+        const DIM_SHORTS = ['冷酷', '操纵', '反社会', '特权', '暴力'];
+
+        // ===== 为150个条目分配维度（索引0~149） =====
+        const itemDimMap = {};
+        // 辅助函数
+        function setDim(indices, dimIdx) {
+            for (const i of indices) { itemDimMap[i] = dimIdx; }
+        }
+
+        // 手动分配（按条目分组）
+        // 维度0: 冷酷无情 (缺乏共情、愧疚感)
+        setDim([0, 10, 11, 13, 14, 15, 24, 27, 40, 41, 54, 56, 57, 65, 69, 70, 71, 72, 89, 98, 105, 106, 110, 111, 113, 119,
+            125, 127, 138, 139, 144, 145, 146, 147, 149
+        ], 0);
+
+        // 维度1: 操纵利用 (欺骗、剥削、利用他人)
+        setDim([1, 8, 9, 16, 17, 21, 22, 23, 29, 30, 31, 32, 37, 38, 44, 45, 46, 49, 52, 58, 59, 73, 81, 86, 95, 103, 107,
+            108, 109, 115, 116, 120, 121, 136, 143
+        ], 1);
+
+        // 维度2: 反社会/违法 (犯罪、无视法律规则)
+        setDim([2, 3, 4, 5, 6, 7, 12, 25, 26, 27, 28, 33, 36, 42, 47, 48, 50, 51, 60, 61, 62, 63, 64, 66, 67, 68, 74, 75, 76,
+            77, 78, 79, 80, 83, 87, 88, 90, 91, 92, 93, 94, 96, 97, 99, 100, 101, 104, 112, 114, 117, 122, 123, 124, 126,
+            128, 129, 130, 131, 132, 133, 134, 135, 137, 140, 141
+        ], 2);
+
+        // 维度3: 自大特权 (自我中心、特权感、傲慢)
+        setDim([3, 4, 18, 19, 20, 34, 35, 39, 41, 42, 43, 55, 59, 64, 65, 68, 79, 83, 84, 85, 96, 99, 104, 108, 113, 115,
+            116, 118, 122, 125, 126, 127, 128, 135, 136, 139, 140, 141, 148
+        ], 3);
+
+        // 维度4: 暴力攻击 (身体暴力、恐吓、虐待)
+        setDim([17, 18, 20, 23, 24, 30, 33, 39, 44, 47, 49, 50, 52, 53, 56, 60, 69, 70, 71, 73, 74, 75, 76, 77, 78, 79, 80,
+            82, 83, 85, 86, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 100, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+            112, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134,
+            135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149
+        ], 4);
+
+        // 兜底：确保所有条目都有维度
+        for (let i = 0; i < ITEMS.length; i++) {
+            if (itemDimMap[i] === undefined) {
+                // 根据索引大致分配
+                if (i < 30) itemDimMap[i] = 0;
+                else if (i < 60) itemDimMap[i] = 1;
+                else if (i < 90) itemDimMap[i] = 2;
+                else if (i < 120) itemDimMap[i] = 3;
+                else itemDimMap[i] = 4;
+            }
+        }
+
+        const total = ITEMS.length;
+
+        // ================================================================
+        //  状态
+        // ================================================================
+        let currentIndex = 0;
+        let answers = new Array(total).fill(false);
+        let visited = new Array(total).fill(false);
+
+        // ===== DOM =====
+        const qNumDisplay = document.getElementById('qNumDisplay');
+        const qCountDisplay = document.getElementById('qCountDisplay');
+        const questionText = document.getElementById('questionText');
+        const checkbox = document.getElementById('itemCheckbox');
+        const checkStatus = document.getElementById('checkStatus');
+        const checkboxWrapper = document.getElementById('checkboxWrapper');
+        const progressCircle = document.getElementById('progressCircle');
+        const progressPct = document.getElementById('progressPct');
+        const progressNum = document.getElementById('progressNum');
+        const progressChecked = document.getElementById('progressChecked');
+        const progressVisited = document.getElementById('progressVisited');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultArea = document.getElementById('resultArea');
+        const resultCard = document.getElementById('resultCard');
+        const questionNumber = document.getElementById('questionNumber');
+
+        // ===== 浮窗 =====
+        const tooltip = document.getElementById('tooltipPopup');
+        const tipTitle = document.getElementById('tipTitle');
+        const tipDim = document.getElementById('tipDim');
+        const tipText = document.getElementById('tipText');
+        const tipStatus = document.getElementById('tipStatus');
+        const tipClose = document.getElementById('tipClose');
+        let tooltipTarget = null;
+
+        function showTooltip(index, event) {
+            const idx = index;
+            const dimIdx = itemDimMap[idx] !== undefined ? itemDimMap[idx] : 0;
+            const dimName = DIM_NAMES[dimIdx] || '其他';
+            const color = DIM_COLORS[dimIdx] || '#5a7f9c';
+            const checked = answers[idx];
+            const text = ITEMS[idx];
+
+            tipTitle.textContent = '第 ' + (idx + 1) + ' 题';
+            tipDim.innerHTML = '<span class="dot" style="background:' + color + ';"></span> 维度：' + dimName;
+            tipText.textContent = text;
+            tipStatus.innerHTML = '状态：<span class="' + (checked ? 'checked-badge' : 'unchecked-badge') + '">' + (checked ?
+                '✅ 已勾选' : '⬜ 未勾选') + '</span>';
+
+            const rect = event.target.getBoundingClientRect();
+            let left = rect.left + rect.width / 2 - 200;
+            let top = rect.bottom + 12;
+
+            if (left < 16) left = 16;
+            if (left + 400 > window.innerWidth - 16) left = window.innerWidth - 416;
+            if (top + 200 > window.innerHeight - 16) {
+                top = rect.top - 12 - 200;
+                if (top < 16) top = 16;
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('visible');
+            tooltipTarget = idx;
+        }
+
+        function hideTooltip() {
+            tooltip.classList.remove('visible');
+            tooltipTarget = null;
+        }
+
+        tipClose.addEventListener('click', hideTooltip);
+        document.addEventListener('click', function(e) {
+            if (tooltip.classList.contains('visible')) {
+                if (!tooltip.contains(e.target) && !e.target.closest('.item-tag')) {
+                    hideTooltip();
+                }
+            }
+        });
+        window.addEventListener('scroll', hideTooltip);
+
+        // ===== 渲染 =====
+        function renderQuestion() {
+            const idx = currentIndex;
+            visited[idx] = true;
+            const text = ITEMS[idx];
+            const checked = answers[idx];
+            const dimIdx = itemDimMap[idx] !== undefined ? itemDimMap[idx] : 0;
+            const dimName = DIM_NAMES[dimIdx] || '其他';
+            const color = DIM_COLORS[dimIdx] || '#5a7f9c';
+
+            qNumDisplay.textContent = '第 ' + (idx + 1) + ' 题';
+            qCountDisplay.textContent = (idx + 1) + ' / ' + total;
+            questionText.textContent = text;
+            checkbox.checked = checked;
+            checkboxWrapper.classList.toggle('checked', checked);
+            checkStatus.textContent = checked ? '已勾选' : '未勾选';
+            checkStatus.style.color = checked ? '#5a7f9c' : '#6a8a9a';
+
+            const existingTags = questionNumber.querySelectorAll('.dim-tag');
+            existingTags.forEach(t => t.remove());
+            const span = document.createElement('span');
+            span.className = 'dim-tag';
+            span.style.cssText = 'background:' + color + ';color:#fff;padding:2px 12px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;';
+            span.textContent = dimName;
+            questionNumber.appendChild(span);
+
+            const checkedCount = answers.filter(Boolean).length;
+            const visitedCount = visited.filter(Boolean).length;
+            const pct = Math.round((checkedCount / total) * 100);
+            const circumference = 200.96;
+            const offset = circumference - (checkedCount / total) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            progressPct.textContent = pct + '%';
+            progressNum.innerHTML = '第 <strong>' + (idx + 1) + '</strong> / ' + total + ' 题';
+            progressChecked.innerHTML = '已勾选 <strong>' + checkedCount + '</strong> 项';
+            progressVisited.innerHTML = '已浏览 <strong>' + visitedCount + '</strong> / ' + total;
+
+            prevBtn.disabled = (idx === 0);
+            if (idx === total - 1) {
+                nextBtn.textContent = '最后一题';
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.textContent = '下一题 →';
+                nextBtn.disabled = false;
+            }
+
+            const allVisited = visited.every(v => v === true);
+            submitBtn.disabled = !allVisited;
+        }
+
+        // ===== 事件 =====
+        checkbox.addEventListener('change', function() {
+            answers[currentIndex] = this.checked;
+            renderQuestion();
+            if (tooltipTarget !== null) hideTooltip();
+        });
+
+        checkboxWrapper.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT') {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+
+        prevBtn.addEventListener('click', function() {
+            if (currentIndex > 0) { currentIndex--;
+                renderQuestion();
+                resultArea.classList.remove('visible');
+                hideTooltip();
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentIndex < total - 1) { currentIndex++;
+                renderQuestion();
+                resultArea.classList.remove('visible');
+                hideTooltip();
+            }
+        });
+
+        resetBtn.addEventListener('click', function() {
+            if (confirm('重置所有勾选，确定吗？')) {
+                answers.fill(false);
+                visited.fill(false);
+                currentIndex = 0;
+                visited[0] = true;
+                renderQuestion();
+                resultArea.classList.remove('visible');
+                submitBtn.disabled = true;
+                hideTooltip();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && !prevBtn.disabled) { prevBtn.click();
+                e.preventDefault(); }
+            if (e.key === 'ArrowRight' && !nextBtn.disabled) { nextBtn.click();
+                e.preventDefault(); }
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !submitBtn.disabled) { submitBtn.click();
+                e.preventDefault(); }
+            if (e.key === 'Escape') { hideTooltip(); }
+        });
+
+        // ================================================================
+        //  结果
+        // ================================================================
+        function getDimensionCounts() {
+            const counts = {};
+            DIM_NAMES.forEach(d => counts[d] = 0);
+            for (let i = 0; i < total; i++) {
+                if (answers[i]) {
+                    const dimIdx = itemDimMap[i] !== undefined ? itemDimMap[i] : 0;
+                    const dimName = DIM_NAMES[dimIdx] || '其他';
+                    counts[dimName] = (counts[dimName] || 0) + 1;
+                }
+            }
+            return counts;
+        }
+
+        function getDominantTags(counts) {
+            const totalChecked = Object.values(counts).reduce((a, b) => a + b, 0);
+            if (totalChecked === 0) return [];
+
+            const tags = [];
+            for (const dim of DIM_NAMES) {
+                const count = counts[dim] || 0;
+                const pct = count / totalChecked;
+                let level = 'low';
+                if (pct >= 0.3) level = 'high';
+                else if (pct >= 0.15) level = 'mid';
+                if (pct > 0.05) {
+                    const idx = DIM_NAMES.indexOf(dim);
+                    tags.push({ dim, short: DIM_SHORTS[idx] || dim, count, pct, level, color: DIM_COLORS[idx] || '#5a7f9c' });
+                }
+            }
+            tags.sort((a, b) => b.pct - a.pct);
+            return tags;
+        }
+
+        submitBtn.addEventListener('click', function() {
+            if (!visited.every(v => v === true)) {
+                alert('请浏览全部 ' + total + ' 道题目后再提交。');
+                return;
+            }
+
+            const count = answers.filter(Boolean).length;
+
+            let level, levelClass, desc;
+            if (count <= 25) {
+                level = '低风险 · 偶尔造成情感伤害';
+                levelClass = 'level-low';
+                desc = '<p>勾选 <strong>' + count +
+                    '</strong> 项。此人偶尔会在情感上给他人造成伤害，或利用他人。与其一起生活或工作也许会有麻烦，也许会危及你的财务状况。建议保持适当边界。</p>';
+            } else if (count <= 75) {
+                level = '中风险 · 具备掠夺型人格基本特点 · 捕食者';
+                levelClass = 'level-mid';
+                desc = '<p>勾选 <strong>' + count +
+                    '</strong> 项。此人具备了掠夺型人格的基本特点，是一个“捕食者”。你应该保持警惕，如果你跟此人的关系比较亲密或比较长久，或与其存在利益交集（如借款、金融交易、投资、租借房地产、照看孩子等），就更要小心。</p>';
+            } else {
+                level = '⚠️ 高风险 · 典型掠夺型人格 · 具有危险性';
+                levelClass = 'level-high';
+                desc = '<p>勾选 <strong>' + count +
+                    '</strong> 项。此人是典型的掠夺型人格，会在情感、心理、经济或身体上给你和他人带来危险。你应该立刻采取行动远离这个人。</p>';
+            }
+
+            const dimCounts = getDimensionCounts();
+            const tags = getDominantTags(dimCounts);
+
+            const checkedIndices = [],
+                uncheckedIndices = [];
+            for (let i = 0; i < total; i++) {
+                if (answers[i]) checkedIndices.push(i + 1);
+                else uncheckedIndices.push(i + 1);
+            }
+
+            let dimHtml = '';
+            for (const d of DIM_NAMES) {
+                const idx = DIM_NAMES.indexOf(d);
+                const color = DIM_COLORS[idx] || '#5a7f9c';
+                const countVal = dimCounts[d] || 0;
+                dimHtml += '<div class="dimension-item"><span class="dim-label"><span class="dot" style="background:' + color +
+                    ';"></span>' + d +
+                    '</span><span class="dim-count">' + countVal + ' 项</span></div>';
+            }
+
+            let tagHtml = '';
+            if (tags.length > 0) {
+                tagHtml = '<div class="tag-cloud">';
+                for (const t of tags) {
+                    tagHtml += '<span class="tag ' + t.level + '" style="background:' + t.color + ';">' + t.dim +
+                        ' <span style="font-weight:400;opacity:0.8;">' + Math.round(t.pct * 100) + '%</span></span>';
+                }
+                tagHtml += '</div>';
+            } else {
+                tagHtml = '<p class="text-muted">无显著突出维度</p>';
+            }
+
+            function renderItems(indices, checked) {
+                if (indices.length === 0) return '<span class="text-muted">无</span>';
+                let html = '';
+                for (const idx of indices) {
+                    const dimIdx = itemDimMap[idx - 1] !== undefined ? itemDimMap[idx - 1] : 0;
+                    const color = DIM_COLORS[dimIdx] || '#5a7f9c';
+                    const short = DIM_SHORTS[dimIdx] || '';
+                    const cls = checked ? 'checked' : 'unchecked';
+                    html += '<span class="item-tag ' + cls + '" style="background:' + (checked ? color : '#e8ecf0') +
+                        ';color:' + (checked ? '#fff' : '#5a7a8a') + ';border-color:' + (checked ? color : '#dce2ea') +
+                        ';" onclick="event.stopPropagation();showTooltip(' + (idx - 1) + ', event);" title="点击查看题目内容">' +
+                        idx +
+                        (short ? ' <span class="dim-short">' + short + '</span>' : '') +
+                        '</span>';
+                }
+                return html;
+            }
+
+            let checkedHtml = renderItems(checkedIndices, true);
+            let uncheckedHtml = renderItems(uncheckedIndices, false);
+
+            const criteriaHtml = `
+                <div class="criteria-box">
+                    <h4>📋 评分标准（掠夺型人格 · 危险程度）</h4>
+                    <div class="criterion"><span class="range">≤ 25 项</span><span class="desc">低风险 · 偶尔造成情感伤害</span></div>
+                    <div class="criterion"><span class="range">26 – 75 项</span><span class="desc">中风险 · 具备掠夺型人格基本特点（捕食者）</span></div>
+                    <div class="criterion"><span class="range">＞ 75 项</span><span class="desc">⚠️ 高风险 · 典型掠夺型人格 · 具有危险性</span></div>
+                    <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #dce2ea;font-size:14px;color:#5a7a7a;">
+                        💡 条目色块 <strong>点击</strong> 可浮窗查看完整题目内容。
+                    </div>
+                </div>
+            `;
+
+            resultCard.innerHTML = `
+                <div class="result-score">
+                    <span class="number">${count}</span>
+                    <span class="label">/ 150 项特征符合</span>
+                </div>
+                <div class="result-level ${levelClass}">${level}</div>
+                <div class="result-desc">
+                    ${desc}
+                </div>
+                ${criteriaHtml}
+                <div class="summary-section">
+                    <div class="summary-title">维度分布 <span>${checkedIndices.length} 项</span></div>
+                    <div class="dimension-grid">${dimHtml}</div>
+                    <div class="type-guess">
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+                            <span>突出特征标签：</span>
+                            <span style="font-weight:400;font-size:15px;color:#4a6a7a;">（基于各维度勾选占比）</span>
+                        </div>
+                        ${tagHtml}
+                        <small style="display:block;margin-top:8px;font-weight:400;">💡 <strong>点击</strong> 色块可浮窗查看题目</small>
+                    </div>
+                    <div class="items-list-wrap">
+                        <div class="items-list-box"><span class="list-label">✓ 勾选条目 <span class="count">${checkedIndices.length}</span></span>${checkedHtml}</div>
+                        <div class="items-list-box unchecked-box"><span class="list-label">✗ 未勾选条目 <span class="count">${uncheckedIndices.length}</span></span>${uncheckedHtml}</div>
+                    </div>
+                    <div class="jump-hint">💡 点击任意条目编号（色块）可浮窗查看完整题目内容 · 点击浮窗右上角 ✕ 或按 ESC 关闭</div>
+                </div>
+            `;
+
+            resultArea.classList.add('visible');
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // ===== 初始化 =====
+        visited[0] = true;
+        renderQuestion();
+        console.log('✅ 已加载 ' + total + ' 个掠夺型人格条目');
+        console.log('✅ 所有条目已分配维度，点击结果中的色块可浮窗查看题目内容');
+    </script>
+</body>
+</html>
