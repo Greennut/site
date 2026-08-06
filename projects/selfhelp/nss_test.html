@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自恋光谱量表（NSS）- 在线测试</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+    .header { text-align: center; margin-bottom: 32px; }
+    .header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .header p { font-size: 15px; color: #666; line-height: 1.6; }
+    
+    /* 标题图标：菱形 */
+    .title-icon {
+      display: inline-block;
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: rotate(45deg);
+      border-radius: 6px;
+      position: relative; top: 2px;
+      flex-shrink: 0;
+    }
+    .title-icon-inner {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      color: white; font-size: 14px; font-weight: 800; letter-spacing: 1px;
+    }
+    
+    .scale-info {
+      display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+      background: #f8f9fa; padding: 12px 16px; border-radius: 12px; margin-bottom: 24px;
+    }
+    .scale-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #444; }
+    .scale-dot {
+      width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: white;
+    }
+    .dot-1 { background: #e74c3c; }
+    .dot-2 { background: #e67e22; }
+    .dot-3 { background: #f1c40f; color: #333 !important; }
+    .dot-4 { background: #2ecc71; }
+    .dot-5 { background: #27ae60; }
+    .section { margin-bottom: 28px; }
+    .section-title {
+      font-size: 18px; font-weight: 700; color: #1a1a2e;
+      padding: 10px 16px; border-radius: 10px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .section-nd { background: #fff3cd; border-left: 4px solid #f39c12; }
+    .section-hn { background: #d4edda; border-left: 4px solid #28a745; }
+    .section-en { background: #f8d7da; border-left: 4px solid #dc3545; }
+    .question {
+      background: white; border: 1px solid #e8e8e8; border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 12px; transition: all 0.2s;
+    }
+    .question:hover { border-color: #c0c0c0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .q-num {
+      display: inline-block; width: 28px; height: 28px; border-radius: 50%;
+      background: #f0f0f0; color: #555; font-size: 13px; font-weight: 700;
+      text-align: center; line-height: 28px; margin-right: 10px;
+    }
+    .q-text { font-size: 15px; color: #333; line-height: 1.5; }
+    .options {
+      display: flex; justify-content: space-between; gap: 6px; margin-top: 12px;
+    }
+    .option {
+      flex: 1; text-align: center; padding: 10px 4px; border-radius: 10px;
+      cursor: pointer; font-size: 13px; font-weight: 500; color: #666;
+      border: 2px solid #e8e8e8; background: #fafafa; transition: all 0.15s;
+      user-select: none;
+    }
+    .option:hover { border-color: #999; background: #f5f5f5; }
+    .option.selected-1 { background: #fdecea; border-color: #e74c3c; color: #c0392b; }
+    .option.selected-2 { background: #fef5e7; border-color: #e67e22; color: #d35400; }
+    .option.selected-3 { background: #fef9e7; border-color: #f1c40f; color: #b7950b; }
+    .option.selected-4 { background: #eafaf1; border-color: #2ecc71; color: #27ae60; }
+    .option.selected-5 { background: #e8f8f5; border-color: #27ae60; color: #1e8449; }
+    .submit-btn {
+      display: block; width: 100%; max-width: 320px; margin: 32px auto 0;
+      padding: 14px 32px; font-size: 17px; font-weight: 700; color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+    .results {
+      display: none; margin-top: 32px; padding: 24px; border-radius: 16px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    }
+    .results.show { display: block; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .results h2 { text-align: center; font-size: 22px; color: #1a1a2e; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    
+    /* 结果图标：CSS 柱状图 */
+    .result-icon {
+      display: inline-flex; align-items: flex-end; gap: 3px;
+      height: 24px; width: 28px; flex-shrink: 0;
+    }
+    .result-bar { width: 6px; border-radius: 2px 2px 0 0; }
+    .result-bar:nth-child(1) { height: 10px; background: #f39c12; }
+    .result-bar:nth-child(2) { height: 18px; background: #28a745; }
+    .result-bar:nth-child(3) { height: 24px; background: #dc3545; }
+    
+    .score-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .score-card {
+      background: white; border-radius: 14px; padding: 20px; text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .score-card h3 { font-size: 15px; color: #666; margin-bottom: 8px; }
+    .score-value { font-size: 42px; font-weight: 800; line-height: 1; }
+    .score-max { font-size: 14px; color: #999; margin-top: 4px; }
+    .score-bar {
+      width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-top: 12px; overflow: hidden;
+    }
+    .score-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    .score-desc { font-size: 13px; color: #888; margin-top: 10px; line-height: 1.5; }
+    .interpretation {
+      margin-top: 24px; background: white; border-radius: 14px; padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .interpretation h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 12px; }
+    .interpretation p { font-size: 14px; color: #555; line-height: 1.7; }
+    .progress { text-align: center; margin-bottom: 20px; font-size: 14px; color: #888; }
+    .progress-bar { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px; transition: width 0.3s; }
+    .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <span class="title-icon"><span class="title-icon-inner">N</span></span>
+        自恋光谱量表（NSS）
+      </h1>
+      <p>本量表用于评估您在自恋光谱上的位置，包含三个维度：<br>自恋缺陷、健康自恋与极端自恋。请根据您的真实感受作答。</p>
+    </div>
+
+    <div class="scale-info">
+      <div class="scale-item"><span class="scale-dot dot-1">1</span> 强烈不同意</div>
+      <div class="scale-item"><span class="scale-dot dot-2">2</span> 不同意</div>
+      <div class="scale-item"><span class="scale-dot dot-3">3</span> 中立</div>
+      <div class="scale-item"><span class="scale-dot dot-4">4</span> 同意</div>
+      <div class="scale-item"><span class="scale-dot dot-5">5</span> 强烈同意</div>
+    </div>
+
+    <div class="progress">
+      已完成 <span id="answered-count">0</span> / 30 题
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div id="questions-container"></div>
+
+    <button class="submit-btn" id="submit-btn" onclick="calculateResults()">查看测试结果</button>
+
+    <div class="results" id="results">
+      <h2>
+        <span class="result-icon">
+          <span class="result-bar"></span>
+          <span class="result-bar"></span>
+          <span class="result-bar"></span>
+        </span>
+        您的测试结果
+      </h2>
+      <div class="score-cards">
+        <div class="score-card">
+          <h3>自恋缺陷 (ND)</h3>
+          <div class="score-value" id="nd-score" style="color:#f39c12">0</div>
+          <div class="score-max">/ 50</div>
+          <div class="score-bar"><div class="score-bar-fill" id="nd-bar" style="background:#f39c12;width:0%"></div></div>
+          <div class="score-desc" id="nd-desc"></div>
+        </div>
+        <div class="score-card">
+          <h3>健康自恋 (HN)</h3>
+          <div class="score-value" id="hn-score" style="color:#28a745">0</div>
+          <div class="score-max">/ 50</div>
+          <div class="score-bar"><div class="score-bar-fill" id="hn-bar" style="background:#28a745;width:0%"></div></div>
+          <div class="score-desc" id="hn-desc"></div>
+        </div>
+        <div class="score-card">
+          <h3>极端自恋 (EN)</h3>
+          <div class="score-value" id="en-score" style="color:#dc3545">0</div>
+          <div class="score-max">/ 50</div>
+          <div class="score-bar"><div class="score-bar-fill" id="en-bar" style="background:#dc3545;width:0%"></div></div>
+          <div class="score-desc" id="en-desc"></div>
+        </div>
+      </div>
+      <div class="interpretation">
+        <h3>结果解读</h3>
+        <p id="interpretation-text"></p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>自恋光谱量表（Narcissism Spectrum Scale, NSS）| 仅供自我探索参考，不构成专业诊断</p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { id: 1, text: "赞美会让我感到不自在。", section: "nd" },
+      { id: 2, text: "当别人抢在我前面成为焦点时，我会感到恼火。", section: "nd" },
+      { id: 3, text: "我曾因为不好意思提名自己（例如争取升职或领导职位）而错失机会。", section: "nd" },
+      { id: 4, text: "有时我不会表达自己的想法，因为觉得别人的想法会更好。", section: "nd" },
+      { id: 5, text: "我经常顺从他人的意见。", section: "nd" },
+      { id: 6, text: "我担心别人如何看待我和对我的感受。", section: "nd" },
+      { id: 7, text: "我不确定自己在关系中想要什么或需要什么。", section: "nd" },
+      { id: 8, text: "当别人询问我的偏好时，我常常不知所措。", section: "nd" },
+      { id: 9, text: "每当关系出现问题时，我都会责怪自己。", section: "nd" },
+      { id: 10, text: "我经常道歉。", section: "nd" },
+      { id: 11, text: "我自信且富有爱心。", section: "hn" },
+      { id: 12, text: "即使任务具有挑战性，我也会坚持下去。", section: "hn" },
+      { id: 13, text: "当我的成就来之不易时，我会更加自豪。", section: "hn" },
+      { id: 14, text: "我能够认识到自己的局限性，而不会因此感到自卑。", section: "hn" },
+      { id: 15, text: "如果承认自己的错误能改善局面，我很乐意这样做。", section: "hn" },
+      { id: 16, text: "我相信关系的成功或失败双方都负有责任。", section: "hn" },
+      { id: 17, text: "当别人说我骄傲自满时，我能够克制自己。", section: "hn" },
+      { id: 18, text: "我喜欢大胆梦想，但不会以牺牲关系为代价。", section: "hn" },
+      { id: 19, text: "比起接受，我更愿意给予。", section: "hn" },
+      { id: 20, text: "尽管遭遇挫折，我仍然相信自己。", section: "hn" },
+      { id: 21, text: "*我发现操纵别人很容易。", section: "en" },
+      { id: 22, text: "*我坚持要求得到应有的尊重。", section: "en" },
+      { id: 23, text: "*我期望从别人那里得到很多。", section: "en" },
+      { id: 24, text: "*在得到我认为应得的一切之前，我永远不会满足。", section: "en" },
+      { id: 25, text: "*我暗自相信自己比大多数人都优秀。", section: "en" },
+      { id: 26, text: "*受到批评时，我会非常愤怒。", section: "en" },
+      { id: 27, text: "*当别人没有注意到我在公众场合的形象时，我会感到沮丧。", section: "en" },
+      { id: 28, text: "*如果有机会，我倾向于炫耀。", section: "en" },
+      { id: 29, text: "*我有强烈的权力欲。", section: "en" },
+      { id: 30, text: "*与大多数人相比，我在很多方面都很出色。", section: "en" }
+    ];
+
+    const sectionConfig = {
+      nd: { title: "自恋缺陷（Narcissism Deficits）", cls: "section-nd", desc: "反映自我价值感不足、过度顺从、缺乏自信等特征。" },
+      hn: { title: "健康自恋（Healthy Narcissism）", cls: "section-hn", desc: "反映适度的自尊、韧性、自我接纳与关系平衡能力。" },
+      en: { title: "极端自恋（Extreme Narcissism）", cls: "section-en", desc: "反映操纵性、特权感、傲慢、对权力与关注的过度追求。" }
+    };
+
+    const answers = {};
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      let currentSection = '';
+      questions.forEach(q => {
+        if (q.section !== currentSection) {
+          currentSection = q.section;
+          const sec = sectionConfig[currentSection];
+          const secDiv = document.createElement('div');
+          secDiv.className = 'section';
+          secDiv.innerHTML = `<div class="section-title ${sec.cls}">${sec.title}<span style="font-size:13px;font-weight:400;color:#666;margin-left:auto;">${sec.desc}</span></div>`;
+          container.appendChild(secDiv);
+        }
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.innerHTML = `
+          <div><span class="q-num">${q.id}</span><span class="q-text">${q.text}</span></div>
+          <div class="options">
+            ${[1,2,3,4,5].map(v => `<div class="option" data-q="${q.id}" data-v="${v}" onclick="selectOption(${q.id}, ${v})">${v}</div>`).join('')}
+          </div>
+        `;
+        container.lastChild.appendChild(qDiv);
+      });
+    }
+
+    function selectOption(qid, value) {
+      answers[qid] = value;
+      document.querySelectorAll(`.option[data-q="${qid}"]`).forEach(el => {
+        el.className = 'option';
+        if (parseInt(el.dataset.v) === value) {
+          el.classList.add(`selected-${value}`);
+        }
+      });
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const count = Object.keys(answers).length;
+      document.getElementById('answered-count').textContent = count;
+      document.getElementById('progress-fill').style.width = (count / 30 * 100) + '%';
+    }
+
+    function calculateResults() {
+      const answered = Object.keys(answers).length;
+      if (answered < 30) {
+        const missing = questions.filter(q => !answers[q.id]).map(q => q.id);
+        alert(`您还有 ${30 - answered} 道题未作答（第 ${missing.join('、')} 题），请完成所有题目后再查看结果。`);
+        const firstMissing = missing[0];
+        const el = document.querySelector(`.option[data-q="${firstMissing}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      let nd = 0, hn = 0, en = 0;
+      questions.forEach(q => {
+        const v = answers[q.id];
+        if (q.section === 'nd') nd += v;
+        else if (q.section === 'hn') hn += v;
+        else if (q.section === 'en') en += v;
+      });
+
+      document.getElementById('nd-score').textContent = nd;
+      document.getElementById('hn-score').textContent = hn;
+      document.getElementById('en-score').textContent = en;
+
+      document.getElementById('nd-bar').style.width = (nd / 50 * 100) + '%';
+      document.getElementById('hn-bar').style.width = (hn / 50 * 100) + '%';
+      document.getElementById('en-bar').style.width = (en / 50 * 100) + '%';
+
+      const ndDesc = nd <= 20 ? "较低：您有较强的自我价值感，不太受自恋缺陷困扰。" :
+                     nd <= 35 ? "中等：您在自我价值与顺从之间有一定摇摆。" :
+                     "较高：您可能存在较明显的自恋缺陷，如低自尊、过度自责等。";
+      const hnDesc = hn <= 20 ? "较低：您可能需要更多培养健康的自我肯定与韧性。" :
+                     hn <= 35 ? "中等：您具备一定水平的健康自恋特质。" :
+                     "较高：您拥有良好的自尊、韧性与关系平衡能力。";
+      const enDesc = en <= 20 ? "较低：您不太表现出极端自恋特征。" :
+                     en <= 35 ? "中等：您在某些情境下可能展现出一定的自恋倾向。" :
+                     "较高：您可能表现出较明显的极端自恋特征，如操纵性、特权感等。";
+
+      document.getElementById('nd-desc').textContent = ndDesc;
+      document.getElementById('hn-desc').textContent = hnDesc;
+      document.getElementById('en-desc').textContent = enDesc;
+
+      let interp = "";
+      if (hn >= nd && hn >= en) {
+        interp = "您的测试结果以<strong>健康自恋（HN）</strong>为主导，表明您拥有较为平衡的自我认知。您既能肯定自己的价值，也能在关系中保持适度的谦逊与合作。这种自恋水平通常与良好的心理适应性和人际关系质量相关。";
+      } else if (nd >= hn && nd >= en) {
+        interp = "您的测试结果以<strong>自恋缺陷（ND）</strong>为主导，表明您可能在自我价值感方面存在一些不足。您可能倾向于过度顺从、回避自我表达，或在关系中过度自责。建议关注自我接纳与自信心的培养，必要时可寻求专业心理支持。";
+      } else {
+        interp = "您的测试结果以<strong>极端自恋（EN）</strong>为主导，表明您可能具有较强的自我中心倾向、特权感或对权力与关注的追求。这种特质可能在某些情境下带来短期优势，但长期来看可能影响人际关系的深度与稳定性。建议反思自我与他人的平衡，培养共情能力。";
+      }
+
+      if (Math.abs(hn - nd) < 5 || Math.abs(hn - en) < 5 || Math.abs(nd - en) < 5) {
+        interp += "<br><br>值得注意的是，您的三个维度得分较为接近，说明您的自恋特质呈现出较为复杂的混合模式，不同情境下可能表现出不同的自恋面向。";
+      }
+
+      interp += "<br><br>⚠️ <strong>温馨提示</strong>：本量表仅供自我探索参考，不能替代专业心理诊断。如对结果有疑问或感到困扰，建议咨询专业心理咨询师。";
+      document.getElementById('interpretation-text').innerHTML = interp;
+
+      document.getElementById('results').classList.add('show');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    renderQuestions();
+  </script>
+</body>
+</html>
